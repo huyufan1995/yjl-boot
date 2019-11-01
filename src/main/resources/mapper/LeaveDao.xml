@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.LeaveDao">
+
+	<sql id="base_column">
+		leave.`id`, leave.`content`, leave.`openid`, leave.`ctime`, leave.`portrait`, leave.`name`, leave.`mobile`, leave.`status`, leave.`is_del`, leave.`member_id`
+	</sql>
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.renren.cms.entity.LeaveEntity" id="leaveMap">
+		<result property="id" column="id" />
+		<result property="content" column="content" />
+		<result property="openid" column="openid" />
+		<result property="ctime" column="ctime" />
+		<result property="portrait" column="portrait" />
+		<result property="name" column="name" />
+		<result property="mobile" column="mobile" />
+		<result property="status" column="status" />
+		<result property="isDel" column="is_del" />
+		<result property="memberId" column="member_id" />
+	</resultMap>
+
+	<select id="searchList" resultType="io.renren.cms.entity.LeaveEntity">
+		SELECT
+			*,
+		(SELECT real_name from tb_member where id = member_id) realName
+		FROM
+			tb_leave
+		WHERE
+			is_del = 'f'
+		<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+		<if test="superiorId != null and superiorId != ''"> and member_id in (SELECT id from tb_member where superior_id = #{superiorId} or id = #{superiorId})</if>
+		<if test="deptId != null and deptId != ''">
+			and member_id in (SELECT member_id from tb_dept_member WHERE dept_id = #{deptId})
+		</if>
+
+		<if test="key != null and key != ''">
+			and (name LIKE concat('%', #{key}, '%') or mobile LIKE concat('%',#{key},'%'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.LeaveEntity">
+		select * from tb_leave where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.LeaveEntity">
+		select * from tb_leave where is_del = 'f'
+
+		<if test="content != null and content != ''"> and `content` = #{content}</if>
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="portrait != null and portrait != ''"> and `portrait` = #{portrait}</if>
+		<if test="name != null and name != ''"> and `name` = #{name}</if>
+		<if test="mobile != null and mobile != ''"> and `mobile` = #{mobile}</if>
+		<if test="status != null and status != ''"> and `status` = #{status}</if>
+		<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+		<if test="deptId != null and deptId != ''">
+			and member_id in (SELECT member_id from tb_dept_member WHERE dept_id = #{deptId})
+		</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(tl.id) from tb_leave tl
+		left join tb_member tm
+		on tl.member_id = tm.id
+		 where tl.is_del = 'f'
+		<if test="company != null and company != ''">
+			and tm.`company` like concat('%',#{company},'%')
+		</if>
+		<if test="content != null and content != ''"> and tl.`content` = #{content}</if>
+		<if test="openid != null and openid != ''"> and tl.`openid` = #{openid}</if>
+		<if test="portrait != null and portrait != ''"> and tl.`portrait` = #{portrait}</if>
+		<if test="name != null and name != ''"> and tl.`name` = #{name}</if>
+		<if test="mobile != null and mobile != ''"> and tl.`mobile` = #{mobile}</if>
+		<if test="status != null and status != ''"> and tl.`status` = #{status}</if>
+		<if test="memberId != null and memberId != ''"> and tl.`member_id` = #{memberId}</if>
+		<if test="superiorId != null and superiorId != ''"> and tl.member_id in (SELECT id from tb_member where superior_id = #{superiorId} or id = #{superiorId})</if>
+		<if test="deptId != null and deptId != ''">
+			and member_id in (SELECT member_id from tb_dept_member WHERE dept_id = #{deptId})
+		</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (tl.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+
+	<insert id="save" parameterType="io.renren.cms.entity.LeaveEntity">
+		insert into tb_leave
+		(
+		`id`,
+		`content`,
+		`openid`,
+		`ctime`,
+		`portrait`,
+		`name`,
+		`mobile`,
+		`status`,
+		`is_del`,
+		`member_id`
+		)
+		values
+		(
+		#{id},
+		#{content},
+		#{openid},
+		#{ctime},
+		#{portrait},
+		#{name},
+		#{mobile},
+		#{status},
+		#{isDel},
+		#{memberId}
+		)
+	</insert>
+
+	<update id="update" parameterType="io.renren.cms.entity.LeaveEntity">
+		update tb_leave
+		<set>
+			<if test="content != null">`content` = #{content}, </if>
+			<if test="openid != null">`openid` = #{openid}, </if>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
+			<if test="portrait != null">`portrait` = #{portrait}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="mobile != null">`mobile` = #{mobile}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="isDel != null">`is_del` = #{isDel}, </if>
+			<if test="memberId != null">`member_id` = #{memberId}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!-- 物理删除 -->
+	<delete id="delete">
+		delete from tb_leave where id = #{value}
+	</delete>
+
+	<!-- 批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_leave where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 逻辑删除 -->
+	<update id="logicDel">
+		update tb_leave set is_del = 't' where id = #{value}
+	</update>
+
+	<!-- 批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update tb_leave
+		set is_del = 't'
+		where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+
+	<select id="queryListVo" resultType="io.renren.api.vo.LeaveEntityVo">
+		select tl.*,tm.nickname as toName,tm.company as toCompany from tb_leave tl
+		left join tb_member tm
+		on tl.member_id = tm.id
+		where tl.is_del = 'f'
+		<if test="id != null and id != ''"> and tl.`id` = #{id}</if>
+		<if test="content != null and content != ''"> and tl.`content` = #{content}</if>
+		<if test="openid != null and openid != ''"> and tl`openid` = #{openid}</if>
+		<if test="portrait != null and portrait != ''"> and tl.`portrait` = #{portrait}</if>
+		<if test="name != null and name != ''"> and tl.`name` = #{name}</if>
+		<if test="company != null and company != ''">
+		 and tm.`company` like concat('%',#{company},'%')
+		 </if>
+		<if test="mobile != null and mobile != ''"> and tl.`mobile` = #{mobile}</if>
+		<if test="status != null and status != ''"> and tl.`status` = #{status}</if>
+		<if test="memberId != null and memberId != ''"> and tl.`member_id` = #{memberId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (tl.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by tl.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+</mapper>

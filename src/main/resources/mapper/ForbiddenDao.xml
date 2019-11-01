@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.ForbiddenDao">
+
+	<select id="queryObjectBySuperiorId" resultType="io.renren.cms.entity.ForbiddenMemberEntity">
+		SELECT * from tb_forbidden where superior_id = #{superiorId} LIMIT 1
+	</select>
+
+	<select id="queryObjectByOpenid" resultType="io.renren.cms.entity.ForbiddenMemberEntity">
+		SELECT * from tb_forbidden where openid = #{openid} LIMIT 1
+	</select>
+
+	<insert id="save" parameterType="io.renren.cms.entity.ForbiddenMemberEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_forbidden
+		(
+		openid,
+		forbidden_msg,
+		superior_id,
+		create_date
+		)
+		values
+		(
+		#{openId},
+		#{forbiddenMsg},
+		#{superiorId},
+		#{createDate}
+		)
+	</insert>
+
+<!--	<update id="update" parameterType="io.renren.cms.entity.ForbiddenMemberEntity">
+		update tb_forbidden
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="portrait != null">`portrait` = #{portrait}, </if>
+			<if test="position != null">`position` = #{position}, </if>
+		</set>
+		where openid = #{openid}
+	</update>-->
+
+	<!-- 物理删除 -->
+	<delete id="delete">
+		delete from tb_forbidden where superior_id = #{value}
+	</delete>
+
+	<!-- 批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_card where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

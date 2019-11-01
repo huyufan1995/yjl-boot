@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.ApplyRecordDao">
+
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.renren.cms.entity.ApplyRecordEntity" id="applyRecordMap">
+		<result property="id" column="id" />
+		<result property="ctime" column="ctime" />
+		<result property="isDel" column="is_del" />
+		<result property="templateApplyId" column="template_apply_id" />
+		<result property="applyId" column="apply_id" />
+		<result property="joinOpenid" column="join_openid" />
+		<result property="itemDetail" column="item_detail" />
+		<result property="joinPortrait" column="join_portrait" />
+		<result property="superiorId" column="superior_id" />
+		<result property="memberId" column="member_id" />
+		<result property="shareMemberId" column="share_member_id" />
+		<result property="joinNickName" column="join_nick_name" />
+	</resultMap>
+	
+	<select id="queryListByApplyId" resultType="io.renren.cms.entity.ApplyRecordEntity">
+		SELECT
+			*,
+		(SELECT real_name from tb_member WHERE id = share_member_id) shareMemberName
+		FROM
+			tb_apply_record
+		WHERE
+			is_del = 'f'
+		<if test="applyId != null and applyId != ''"> and `apply_id` = #{applyId}</if>
+		<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+		<if test="shareMemberId != null and shareMemberId != ''"> and `share_member_id` = #{shareMemberId}</if>
+		<if test="key != null and key != ''">
+			and item_detail LIKE concat('%', #{key}, '%')
+		</if>
+		ORDER BY id desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="applyRecordListByApplyId" resultType="io.renren.cms.entity.ApplyRecordEntity">
+		SELECT
+		*
+		FROM
+		tb_apply_record
+		WHERE
+		is_del = 'f'
+		and `apply_id` = #{applyId}
+		ORDER BY id desc
+	</select>
+
+	<select id="queryListByJoinOpenid" resultType="io.renren.api.vo.ApplyRecordVo">
+		SELECT
+			a.start_time,
+			a.end_time,
+			a.`name`,
+			a.apply_count,
+			ar.apply_id,
+			a.describe,
+			ar.share_member_id,
+			ar.id applyRecordId
+		FROM
+			tb_apply_record ar
+		LEFT JOIN tb_apply a ON ar.apply_id = a.id
+		WHERE ar.join_openid = #{joinOpenid}
+		and a.is_del = 'f'
+		and ar.is_del = 'f'
+		ORDER BY ar.id desc
+		
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<select id="queryObjectByApplyIdAndJoinOpenid" resultType="io.renren.cms.entity.ApplyRecordEntity">
+		select * from tb_apply_record where is_del = 'f' and apply_id = #{applyId} and join_openid = #{joinOpenid} limit 1
+	</select>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.ApplyRecordEntity">
+		select * from tb_apply_record where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.ApplyRecordEntity">
+		select *,
+			(SELECT real_name from tb_member WHERE id = share_member_id) shareMemberName
+		 from tb_apply_record where is_del = 'f'
+
+		<if test="templateApplyId != null and templateApplyId != ''"> and `template_apply_id` = #{templateApplyId}</if>
+		<if test="applyId != null and applyId != ''"> and `apply_id` = #{applyId}</if>
+		<if test="joinOpenid != null and joinOpenid != ''"> and `join_openid` = #{joinOpenid}</if>
+		<if test="superiorId != null and superiorId != ''"> and `superior_id` = #{superiorId}</if>
+		<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+		<if test="shareMemberId != null and shareMemberId != ''"> and `share_member_id` = #{shareMemberId}</if>
+		<if test="deptId != null and deptId != ''"> and share_member_id in (SELECT member_id from tb_dept_member WHERE dept_id = #{deptId})</if>
+		
+		<if test="key != null and key != ''">
+			and item_detail LIKE concat('%', #{key}, '%')
+		</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(tar.id) from tb_apply_record tar
+		left join (select id,nickname from tb_member) tm1
+		on tar.member_id = tm1.id
+		where tar.is_del = 'f'
+		<if test="templateApplyId != null and templateApplyId != ''"> and tar.`template_apply_id` = #{templateApplyId}</if>
+		<if test="applyId != null and applyId != ''"> and tar.`apply_id` = #{applyId}</if>
+		<if test="memberName != null and memberName != ''"> and tm1.nickname = #{memberName}</if>
+		<if test="joinOpenid != null and joinOpenid != ''"> and tar.`join_openid` = #{joinOpenid}</if>
+		<if test="itemDetail != null and itemDetail != ''"> and tar.`item_detail` = #{itemDetail}</if>
+		<if test="joinPortrait != null and joinPortrait != ''"> and tar.`join_portrait` = #{joinPortrait}</if>
+		<if test="superiorId != null and superiorId != ''"> and tar.`superior_id` = #{superiorId}</if>
+		<if test="memberId != null and memberId != ''"> and tar.`member_id` = #{memberId}</if>
+		<if test="shareMemberId != null and shareMemberId != ''"> and tar.`share_member_id` = #{shareMemberId}</if>
+		<if test="deptId != null and deptId != ''"> and share_member_id in (SELECT member_id from tb_dept_member WHERE dept_id = #{deptId})</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (tar.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+
+	<insert id="save" parameterType="io.renren.cms.entity.ApplyRecordEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_apply_record
+		(
+		`ctime`,
+		`is_del`,
+		`template_apply_id`,
+		`apply_id`,
+		`join_openid`,
+		`item_detail`,
+		`join_portrait`,
+		`superior_id`,
+		`share_member_id`,
+		`join_nick_name`,
+		`member_id`
+		)
+		values
+		(
+		#{ctime},
+		#{isDel},
+		#{templateApplyId},
+		#{applyId},
+		#{joinOpenid},
+		#{itemDetail},
+		#{joinPortrait},
+		#{superiorId},
+		#{shareMemberId},
+		#{joinNickName},
+		#{memberId}
+		)
+	</insert>
+
+	<update id="update" parameterType="io.renren.cms.entity.ApplyRecordEntity">
+		update tb_apply_record
+		<set>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
+			<if test="isDel != null">`is_del` = #{isDel}, </if>
+			<if test="templateApplyId != null">`template_apply_id` = #{templateApplyId}, </if>
+			<if test="applyId != null">`apply_id` = #{applyId}, </if>
+			<if test="joinOpenid != null">`join_openid` = #{joinOpenid}, </if>
+			<if test="itemDetail != null">`item_detail` = #{itemDetail}, </if>
+			<if test="joinPortrait != null">`join_portrait` = #{joinPortrait}, </if>
+			<if test="superiorId != null">`superior_id` = #{superiorId}, </if>
+			<if test="shareMemberId != null">`share_member_id` = #{shareMemberId}, </if>
+			<if test="joinNickName != null">`join_nick_name` = #{joinNickName}, </if>
+			<if test="memberId != null">`member_id` = #{memberId}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!-- 物理删除 -->
+	<delete id="delete">
+		delete from tb_apply_record where id = #{value}
+	</delete>
+
+	<!-- 批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_apply_record where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 逻辑删除 -->
+	<update id="logicDel">
+		update tb_apply_record set is_del = 't' where id = #{value}
+	</update>
+	
+	<!-- 逻辑删除 -->
+	<update id="logicDelByApplyId">
+		update tb_apply_record set is_del = 't' where apply_id = #{value}
+	</update>
+
+	<!-- 批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update tb_apply_record
+		set is_del = 't'
+		where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+
+	<select id="queryListVo" resultType="io.renren.api.vo.ApplyRecordEntityVo">
+		select tar.*,tm.nickname as superiorName,tm1.nickname as memberName,tm2.nickname as shareName
+		from tb_apply_record tar
+		left join
+		(select id,nickname from tb_member) tm
+		on tar.superior_id = tm.id
+		left join (select id,nickname from tb_member) tm1
+		on tar.member_id = tm1.id
+		left join (select id,nickname from tb_member) tm2
+		on tar.share_member_id = tm2.id
+		where tar.is_del = 'f'
+
+		<if test="templateApplyId != null and templateApplyId != ''"> and tar.`template_apply_id` = #{templateApplyId}</if>
+		<if test="applyId != null and applyId != ''"> and tar.`apply_id` = #{applyId}</if>
+		<if test="memberName != null and memberName != ''"> and tm1.nickname = #{memberName}</if>
+		<if test="joinOpenid != null and joinOpenid != ''"> and tar.`join_openid` = #{joinOpenid}</if>
+		<if test="superiorId != null and superiorId != ''"> and tar.`superior_id` = #{superiorId}</if>
+		<if test="memberId != null and memberId != ''"> and tar.`member_id` = #{memberId}</if>
+		<if test="shareMemberId != null and shareMemberId != ''"> and tar.`share_member_id` = #{shareMemberId}</if>
+
+		<if test="key != null and key != ''">
+			and tar.item_detail LIKE concat('%', #{key}, '%')
+		</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (tar.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by tar.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+</mapper>

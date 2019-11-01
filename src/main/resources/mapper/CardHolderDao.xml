@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.CardHolderDao">
+
+	<sql id="base_column">
+		cardHolder.`id`, cardHolder.`name`, cardHolder.`portrait`, cardHolder.`position`, cardHolder.`company`, cardHolder.`mobile`, cardHolder.`ctime`,
+		cardHolder.`utime`, cardHolder.`is_del`,
+		cardHolder.`gender`, cardHolder.`weixin`, cardHolder.`email`, cardHolder.`address`, cardHolder.`member_id`,
+		cardHolder.`first_letter`
+	</sql>
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.renren.cms.entity.CardHolderEntity" id="cardHolderMap">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="portrait" column="portrait" />
+		<result property="position" column="position" />
+		<result property="company" column="company" />
+		<result property="mobile" column="mobile" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+		<result property="isDel" column="is_del" />
+		<result property="gender" column="gender" />
+		<result property="weixin" column="weixin" />
+		<result property="email" column="email" />
+		<result property="address" column="address" />
+		<result property="memberId" column="member_id" />
+		<result property="firstLetter" column="first_letter" />
+		<result property="openid" column="openid" />
+		<result property="addressLongitude" column="address_longitude" />
+		<result property="addressLatitude" column="address_latitude" />
+	</resultMap>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.CardHolderEntity">
+		select * from tb_card_holder where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.CardHolderEntity">
+		select * from tb_card_holder where is_del = 'f'
+
+		<if test="key != null and key != ''">
+			and (name LIKE concat('%', #{key}, '%') or mobile LIKE concat('%',#{key},'%'))
+		</if>
+		
+		<if test="name != null and name != ''"> and `name` = #{name}</if>
+		<if test="position != null and position != ''"> and `position` = #{position}</if>
+		<if test="company != null and company != ''"> and `company` = #{company}</if>
+		<if test="mobile != null and mobile != ''"> and `mobile` = #{mobile}</if>
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="gender != null and gender != ''"> and `gender` = #{gender}</if>
+		<if test="weixin != null and weixin != ''"> and `weixin` = #{weixin}</if>
+		<if test="email != null and email != ''"> and `email` = #{email}</if>
+		<if test="address != null and address != ''"> and `address` = #{address}</if>
+		<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+		<if test="firstLetter != null and firstLetter != ''"> and `first_letter` = #{firstLetter}</if>
+		<if test="superiorId != null and superiorId != ''"> and openid in (SELECT openid from tb_member WHERE superior_id = #{superiorId} or id = #{superiorId})</if>
+		<if test="deptId != null and deptId != ''"> and openid in (SELECT openid from tb_dept_member WHERE dept_id = #{deptId})</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(id) from tb_card_holder where is_del = 'f'
+		
+		<if test="key != null and key != ''">
+			and (name LIKE concat('%', #{key}, '%') or mobile LIKE concat('%',#{key},'%'))
+		</if>
+		<if test="id != null and id != ''"> and `id` = #{id}</if>
+		<if test="name != null and name != ''"> and `name` = #{name}</if>
+		<if test="position != null and position != ''"> and `position` = #{position}</if>
+		<if test="company != null and company != ''"> and `company` = #{company}</if>
+		<if test="mobile != null and mobile != ''"> and `mobile` = #{mobile}</if>
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="gender != null and gender != ''"> and `gender` = #{gender}</if>
+		<if test="weixin != null and weixin != ''"> and `weixin` = #{weixin}</if>
+		<if test="email != null and email != ''"> and `email` = #{email}</if>
+		<if test="address != null and address != ''"> and `address` = #{address}</if>
+		<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+		<if test="firstLetter != null and firstLetter != ''"> and `first_letter` = #{firstLetter}</if>
+		<if test="superiorId != null and superiorId != ''"> and openid in (SELECT openid from tb_member WHERE superior_id = #{superiorId} or id = #{superiorId})</if>
+		<if test="deptId != null and deptId != ''">
+			and openid in (SELECT openid from tb_dept_member WHERE dept_id = #{deptId})
+		</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+
+	<insert id="save" parameterType="io.renren.cms.entity.CardHolderEntity">
+		insert into tb_card_holder
+		(
+		`id`,
+		`name`,
+		`portrait`,
+		`position`,
+		`company`,
+		`mobile`,
+		`ctime`,
+		`utime`,
+		`is_del`,
+		`gender`,
+		`weixin`,
+		`email`,
+		`address`,
+		`member_id`,
+		`openid`,
+		`address_longitude`,
+		`address_latitude`,
+		`first_letter`
+		)
+		values
+		(
+		#{id},
+		#{name},
+		#{portrait},
+		#{position},
+		#{company},
+		#{mobile},
+		#{ctime},
+		#{utime},
+		#{isDel},
+		#{gender},
+		#{weixin},
+		#{email},
+		#{address},
+		#{memberId},
+		#{openid},
+		#{addressLongitude},
+		#{addressLatitude},
+		#{firstLetter}
+		)
+	</insert>
+
+	<update id="update" parameterType="io.renren.cms.entity.CardHolderEntity">
+		update tb_card_holder
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="portrait != null">`portrait` = #{portrait}, </if>
+			<if test="position != null">`position` = #{position}, </if>
+			<if test="company != null">`company` = #{company}, </if>
+			<if test="mobile != null">`mobile` = #{mobile}, </if>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
+			<if test="utime != null">`utime` = #{utime}, </if>
+			<if test="isDel != null">`is_del` = #{isDel}, </if>
+			<if test="gender != null">`gender` = #{gender}, </if>
+			<if test="weixin != null">`weixin` = #{weixin}, </if>
+			<if test="email != null">`email` = #{email}, </if>
+			<if test="address != null">`address` = #{address}, </if>
+			<if test="memberId != null">`member_id` = #{memberId}, </if>
+			<if test="openid != null">`openid` = #{openid}, </if>
+			<if test="addressLongitude != null">`address_longitude` = #{addressLongitude}, </if>
+			<if test="addressLatitude != null">`address_latitude` = #{addressLatitude}, </if>
+			<if test="firstLetter != null">`first_letter` = #{firstLetter}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!-- 物理删除 -->
+	<delete id="delete">
+		delete from tb_card_holder where id = #{value}
+	</delete>
+
+	<!-- 批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_card_holder where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 逻辑删除 -->
+	<update id="logicDel">
+		update tb_card_holder set is_del = 't' where id = #{value}
+	</update>
+
+	<!-- 批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update tb_card_holder
+		set is_del = 't'
+		where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<select id="queryListVo" resultType="io.renren.api.vo.CardHolderEntityVo">
+		select tch.*,tc.name as fromName from tb_card_holder tch
+		left join tb_card tc
+		on tch.openid = tc.openid
+		where tch.is_del = 'f'
+
+		<if test="key != null and key != ''">
+			and (tch.name LIKE concat('%', #{key}, '%') or tch.mobile LIKE concat('%',#{key},'%'))
+		</if>
+		<if test="id != null and id != ''"> and tch.`id` = #{id}</if>
+		<if test="name != null and name != ''"> and tch.`name` = #{name}</if>
+		<if test="position != null and position != ''"> and tch.`position` = #{position}</if>
+		<if test="company != null and company != ''"> and tch.`company` = #{company}</if>
+		<if test="mobile != null and mobile != ''"> and tch.`mobile` = #{mobile}</if>
+		<if test="openid != null and openid != ''"> and tch.`openid` = #{openid}</if>
+		<if test="gender != null and gender != ''"> and tch.`gender` = #{gender}</if>
+		<if test="weixin != null and weixin != ''"> and tch.`weixin` = #{weixin}</if>
+		<if test="email != null and email != ''"> and tch.`email` = #{email}</if>
+		<if test="address != null and address != ''"> and tch.`address` = #{address}</if>
+		<if test="memberId != null and memberId != ''"> and tch.`member_id` = #{memberId}</if>
+		<if test="firstLetter != null and firstLetter != ''"> and tch.`first_letter` = #{firstLetter}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (tch.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by tch.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+</mapper>

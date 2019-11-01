@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.TemplateWebsiteBrowseDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.renren.cms.entity.TemplateWebsiteBrowseEntity" id="templateWebsiteBrowseMap">
+		<result property="id" column="id" />
+		<result property="templateWebsiteId" column="template_website_id" />
+		<result property="ownerOpenid" column="owner_openid" />
+		<result property="portrait" column="portrait" />
+		<result property="browseOpenid" column="browse_openid" />
+		<result property="accessTime" column="access_time" />
+		<result property="company" column="company" />
+		<result property="position" column="position" />
+		<result property="name" column="name" />
+		<result property="ctime" column="ctime" />
+		<result property="ownerPortrait" column="owner_portrait" />
+		<result property="ownerPompany" column="owner_company" />
+	</resultMap>
+	
+	<select id="queryListByOwnerOpenid" resultType="io.renren.cms.entity.TemplateWebsiteBrowseEntity">
+		SELECT
+			*
+		FROM
+			tb_template_website_browse
+		WHERE
+			owner_openid = #{ownerOpenid}
+		GROUP BY browse_openid
+		ORDER BY access_time DESC
+		LIMIT 5
+	</select>
+	
+	<select id="queryObjectByOwnerOpenidAndBrowseOpenid" resultType="io.renren.cms.entity.TemplateWebsiteBrowseEntity">
+		select * from tb_template_website_browse where owner_openid = #{ownerOpenid} and browse_openid = #{browseOpenid} LIMIT 1
+	</select>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.TemplateWebsiteBrowseEntity">
+		select * from tb_template_website_browse where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.TemplateWebsiteBrowseEntity">
+	
+		SELECT
+			*,
+			(select real_name from tb_member where openid = owner_openid order by id desc limit 1) shareRealName
+		FROM
+			tb_template_website_browse
+		WHERE
+			1 = 1
+
+		<if test="templateWebsiteId != null and templateWebsiteId != ''"> and `template_website_id` = #{templateWebsiteId}</if>
+		<if test="ownerOpenid != null and ownerOpenid != ''"> and `owner_openid` = #{ownerOpenid}</if>
+		<if test="browseOpenid != null and browseOpenid != ''"> and `browse_openid` = #{browseOpenid}</if>
+		<if test="company != null and company != ''"> and `company` = #{company}</if>
+		<if test="superiorId != null and superiorId != ''"> and owner_openid in (SELECT openid FROM tb_member where superior_id = #{superiorId} or id = #{superiorId})</if>
+		<if test="deptId != null and deptId != ''"> and owner_openid in (SELECT openid from tb_dept_member WHERE dept_id = #{deptId})</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (access_time between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by access_time desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(ttwb.id) from tb_template_website_browse ttwb
+		left join tb_member tm
+		on ttwb.owner_openid = tm.openid
+		 where 1 = 1
+		and tm.bind_status ='bind'
+		<if test="forName != null and forName != ''"> and tm.nickname = #{forName}</if>
+		<if test="templateWebsiteId != null and templateWebsiteId != ''"> and ttwb.`template_website_id` = #{templateWebsiteId}</if>
+		<if test="ownerOpenid != null and ownerOpenid != ''"> and ttwb.`owner_openid` = #{ownerOpenid}</if>
+		<if test="browseOpenid != null and browseOpenid != ''"> and ttwb.`browse_openid` = #{browseOpenid}</if>
+		<if test="company != null and company != ''"> and ttwb.`company` = #{company}</if>
+		<if test="superiorId != null and superiorId != ''"> and ttwb.owner_openid in (SELECT openid FROM tb_member where superior_id = #{superiorId} or id = #{superiorId})</if>
+		<if test="deptId != null and deptId != ''"> and owner_openid in (SELECT openid from tb_dept_member WHERE dept_id = #{deptId})</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ttwb.access_time between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+
+	<insert id="save" parameterType="io.renren.cms.entity.TemplateWebsiteBrowseEntity">
+		insert into tb_template_website_browse
+		(
+		`id`,
+		`template_website_id`,
+		`owner_openid`,
+		`portrait`,
+		`browse_openid`,
+		`access_time`,
+		`position`,
+		`name`,
+		`ctime`,
+		`owner_portrait`,
+		`owner_company`,
+		`company`
+		)
+		values
+		(
+		#{id},
+		#{templateWebsiteId},
+		#{ownerOpenid},
+		#{portrait},
+		#{browseOpenid},
+		#{accessTime},
+		#{position},
+		#{name},
+		#{ctime},
+		#{ownerPortrait},
+		#{ownerCompany},
+		#{company}
+		)
+	</insert>
+
+	<update id="update" parameterType="io.renren.cms.entity.TemplateWebsiteBrowseEntity">
+		update tb_template_website_browse
+		<set>
+			<if test="templateWebsiteId != null">`template_website_id` = #{templateWebsiteId}, </if>
+			<if test="ownerOpenid != null">`owner_openid` = #{ownerOpenid}, </if>
+			<if test="portrait != null">`portrait` = #{portrait}, </if>
+			<if test="browseOpenid != null">`browse_openid` = #{browseOpenid}, </if>
+			<if test="accessTime != null">`access_time` = #{accessTime}, </if>
+			<if test="accessTime != null">`access_time` = #{accessTime}, </if>
+			<if test="position != null">`position` = #{position}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
+			<if test="ownerPortrait != null">`owner_portrait` = #{ownerPortrait}, </if>
+			<if test="ownerCompany != null">`owner_company` = #{ownerCompany}, </if>
+			<if test="company != null">`company` = #{company}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!-- 物理删除 -->
+	<delete id="delete">
+		delete from tb_template_website_browse where id = #{value}
+	</delete>
+
+	<!-- 批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_template_website_browse where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 逻辑删除 -->
+	<update id="logicDel">
+		update tb_template_website_browse set is_del = 't' where id = #{value}
+	</update>
+
+	<!-- 批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update tb_template_website_browse
+		set is_del = 't'
+		where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<select id="queryListVo" resultType="io.renren.api.vo.TemplateWebsiteBrowseEntityVo">
+		select ttwb.*,tm.nickname as forName from tb_template_website_browse ttwb
+		left join tb_member tm
+		on ttwb.owner_openid = tm.openid
+		where 1 = 1
+		and tm.bind_status ='bind'
+		<if test="forName != null and forName != ''"> and tm.nickname = #{forName}</if>
+		<if test="templateWebsiteId != null and templateWebsiteId != ''"> and ttwb.`template_website_id` = #{templateWebsiteId}</if>
+		<if test="ownerOpenid != null and ownerOpenid != ''"> and ttwb.`owner_openid` = #{ownerOpenid}</if>
+		<if test="browseOpenid != null and browseOpenid != ''"> and ttwb.`browse_openid` = #{browseOpenid}</if>
+		<if test="company != null and company != ''"> and ttwb.`company` = #{company}</if>
+		<if test="superiorId != null and superiorId != ''"> and ttwb.owner_openid in (SELECT openid FROM tb_member where superior_id = #{superiorId} or id = #{superiorId})</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ttwb.access_time between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by ttwb.access_time desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+</mapper>

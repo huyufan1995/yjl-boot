@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>官网模板</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+<link rel="stylesheet" href="../public/iview/iview.css">
+<link rel="stylesheet" href="../public/iview/ionicons.min.css">
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/iview/iview.min.js"></script>
+<script src="../public/js/common.js"></script>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<!--<i-button type="error" icon="close" @click="del" style="float:right;margin:0px 5px 0px 0px;">批量删除</i-button>
+			<i-button type="primary" icon="minus" @click="update" style="float:right;margin:0px 5px 0px 0px;">修改</i-button>-->
+			<i-button type="primary" icon="plus" @click="add" style="float:right;margin:0px 5px 0px 0px;">新增</i-button>
+			
+			<i-input v-model="q.id" placeholder="请输入Id" clearable style="width: 300px"></i-input>
+			<Date-picker v-model="q.ctime" type="daterange" placement="bottom-end" placeholder="请选择创建时间" style="width: 300px" @on-change="formateDate"></Date-picker>
+			
+			<i-button type="primary" icon="ios-search" @click="query">查询</i-button>
+			<i-button type="primary" icon="ios-refresh-empty" @click="reset">重置</i-button>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+
+	
+	<!-- ModalEdit-->
+	<Modal v-model="showModalEdit" :title="title" :mask-closable="false" width="800">
+	
+		<i-form ref="templateWebsite" :model="templateWebsite" :rules="ruleValidate" :label-width="100" label-position="left">
+			<Form-item label="字体颜色" prop="fontColor">
+			    	<i-input v-model="templateWebsite.fontColor" placeholder="" style="width: 300px"></i-input>
+				</Form-item>
+
+			<Form-item label="首页图标" prop="indexImgSrc">
+				<img :src="indexImgSrc" class="img-rounded" v-if="showIndexImage" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess1"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<Form-item label="电话图标" prop="phoneImgSrc">
+				<img :src="phoneImgSrc" class="img-rounded" v-if="showPhoneImage" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess2"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<Form-item label="分享图标" prop="shareImgSrc">
+				<img :src="shareImgSrc" class="img-rounded" v-if="showShareImage" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess3"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<hr>
+			<Form-item label="头部背景" prop="box1BgImgSrc">
+				<img :src="box1BgImgSrc" class="img-rounded" v-if="showBox1Bg" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess4"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<Form-item label="名片背景" prop="box1MpImgSrc">
+				<img :src="box1MpImgSrc" class="img-rounded" v-if="showBox1MpBg" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess5"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<hr>
+			<Form-item label="公司简介头部背景" prop="box2TopImgSrc">
+				<img :src="box2TopImgSrc" class="img-rounded" v-if="showBox2Top" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess6"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<Form-item label="公司简介背景" prop="box2BgImgSrc">
+				<img :src="box2BgImgSrc" class="img-rounded" v-if="showBox2Bg" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess7"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<hr>
+			<Form-item label="产品介绍头部背景" prop="box3TopImgSrc">
+				<img :src="box3TopImgSrc" class="img-rounded" v-if="showBox3Top" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess8"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+
+			<Form-item label="产品介绍背景" prop="box3BgImgSrc">
+				<img :src="box3BgImgSrc" class="img-rounded" v-if="showBox3Bg" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess9"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<hr>
+			<Form-item label="更多介绍背景" prop="box4BgImgSrc">
+				<img :src="box4BgImgSrc" class="img-rounded" v-if="showBox4Bg" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess10"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<hr>
+			<Form-item label="产品介绍头部背景" prop="box5TopImgSrc">
+				<img :src="box5TopImgSrc" class="img-rounded" v-if="showBox5Top" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess11"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+
+			<Form-item label="背景" prop="box5BgImgSrc">
+				<img :src="box5BgImgSrc" class="img-rounded" v-if="showBox5Bg" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess12"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<hr>
+			<Form-item label="新增图集" prop="box6BgImgSrc">
+				<img :src="box6BgImgSrc" class="img-rounded" v-if="showBox6Bg" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess13"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<hr>
+			<Form-item label="留言框" prop="box7BgImgSrc">
+				<img :src="box7BgImgSrc" class="img-rounded" v-if="showBox7Bg" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess14"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+
+			<Form-item label="留言管理" prop="box7BoxImgSrc">
+				<img :src="box7BoxImgSrc" class="img-rounded" v-if="showBox7Box" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess15"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+
+			<Form-item label="按钮" prop="box7BtnImgSrc">
+				<img :src="box7BtnImgSrc" class="img-rounded" v-if="showBox7Btn" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess16"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<hr>
+			<Form-item label="联系我们" prop="box8BgImgSrc">
+				<img :src="box8BgImgSrc" class="img-rounded" v-if="showBox8Bg" width="150px" height="78px">
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess17"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：690*360px</span>
+			</Form-item>
+			<hr>
+			<Form-item label="示例图" prop="examplePath">
+				<img :src="examplePathImgSrc" class="img-rounded" v-if="showExamplePath" width="150px" height="78px">
+
+				<Upload
+						:format="['jpg','jpeg','png']"
+						:on-success="handleSuccess18"
+						name="file"
+						:show-upload-list="true"
+						action="../cos/upload/cloud/templateImage">
+					<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+				</Upload>
+				<span>图片尺寸：750*1836px</span>
+			</Form-item>
+		</i-form>
+
+        <div slot="footer">
+        	<i-button type="warning" @click="showModalEdit = false">取消</i-button>
+        	<i-button type="primary" @click="saveOrUpdate">确定</i-button>
+    	</div>
+	 </Modal>
+	<!-- ModalAdd-->
+	<Modal v-model="showModalAdd" :title="title" :mask-closable="false" width="800">
+
+		<i-form ref="templateWebsite" :model="templateWebsite" :rules="ruleValidate" :label-width="100" label-position="left">
+			<Upload
+					multiple
+					type="drag"
+					action="../cos/upload/cloud/templateImages"
+					:before-upload="handleBeforeUpload"
+					:data="uploadData"
+			>
+				<div style="padding: 20px 0">
+					<Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
+					<p>批量上传图片</p>
+				</div>
+			</Upload>
+			<Form-item label="字体颜色" prop="fontColor">
+				<i-input v-model="templateWebsite.fontColor" placeholder="" style="width: 300px"></i-input>
+			</Form-item>
+			<Form-item label="目录" prop="catalog">
+				<i-input v-model="catalog" placeholder="" style="width: 300px"></i-input>
+			</Form-item>
+		</i-form>
+
+		<div slot="footer">
+			<i-button type="warning" @click="showModalAdd = false">取消</i-button>
+			<i-button type="primary" @click="saveOrUpdate">确定</i-button>
+		</div>
+	</Modal>
+</div>
+
+<script src="../public/js/cms/templatewebsite.js"></script>
+</body>
+</html>

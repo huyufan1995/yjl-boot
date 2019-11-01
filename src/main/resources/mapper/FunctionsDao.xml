@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.FunctionsDao">
+
+	<sql id="base_column">
+		functions.`id`, functions.`title`, functions.`image`, functions.`describe`, functions.`hint`
+	</sql>
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.renren.cms.entity.FunctionsEntity" id="functionsMap">
+		<result property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="image" column="image" />
+		<result property="describe" column="describe" />
+		<result property="hint" column="hint" />
+		<result property="sortNum" column="sort_num" />
+	</resultMap>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.FunctionsEntity">
+		select * from tb_functions where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.FunctionsEntity">
+		select * from tb_functions where 1 = 1
+
+		<if test="title != null and title != ''"> and `title` = #{title}</if>
+		<if test="describe != null and describe != ''"> and `describe` = #{describe}</if>
+		<if test="hint != null and hint != ''"> and `hint` = #{hint}</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by sort_num
+			</otherwise>
+		</choose>
+		
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(id) from tb_functions where 1 = 1
+		<if test="title != null and title != ''"> and `title` = #{title}</if>
+		<if test="describe != null and describe != ''"> and `describe` = #{describe}</if>
+		<if test="hint != null and hint != ''"> and `hint` = #{hint}</if>
+	</select>
+
+	<insert id="save" parameterType="io.renren.cms.entity.FunctionsEntity">
+		insert into tb_functions
+		(
+		`id`,
+		`title`,
+		`image`,
+		`describe`,
+		`sort_num`,
+		`hint`
+		)
+		values
+		(
+		#{id},
+		#{title},
+		#{image},
+		#{describe},
+		#{sortNum},
+		#{hint}
+		)
+	</insert>
+
+	<update id="update" parameterType="io.renren.cms.entity.FunctionsEntity">
+		update tb_functions
+		<set>
+			<if test="title != null">`title` = #{title}, </if>
+			<if test="image != null">`image` = #{image}, </if>
+			<if test="describe != null">`describe` = #{describe}, </if>
+			<if test="sortNum != null">`sort_num` = #{sortNum}, </if>
+			<if test="hint != null">`hint` = #{hint}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!-- 物理删除 -->
+	<delete id="delete">
+		delete from tb_functions where id = #{value}
+	</delete>
+
+	<!-- 批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_functions where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 逻辑删除 -->
+	<update id="logicDel">
+		update tb_functions set is_del = 't' where id = #{value}
+	</update>
+
+	<!-- 批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update tb_functions
+		set is_del = 't'
+		where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+</mapper>

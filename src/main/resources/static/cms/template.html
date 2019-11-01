@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>模板</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/js/common.js"></script>
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/at-ui-style/css/at.min.css">
+<script src="//cdn.jsdelivr.net/npm/at-ui/dist/at.min.js"></script>
+</head>
+<body>
+	<div id="rrapp" v-cloak>
+		<div v-show="showList">
+			<div class="grid-btn">
+				<a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+				<a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+				
+				<a class="btn btn-primary" @click="release"><i class="fa fa-plus"></i>&nbsp;发布</a>
+				<a class="btn btn-primary" @click="cancelRelease"><i class="fa fa-pencil-square-o"></i>&nbsp;取消发布</a>
+<!-- 				<a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a> -->
+			</div>
+			<table id="jqGrid"></table>
+			<div id="jqGridPager"></div>
+		</div>
+
+		<div v-show="!showList" class="panel panel-default">
+			<div class="panel-heading">{{title}}</div>
+			<form class="form-horizontal">
+				<div class="form-group">
+					<div class="col-sm-4 control-label">模板类型</div>
+					<div class="col-sm-8">
+						<at-select v-model="template.isFun" size="large" placeholder="模板类型"  style="width: 200px"> 
+							 <at-option value="t" >趣图</at-option>
+							 <at-option value="f" >首页场景图</at-option>
+						</at-select>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">模板名称</div>
+					<div class="col-sm-8">
+						<at-input v-model="template.name" size="large" placeholder="模板名称" style="width: 200px"></at-input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">模板路径</div>
+					<div class="col-sm-8">
+						<at-input v-model="template.imageTemplate" size="large" placeholder="模板路径" style="width: 200px"></at-input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">实例路径</div>
+					<div class="col-sm-8">
+						<at-input v-model="template.imageExample" size="large" placeholder="实例路径" style="width: 200px"></at-input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">分类</div>
+					<div class="col-sm-8">
+<!-- 						<at-input size="large" v-model="template.categoryId" placeholder="分类" type="number" style="width: 200px"></at-input> -->
+						<at-select v-model="template.categoryId" size="large" placeholder="分类" style="width: 200px"> 
+							 <at-option v-for="item in categorys" :value="item.id" :key="item.id">{{ item.name }}</at-option>
+						</at-select>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">使用量</div>
+					<div class="col-sm-8">
+						<at-input size="large" v-model="template.useCnt" placeholder="使用量" type="number" style="width: 200px"></at-input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">浏览量</div>
+					<div class="col-sm-8">
+						<at-input size="large" v-model="template.viewCnt" placeholder="浏览量" type="number" style="width: 200px"></at-input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">是否免费</div>
+					<div class="col-sm-8">
+						<at-select v-model="template.isFree" size="large" style="width: 200px" placeholder="是否免费">
+						  <at-option value="true">是</at-option>
+						  <at-option value="false">否</at-option>
+						</at-select>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">模板宽</div>
+					<div class="col-sm-8">
+						<at-input size="large" v-model="template.width" placeholder="模板宽" type="number" style="width: 200px"></at-input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">模板高</div>
+					<div class="col-sm-8">
+						<at-input v-model="template.height" size="large" placeholder="模板高" type="number" style="width: 200px"></at-input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label"></div>
+					<at-button type="primary" @click="saveOrUpdate">确定</at-button>
+					&nbsp;&nbsp;
+					<at-button type="warning" @click="reload">返回</at-button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script src="../public/js/cms/template.js"></script>
+</body>
+</html>

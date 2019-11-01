@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.CasePraiseDao">
+
+	<sql id="base_column">
+		casePraise.`id`, casePraise.`ctime`, casePraise.`openid`, casePraise.`case_id`
+	</sql>
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.renren.cms.entity.CasePraiseEntity" id="casePraiseMap">
+		<result property="id" column="id" />
+		<result property="ctime" column="ctime" />
+		<result property="openid" column="openid" />
+		<result property="caseId" column="case_id" />
+	</resultMap>
+	
+	<select id="queryObjectByOpenidAndCaseId" resultType="io.renren.cms.entity.CasePraiseEntity">
+		select * from tb_case_praise where openid = #{openid} and case_id = #{caseId} limit 1
+	</select>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.CasePraiseEntity">
+		select * from tb_case_praise where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.CasePraiseEntity">
+		select * from tb_case_praise where 1 = 1
+
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="caseId != null and caseId != ''"> and `case_id` = #{caseId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(id) from tb_case_praise where 1 = 1
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="caseId != null and caseId != ''"> and `case_id` = #{caseId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+
+	<insert id="save" parameterType="io.renren.cms.entity.CasePraiseEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_case_praise
+		(
+		`ctime`,
+		`openid`,
+		`case_id`
+		)
+		values
+		(
+		#{ctime},
+		#{openid},
+		#{caseId}
+		)
+	</insert>
+
+	<update id="update" parameterType="io.renren.cms.entity.CasePraiseEntity">
+		update tb_case_praise
+		<set>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
+			<if test="openid != null">`openid` = #{openid}, </if>
+			<if test="caseId != null">`case_id` = #{caseId}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!-- 物理删除 -->
+	<delete id="delete">
+		delete from tb_case_praise where id = #{value}
+	</delete>
+
+	<!-- 批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_case_praise where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 逻辑删除 -->
+	<update id="logicDel">
+		update tb_case_praise set is_del = 't' where id = #{value}
+	</update>
+
+	<!-- 批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update tb_case_praise
+		set is_del = 't'
+		where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<select id="queryListVo" resultType="io.renren.api.vo.CasePraiseEntityVo">
+		select tcp.*,(SELECT title from tb_case WHERE id = case_id) caseTitle,tm.nickname as casepraiseName from tb_case_praise tcp
+		left join tb_member tm
+		on tcp.openid = tm.openid and tm.bind_status ='bind'
+		where 1 = 1
+
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="caseId != null and caseId != ''"> and `case_id` = #{caseId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+</mapper>

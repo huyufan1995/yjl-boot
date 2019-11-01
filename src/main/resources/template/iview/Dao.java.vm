@@ -1,0 +1,20 @@
+package ${package}.dao;
+
+import java.util.List;
+
+import ${package}.entity.${className}Entity;
+import io.renren.dao.BaseDao;
+
+/**
+ * ${comments}
+ * 
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}Dao extends BaseDao<${className}Entity> {
+	
+	int logicDel(${pk.attrType} ${pk.attrname});
+	
+	int logicDelBatch(List<${pk.attrType}> ${pk.attrname}s);
+}

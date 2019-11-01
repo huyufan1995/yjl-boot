@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.UserDaysDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.cms.entity.UserDaysEntity" id="userDaysMap">
+        <result property="id" column="id"/>
+        <result property="openId" column="open_id"/>
+        <result property="totalDays" column="total_days"/>
+        <result property="registeTime" column="registe_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="ifDeleted" column="if_deleted"/>
+    </resultMap>
+
+	<select id="queryObjectByParam" resultType="io.renren.cms.entity.UserDaysEntity">
+		select * from tb_user_days where 1=1
+		<if test="openId != null and openId.trim() != ''">
+			and open_id=#{openId}
+		</if>
+		limit 1
+	</select>
+	<select id="queryObject" resultType="io.renren.cms.entity.UserDaysEntity">
+		select * from tb_user_days where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.UserDaysEntity">
+		select * from tb_user_days where 1=1
+		
+		<if test="openId != null and openId.trim() != ''">
+			and open_id=#{openId}
+		</if>
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_user_days 
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.cms.entity.UserDaysEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_user_days
+		(
+			`open_id`, 
+			`total_days`, 
+			`create_time`, 
+			`registe_time`, 
+			`update_time`, 
+			`if_deleted`
+		)
+		values
+		(
+			#{openId}, 
+			#{totalDays}, 
+			#{createTime}, 
+			#{registeTime}, 
+			#{updateTime}, 
+			#{ifDeleted}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.cms.entity.UserDaysEntity">
+		update tb_user_days 
+		<set>
+			<if test="openId != null">`open_id` = #{openId}, </if>
+			<if test="totalDays != null">`total_days` = #{totalDays}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="updateTime != null">`update_time` = #{updateTime}, </if>
+			<if test="ifDeleted != null">`if_deleted` = #{ifDeleted}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_user_days where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_user_days where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,58 @@
+# Tomcat
+server:
+    tomcat:
+        max-threads: 1000
+        min-spare-threads: 30
+    port: 9888
+
+# mysql
+spring:
+    application:
+        name: yykj
+    # 环境 dev|test|pro
+    profiles:
+        active: test
+    datasource:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        # jackson时间格式化
+    jackson:
+        time-zone: GMT+8
+        date-format: yyyy-MM-dd HH:mm:ss
+    thymeleaf:
+        cache: false
+
+# Mybatis配置
+mybatis:
+    mapperLocations: classpath:mapper/*.xml
+    configLocation: classpath:mybatis.xml
+
+#logging.level.io.renren=DEBUG
+
+tencent: 
+  cos: 
+    appId: 1252188577
+    secretId: AKIDXrwn9FpAK9l7D3T6h38xWryBCzXpPiBO
+    secretKey: 62mGeqyd5LPHvIPPBhz1EApRggQJyPZx
+    region: ap-beijing
+    imagePrefixUrl: https://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/
+  ai: 
+    appId: 2121160360
+    appKey: x9jhuPgPUQBL6qgb
+  sms:
+    appId: 1400247362
+    appKey: f365f3c368c6b5c71ac351e94565fd29
+
+wx: 
+  pay:
+    appId: wx69b79496c0342beb #微信公众号或者小程序等的appid
+    mchId: 1277889401 #微信支付商户号 传媒
+    mchKey: hululinameng123abc6688abchkimch8 #微信支付商户密钥
+    keyPath: /mnt/app/yykj/apiclient_cert.p12 #p12证书的位置，可以指定绝对路径，也可以指定类路径（以classpath:开头）
+  miniapp: 
+    configs:
+        - appid: wx69b79496c0342beb #微信小程序的appid
+          secret: 7fd51669ca492019587c1a123c85c99c #微信小程序的Secret
+          token: token #微信小程序消息服务器配置的token
+          aesKey: aesKey #微信小程序消息服务器配置的EncodingAESKey
+          msgDataFormat: JSON

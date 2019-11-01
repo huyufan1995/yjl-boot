@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.MemberDao">
+
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.renren.cms.entity.MemberEntity" id="memberMap">
+		<result property="id" column="id" />
+		<result property="portrait" column="portrait" />
+		<result property="nickname" column="nickname" />
+		<result property="gender" column="gender" />
+		<result property="ctime" column="ctime" />
+		<result property="role" column="role" />
+		<result property="isDel" column="is_del" />
+		<result property="status" column="status" />
+		<result property="superiorId" column="superior_id" />
+		<result property="realName" column="real_name" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="mobile" column="mobile" />
+		<result property="openid" column="openid" />
+		<result property="certType" column="cert_type" />
+		<result property="type" column="type" />
+		<result property="authStatus" column="auth_status" />
+		<result property="code" column="code" />
+		<result property="bindStatus" column="bind_status" />
+		<result property="staffMaxCount" column="staff_max_count" />
+		<result property="company" column="company" />
+	</resultMap>
+	
+	<select id="queryListDeptStaffOff" resultType="io.renren.api.vo.StaffVo">
+		SELECT
+			*
+		FROM
+			tb_member m
+		WHERE
+			m.role = 'staff'
+		AND m.is_del = 'f'
+		AND m.STATUS = 'normal'
+		AND m.auth_status = 't'
+		AND m.bind_status = 'bind'
+		AND m.superior_id = #{superiorId}
+		AND m.id NOT IN (
+			SELECT
+				member_id
+			FROM
+				tb_dept_member
+		)
+		
+		<if test="key != null and key != ''">
+			and (m.real_name LIKE concat('%', #{key}, '%') or m.mobile LIKE concat('%',#{key},'%'))
+		</if>
+		
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by m.id DESC
+			</otherwise>
+		</choose>
+		
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<select id="queryListDeptStaff" resultType="io.renren.api.vo.StaffVo">
+		SELECT
+			m.*, dm.dept_id,
+			dm.member_id,
+			dm.perm,
+			dm.join_time
+		FROM
+			tb_member m
+		INNER JOIN tb_dept_member dm ON m.id = dm.member_id
+		WHERE
+			m.role = 'staff'
+		AND m.is_del = 'f'
+		AND m.STATUS = 'normal'
+		AND m.auth_status = 't'
+		AND m.bind_status = 'bind'
+		AND dm.dept_id = #{deptId}
+		
+		<if test="key != null and key != ''">
+			and (m.real_name LIKE concat('%', #{key}, '%') or m.mobile LIKE concat('%',#{key},'%'))
+		</if>
+		
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by dm.perm DESC, dm.join_time DESC
+			</otherwise>
+		</choose>
+		
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<update id="updateMemberId" parameterType="map">
+		UPDATE ${tableName} set member_id = #{targetMemberId} WHERE member_id = #{sourceMemberId}
+	</update>
+	
+	<update id="updateMemberIdAndOpenid" parameterType="map">
+		UPDATE ${tableName} SET member_id = #{targetMemberId}, openid = #{targetOpenid} WHERE member_id = #{sourceMemberId} OR openid = #{sourceOpenid}
+	</update>
+
+	<select id="queryObjectByCode" resultType="io.renren.cms.entity.MemberEntity">
+		select * from tb_member where code = #{code} and is_del = 'f' limit 1
+	</select>
+
+	<update id="updateBySuperiorId" parameterType="io.renren.cms.entity.MemberEntity">
+		update tb_member
+		<set>
+			<if test="certType != null">`cert_type` = #{certType}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="startTime != null">`start_time` = #{startTime}, </if>
+			<if test="endTime != null">`end_time` = #{endTime}</if>
+		</set>
+		where superior_id = #{superiorId}
+	</update>
+
+	<select id="queryTotalStaffCount" resultType="int">
+		SELECT count(id) from tb_member WHERE is_del = 'f' and superior_id = #{superiorId} and bind_status = 'bind'
+	</select>
+
+	<select id="queryListStaffShift" resultType="io.renren.api.vo.StaffVo">
+		SELECT m.*, dm.dept_id, dm.perm, dm.join_time from tb_member m LEFT JOIN tb_dept_member dm on m.id = dm.member_id
+		where m.is_del = 'f'
+		and m.auth_status = 't'
+		and m.bind_status = 'bind'
+		<if test="superiorId != null and superiorId != ''"> and (m.superior_id = #{superiorId} or m.id = #{superiorId})</if>
+		<if test="deptId != null and deptId != ''"> and m.id in (SELECT member_id from tb_dept_member WHERE dept_id = #{deptId})</if>
+		<if test="key != null and key != ''">
+			and (m.real_name LIKE concat('%', #{key}, '%') or m.mobile LIKE concat('%',#{key},'%'))
+		</if>
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by m.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryListStaff" resultType="io.renren.api.vo.StaffVo">
+		SELECT
+			m.*,
+			dm.dept_id,
+			dm.perm,
+			dm.join_time,
+			(SELECT name from tb_dept d WHERE d.id = (SELECT dm.dept_id from tb_dept_member dm WHERE dm.member_id = m.id)) deptName
+		FROM
+			tb_member m LEFT JOIN tb_dept_member dm on m.id = dm.member_id
+		WHERE
+			m.is_del = 'f'
+		<if test="superiorId != null and superiorId != ''"> and m.superior_id = #{superiorId}</if>
+		<if test="deptId != null and deptId != ''"> and m.id in (SELECT member_id from tb_dept_member WHERE dept_id = #{deptId})</if>
+		<if test="authStatus != null and authStatus != ''"> and m.auth_status = #{authStatus}</if>
+		<if test="bindStatus != null and bindStatus != ''"> and m.bind_status = #{bindStatus}</if>
+
+		<if test="key != null and key != ''">
+			and (m.real_name LIKE concat('%', #{key}, '%') or m.mobile LIKE concat('%',#{key},'%'))
+		</if>
+		
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by m.id desc
+			</otherwise>
+		</choose>
+		
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+		
+	</select>
+	
+	<select id="queryObjectByMobile" resultType="io.renren.cms.entity.MemberEntity">
+		select * from tb_member where mobile = #{mobile} order by id desc limit 1
+	</select>
+
+	<select id="queryObjectByOpenid" resultType="io.renren.cms.entity.MemberEntity">
+		select * from tb_member where openid = #{openid} order by id desc limit 1
+	</select>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.MemberEntity">
+		select * from tb_member where id = #{value} and is_del = 'f' limit 1
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.MemberEntity">
+		select * from tb_member where is_del = 'f'
+		<if test="id != null and id != ''"> and `id` = #{id}</if>
+		<if test="portrait != null and portrait != ''"> and `portrait` = #{portrait}</if>
+		<if test="nickname != null and nickname != ''"> and `nickname` = #{nickname}</if>
+		<if test="gender != null and gender != ''"> and `gender` = #{gender}</if>
+		<if test="role != null and role != ''"> and `role` = #{role}</if>
+		<if test="status != null and status != ''"> and `status` = #{status}</if>
+		<if test="superiorId != null and superiorId != ''"> and `superior_id` = #{superiorId}</if>
+		<if test="realName != null and realName != ''"> and `real_name` = #{realName}</if>
+		<if test="mobile != null and mobile != ''"> and `mobile` = #{mobile}</if>
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="certType != null and certType != ''"> and `cert_type` = #{certType}</if>
+		<if test="type != null and type != ''"> and `type` = #{type}</if>
+		<if test="authStatus != null and authStatus != ''"> and `auth_status` = #{authStatus}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(m.id) from tb_member m where m.is_del = 'f'
+		<if test="portrait != null and portrait != ''"> and m.`portrait` = #{portrait}</if>
+		<if test="company != null and company != ''"> and m.`company` = #{company}</if>
+		<if test="nickname != null and nickname != ''"> and m.`nickname` = #{nickname}</if>
+		<if test="gender != null and gender != ''"> and m.`gender` = #{gender}</if>
+		<if test="role != null and role != ''"> and m.`role` = #{role}</if>
+		<if test="status != null and status != ''"> and m.`status` = #{status}</if>
+		<if test="superiorId != null and superiorId != ''"> and `superior_id` = #{superiorId}</if>
+		<if test="realName != null and realName != ''"> and m.`real_name` = #{realName}</if>
+		<if test="mobile != null and mobile != ''"> and m.`mobile` = #{mobile}</if>
+		<if test="openid != null and openid != ''"> and m.`openid` = #{openid}</if>
+		<if test="certType != null and certType != ''"> and m.`cert_type` = #{certType}</if>
+		<if test="type != null and type != ''"> and m.`type` = #{type}</if>
+		<if test="code != null and code != ''"> and (m.`code` !=null or m.`code` !='')</if>
+		<if test="authStatus != null and authStatus != ''"> and m.`auth_status` = #{authStatus}</if>
+		<if test="bindStatus != null and bindStatus != ''"> and m.`bind_status` = #{bindStatus}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (m.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+
+	<insert id="save" parameterType="io.renren.cms.entity.MemberEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_member
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null and id != ''">
+				id,
+			</if>
+			<if test="portrait != null and portrait != ''">
+				portrait,
+			</if>
+			<if test="nickname != null and nickname != ''">
+				nickname,
+			</if>
+			<if test="gender != null and gender != ''">
+				gender,
+			</if>
+			<if test="ctime != null">
+				ctime,
+			</if>
+			<if test="role != null and role != ''">
+				role,
+			</if>
+			<if test="endTime != null">
+				end_time,
+			</if>
+			<if test="startTime != null">
+				start_time,
+			</if>
+			<if test="isDel != null and isDel != ''">
+				is_del,
+			</if>
+			<if test="superiorId != null and superiorId != ''">
+				superior_id,
+			</if>
+			<if test="status != null and status != ''">
+				status,
+			</if>
+			<if test="realName != null and realName != ''">
+				real_name,
+			</if>
+			<if test="mobile != null and mobile != ''">
+				mobile,
+			</if>
+			<if test="openid != null and openid != ''">
+				openid,
+			</if>
+			<if test="certType != null and certType != ''">
+				cert_type,
+			</if>
+			<if test="type != null and type != ''">
+				type,
+			</if>
+			<if test="code != null and code != ''">
+				code,
+			</if>
+			<if test="bindStatus != null and bindStatus != ''">
+				bind_status,
+			</if>
+			<if test="staffMaxCount != null">
+				staff_max_count,
+			</if>
+			<if test="company != null">
+				company,
+			</if>
+			<if test="authStatus != null and authStatus != ''">
+				auth_status,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null and id != ''">
+				#{id},
+			</if>
+			<if test="portrait != null and portrait != ''">
+				#{portrait},
+			</if>
+			<if test="nickname != null and nickname != ''">
+				#{nickname},
+			</if>
+			<if test="gender != null and gender != ''">
+				#{gender},
+			</if>
+			<if test="ctime != null">
+				#{ctime},
+			</if>
+			<if test="role != null and role != ''">
+				#{role},
+			</if>
+			<if test="endTime != null">
+				#{endTime},
+			</if>
+			<if test="startTime != null">
+				#{startTime},
+			</if>
+			<if test="isDel != null and isDel != ''">
+				#{isDel},
+			</if>
+			<if test="superiorId != null and superiorId != ''">
+				#{superiorId},
+			</if>
+			<if test="status != null and status != ''">
+				#{status},
+			</if>
+			<if test="realName != null and realName != ''">
+				#{realName},
+			</if>
+			<if test="mobile != null and mobile != ''">
+				#{mobile},
+			</if>
+			<if test="openid != null and openid != ''">
+				#{openid},
+			</if>
+			<if test="certType != null and certType != ''">
+				#{certType},
+			</if>
+			<if test="type != null and type != ''">
+				#{type},
+			</if>
+			<if test="code != null and code != ''">
+				#{code},
+			</if>
+			<if test="bindStatus != null and bindStatus != ''">
+				#{bindStatus},
+			</if>
+			<if test="staffMaxCount != null and staffMaxCount != ''">
+				#{staffMaxCount},
+			</if>
+			<if test="company != null and company != ''">
+				#{company},
+			</if>
+			<if test="authStatus != null and authStatus != ''">
+				#{authStatus}
+			</if>
+		</trim>
+	</insert>
+
+	<update id="update" parameterType="io.renren.cms.entity.MemberEntity">
+		update tb_member
+		<set>
+			<if test="portrait != null">`portrait` = #{portrait}, </if>
+			<if test="nickname != null">`nickname` = #{nickname}, </if>
+			<if test="gender != null">`gender` = #{gender}, </if>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
+			<if test="role != null">`role` = #{role}, </if>
+			<if test="isDel != null">`is_del` = #{isDel}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="superiorId != null">`superior_id` = #{superiorId}, </if>
+			<if test="realName != null">`real_name` = #{realName}, </if>
+			<if test="startTime != null">`start_time` = #{startTime}, </if>
+			<if test="endTime != null">`end_time` = #{endTime}, </if>
+			<if test="mobile != null">`mobile` = #{mobile}, </if>
+			<if test="openid != null">`openid` = #{openid}, </if>
+			<if test="certType != null">`cert_type` = #{certType}, </if>
+			<if test="type != null">`type` = #{type}, </if>
+			<if test="code != null">`code` = #{code}, </if>
+			<if test="bindStatus != null">`bind_status` = #{bindStatus}, </if>
+			<if test="staffMaxCount != null">`staff_max_count` = #{staffMaxCount}, </if>
+			<if test="company != null">`company` = #{company}, </if>
+			<if test="authStatus != null">`auth_status` = #{authStatus}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!-- 物理删除 -->
+	<delete id="delete">
+		delete from tb_member where id = #{value}
+	</delete>
+
+	<!-- 批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_member where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 逻辑删除 -->
+	<update id="logicDel">
+		update tb_member set is_del = 't' where id = #{value}
+	</update>
+
+	<!-- 封禁 -->
+	<update id="forbiddenMember">
+		update tb_member set status = 'freeze' where superior_id = #{value}
+	</update>
+
+    <!-- 解禁 -->
+    <update id="openMember">
+		update tb_member set status = 'normal' where superior_id = #{value}
+	</update>
+
+	<!-- 批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update tb_member
+		set is_del = 't'
+		where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<select id="queryListVO" resultType="io.renren.api.vo.MemberEntityVo">
+		select
+		m2.nickname as memberBossName,
+		tc.company,
+		m.*
+		FROM
+		tb_member m
+		LEFT JOIN tb_member m2 ON m.superior_id = m2.id
+		LEFT JOIN tb_card tc ON m.openid = tc.openid
+		where m.is_del = 'f' and m.superior_id is not null and m.bind_status = 'bind'
+		<if test="id != null and id != ''"> and m.`id` = #{id}</if>
+		<if test="portrait != null and portrait != ''"> and m.`portrait` = #{portrait}</if>
+		<if test="nickname != null and nickname != ''"> and m.`nickname` = #{nickname}</if>
+		<if test="gender != null and gender != ''"> and m.`gender` = #{gender}</if>
+		<if test="role != null and role != ''"> and m.`role` = #{role}</if>
+		<if test="status != null and status != ''"> and m.`status` = #{status}</if>
+		<if test="code != null and code != ''"> and (m.`code` !=null or m.`code` !='')</if>
+		<if test="superiorId != null and superiorId != ''"> and m.`superior_id` =
+			(select s.id from tb_member s
+			where s.nickname =
+			#{superiorId})
+		</if>
+		<if test="realName != null and realName != ''"> and m.`real_name` = #{realName}</if>
+		<if test="mobile != null and mobile != ''"> and m.`mobile` = #{mobile}</if>
+		<if test="openid != null and openid != ''"> and m.`openid` = #{openid}</if>
+		<if test="certType != null and certType != ''"> and m.`cert_type` = #{certType}</if>
+		<if test="type != null and type != ''"> and m.`type` = #{type}</if>
+		<if test="authStatus != null and authStatus != ''"> and m.`auth_status` = #{authStatus}</if>
+		<if test="company != null and company != ''"> and tc.`company` = #{company}</if>
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (m.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by m.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+
+	<select id="queryListBySuperiorId" resultType="io.renren.api.vo.MemberEntityVo">
+		select
+		m2.nickname as memberBossName,
+		tc.company,
+		m.*
+		FROM
+		tb_member m
+		LEFT JOIN tb_member m2 ON m.superior_id = m2.id
+		LEFT JOIN tb_card tc ON m.openid = tc.openid
+		where m.is_del = 'f' and m.superior_id is not null
+		<if test="id != null and id != ''"> and `id` = #{id}</if>
+		<if test="portrait != null and portrait != ''"> and `portrait` = #{portrait}</if>
+		<if test="nickname != null and nickname != ''"> and `nickname` = #{nickname}</if>
+		<if test="gender != null and gender != ''"> and `gender` = #{gender}</if>
+		<if test="role != null and role != ''"> and `role` = #{role}</if>
+		<if test="status != null and status != ''"> and `status` = #{status}</if>
+		<if test="superiorId != null and superiorId != ''"> and m.`superior_id`=#{superiorId}</if>
+		<if test="realName != null and realName != ''"> and `real_name` = #{realName}</if>
+		<if test="mobile != null and mobile != ''"> and m.`mobile` = #{mobile}</if>
+		<if test="company != null and company != ''"> and tc.`company` = #{company}</if>
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="certType != null and certType != ''"> and `cert_type` = #{certType}</if>
+		<if test="type != null and type != ''"> and `type` = #{type}</if>
+		<if test="authStatus != null and authStatus != ''"> and `auth_status` = #{authStatus}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (m.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by m.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryListByCompany" resultType="io.renren.api.vo.MemberEntityVo">
+		select
+		m2.nickname as memberBossName,
+		tc.company,
+		m.*
+		FROM
+		tb_member m
+		LEFT JOIN tb_member m2 ON m.superior_id = m2.id
+		LEFT JOIN tb_card tc ON m.openid = tc.openid
+		where m.is_del = 'f' and m.superior_id is not null and m.bind_status = 'bind'
+		<if test="id != null and id != ''"> and `id` = #{id}</if>
+		<if test="portrait != null and portrait != ''"> and `portrait` = #{portrait}</if>
+		<if test="nickname != null and nickname != ''"> and `nickname` = #{nickname}</if>
+		<if test="gender != null and gender != ''"> and `gender` = #{gender}</if>
+		<if test="role != null and role != ''"> and `role` = #{role}</if>
+		<if test="status != null and status != ''"> and `status` = #{status}</if>
+		<if test="superiorId != null and superiorId != ''"> and m.`superior_id`=#{superiorId}</if>
+		<if test="realName != null and realName != ''"> and `real_name` = #{realName}</if>
+		<if test="mobile != null and mobile != ''"> and m.`mobile` = #{mobile}</if>
+		<if test="company != null and company != ''"> and tc.`company` = #{company}</if>
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="certType != null and certType != ''"> and `cert_type` = #{certType}</if>
+		<if test="type != null and type != ''"> and `type` = #{type}</if>
+		<if test="authStatus != null and authStatus != ''"> and `auth_status` = #{authStatus}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (m.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by m.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<insert id="saveVipMember" parameterType="io.renren.cms.entity.MemberEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_member
+		(
+		`ctime`,
+		`role`,
+		`is_del`,
+		`status`,
+		`superior_id`,
+		`start_time`,
+		`end_time`,
+		`mobile`,
+		`cert_type`,
+		`type`,
+		`code`,
+		`bind_status`,
+		`staff_max_count`,
+		`auth_status`
+		)
+		values
+		(
+		#{ctime},
+		#{role},
+		#{isDel},
+		#{status},
+		#{superiorId},
+		#{startTime},
+		#{endTime},
+		#{mobile},
+		#{certType},
+		#{type},
+		#{code},
+		#{bindStatus},
+		#{staffMaxCount},
+		#{authStatus}
+		)
+	</insert>
+
+</mapper>

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.CertificateDao">
+
+	<sql id="base_column">
+		certificate.`id`, certificate.`member_id`, certificate.`type`, certificate.`license`, certificate.`identity_card_front`, certificate.`identity_card_full`,
+		certificate.`identity_card_reverse`, certificate.`name`, certificate.`mobile`, certificate.`identity_card_number`, certificate.`ctime`, certificate.`utime`,
+		certificate.`is_del`, certificate.`status`, certificate.`reason`
+	</sql>
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.renren.cms.entity.CertificateEntity" id="certificateMap">
+		<result property="id" column="id" />
+		<result property="memberId" column="member_id" />
+		<result property="type" column="type" />
+		<result property="license" column="license" />
+		<result property="identityCardFront" column="identity_card_front" />
+		<result property="identityCardFull" column="identity_card_full" />
+		<result property="identityCardReverse" column="identity_card_reverse" />
+		<result property="name" column="name" />
+		<result property="mobile" column="mobile" />
+		<result property="identityCardNumber" column="identity_card_number" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+		<result property="isDel" column="is_del" />
+		<result property="status" column="status" />
+		<result property="reason" column="reason" />
+	</resultMap>
+
+	<select id="queryObjectByMemberId" resultType="io.renren.cms.entity.CertificateEntity">
+		select * from tb_certificate where member_id = #{memberId} and is_del = 'f' limit 1
+	</select>
+	
+	<select id="queryObject" resultType="io.renren.cms.entity.CertificateEntity">
+		select * from tb_certificate where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.CertificateEntity">
+		select * from tb_certificate where is_del = 'f'
+
+		<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+		<if test="type != null and type != ''"> and `type` = #{type}</if>
+		<if test="name != null and name != ''"> and `name` = #{name}</if>
+		<if test="mobile != null and mobile != ''"> and `mobile` = #{mobile}</if>
+		<if test="identityCardNumber != null and identityCardNumber != ''"> and `identity_card_number` = #{identityCardNumber}</if>
+		<if test="status != null and status != ''"> and `status` = #{status}</if>
+		<if test="reason != null and reason != ''"> and `reason` = #{reason}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(id) from tb_certificate where is_del = 'f'
+		<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+		<if test="type != null and type != ''"> and `type` = #{type}</if>
+		<if test="name != null and name != ''"> and `name` = #{name}</if>
+		<if test="mobile != null and mobile != ''"> and `mobile` = #{mobile}</if>
+		<if test="identityCardNumber != null and identityCardNumber != ''"> and `identity_card_number` = #{identityCardNumber}</if>
+		<if test="status != null and status != ''"> and `status` = #{status}</if>
+		<if test="reason != null and reason != ''"> and `reason` = #{reason}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+
+	<insert id="save" parameterType="io.renren.cms.entity.CertificateEntity">
+		insert into tb_certificate
+		(
+		`id`,
+		`member_id`,
+		`type`,
+		`license`,
+		`identity_card_front`,
+		`identity_card_full`,
+		`identity_card_reverse`,
+		`name`,
+		`mobile`,
+		`identity_card_number`,
+		`ctime`,
+		`utime`,
+		`is_del`,
+		`status`,
+		`reason`
+		)
+		values
+		(
+		#{id},
+		#{memberId},
+		#{type},
+		#{license},
+		#{identityCardFront},
+		#{identityCardFull},
+		#{identityCardReverse},
+		#{name},
+		#{mobile},
+		#{identityCardNumber},
+		#{ctime},
+		#{utime},
+		#{isDel},
+		#{status},
+		#{reason}
+		)
+	</insert>
+
+	<update id="update" parameterType="io.renren.cms.entity.CertificateEntity">
+		update tb_certificate
+		<set>
+			<if test="memberId != null">`member_id` = #{memberId}, </if>
+			<if test="type != null">`type` = #{type}, </if>
+			<if test="license != null">`license` = #{license}, </if>
+			<if test="identityCardFront != null">`identity_card_front` = #{identityCardFront}, </if>
+			<if test="identityCardFull != null">`identity_card_full` = #{identityCardFull}, </if>
+			<if test="identityCardReverse != null">`identity_card_reverse` = #{identityCardReverse}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="mobile != null">`mobile` = #{mobile}, </if>
+			<if test="identityCardNumber != null">`identity_card_number` = #{identityCardNumber}, </if>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
+			<if test="utime != null">`utime` = #{utime}, </if>
+			<if test="isDel != null">`is_del` = #{isDel}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="reason != null">`reason` = #{reason}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!-- 物理删除 -->
+	<delete id="delete">
+		delete from tb_certificate where id = #{value}
+	</delete>
+
+	<!-- 批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_certificate where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 逻辑删除 -->
+	<update id="logicDel">
+		update tb_certificate set is_del = 't' where id = #{value}
+	</update>
+
+	<!-- 批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update tb_certificate
+		set is_del = 't'
+		where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+</mapper>

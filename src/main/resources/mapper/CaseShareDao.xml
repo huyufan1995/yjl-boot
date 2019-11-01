@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.CaseShareDao">
+
+	<sql id="base_column">
+		caseShare.`id`, caseShare.`case_id`, caseShare.`share_member_id`, caseShare.`share_time`
+	</sql>
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.renren.cms.entity.CaseShareEntity" id="caseShareMap">
+		<result property="id" column="id" />
+		<result property="caseId" column="case_id" />
+		<result property="shareMemberId" column="share_member_id" />
+		<result property="shareTime" column="share_time" />
+		<result property="shareSuperiorId" column="share_superior_id" />
+	</resultMap>
+	
+	<select id="queryObjectByCaseIdAndShareMemberId" resultType="io.renren.cms.entity.CaseShareEntity">
+		select * from tb_case_share where case_id = #{caseId} and share_member_id = #{shareMemberId} limit 1
+	</select>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.CaseShareEntity">
+		select * from tb_case_share where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.CaseShareEntity">
+		select * from tb_case_share where 1 = 1
+
+		<if test="caseId != null and caseId != ''"> and `case_id` = #{caseId}</if>
+		<if test="shareMemberId != null and shareMemberId != ''"> and `share_member_id` = #{shareMemberId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (share_time between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(tcs.id) from tb_case_share tcs,tb_member tm where 1 = 1
+		and tcs.share_member_id = tm.id and tm.bind_status='bind'
+		<if test="shareName != null and shareName != ''"> and tm.nickname = #{shareName}</if>
+		<if test="caseId != null and caseId != ''"> and tcs.`case_id` = #{caseId}</if>
+		<if test="shareMemberId != null and shareMemberId != ''"> and tcs.`share_member_id` = #{shareMemberId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (tcs.share_time between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+
+	<insert id="save" parameterType="io.renren.cms.entity.CaseShareEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_case_share
+		(
+		`case_id`,
+		`share_member_id`,
+		`share_superior_id`,
+		`share_time`
+		)
+		values
+		(
+		#{caseId},
+		#{shareMemberId},
+		#{shareSuperiorId},
+		#{shareTime}
+		)
+	</insert>
+
+	<update id="update" parameterType="io.renren.cms.entity.CaseShareEntity">
+		update tb_case_share
+		<set>
+			<if test="caseId != null">`case_id` = #{caseId}, </if>
+			<if test="shareMemberId != null">`share_member_id` = #{shareMemberId}, </if>
+			<if test="shareSuperiorId != null">`share_superior_id` = #{shareSuperiorId}, </if>
+			<if test="shareTime != null">`share_time` = #{shareTime}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!-- 物理删除 -->
+	<delete id="delete">
+		delete from tb_case_share where id = #{value}
+	</delete>
+
+	<!-- 批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_case_share where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 逻辑删除 -->
+	<update id="logicDel">
+		update tb_case_share set is_del = 't' where id = #{value}
+	</update>
+
+	<!-- 批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update tb_case_share
+		set is_del = 't'
+		where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+	<select id="queryListVo" resultType="io.renren.api.vo.CaseShareEntityVo">
+		select tcs.*,(SELECT title from tb_case WHERE id = case_id) caseTitle,tm.nickname as shareName
+		from tb_case_share tcs,tb_member tm
+		where 1 = 1
+		and tcs.share_member_id = tm.id and tm.bind_status='bind'
+		<if test="caseId != null and caseId != ''"> and `case_id` = #{caseId}</if>
+		<if test="shareName != null and shareName != ''"> and tm.nickname = #{shareName}</if>
+		<if test="shareMemberId != null and shareMemberId != ''"> and `share_member_id` = #{shareMemberId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (share_time between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+</mapper>

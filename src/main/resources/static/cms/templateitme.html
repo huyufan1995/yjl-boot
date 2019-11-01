@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>模板配置</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/js/common.js"></script>
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/at-ui-style/css/at.min.css">
+<script src="//cdn.jsdelivr.net/npm/at-ui/dist/at.min.js"></script>
+</head>
+<body>
+	<div id="rrapp" v-cloak>
+		<div v-show="showList">
+			<div class="grid-btn">
+				<div class="form-group col-sm-2">
+					<input type="text" class="form-control" v-model="q.templateId" placeholder="模板ID">
+				</div>
+				
+				<a class="btn btn-default" @click="query"><i class="fa fa-search"></i>&nbsp;查询</a>
+				<a class="btn btn-default" @click="reset"><i class="fa fa-reply-all"></i>&nbsp;重置</a>
+				
+				<a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+				<a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+<!-- 				<a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a> -->
+			</div>
+			<table id="jqGrid"></table>
+			<div id="jqGridPager"></div>
+		</div>
+
+		<div v-show="!showList" class="panel panel-default">
+			<div class="panel-heading">{{title}}</div>
+			<form class="form-horizontal">
+				<div class="form-group">
+					<div class="col-sm-4 control-label">类型</div>
+					<div class="col-sm-8">
+						<!-- <at-select v-model="templateItme.type" size="large" style="width: 200px" placeholder="类型">
+						  <at-option value="font">文字</at-option>
+						  <at-option value="image">图片</at-option>
+						</at-select> -->
+						
+						<select class="form-control" v-model="templateItme.type" @change="change_type()" style="width: 200px">
+							<option value="font">文字</option>
+							<option value="image">图片</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">模板ID</div>
+					<div class="col-sm-8">
+						<at-input size="large" v-model="templateItme.templateId" placeholder="模板ID" type="number" style="width: 200px"></at-input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">序号</div>
+					<div class="col-sm-8">
+						<at-input size="large" v-model="templateItme.sortNum" placeholder="序号" type="number" style="width: 200px"></at-input>
+					</div>
+				</div>
+				
+<!-- 				字体 -->
+				<div id="font_div" v-show="type == 'font'">
+					<div class="form-group">
+						<div class="col-sm-4 control-label">字体名称</div>
+						<div class="col-sm-8">
+							<at-select v-model="templateItme.fontName" size="large" placeholder="字体名称" style="width: 200px"> 
+							  <at-option value='微软雅黑'>微软雅黑</at-option>
+							  <at-option value='宋体'>宋体</at-option>
+							  <at-option value='黑体'>黑体</at-option>
+							</at-select>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">字体样式</div>
+						<div class="col-sm-8">
+							<at-select v-model="templateItme.fontStyle" size="large" style="width: 200px" placeholder="字体样式">
+							  <at-option value=0>普通</at-option>
+							  <at-option value=1>粗体</at-option>
+							  <at-option value=2>斜体</at-option>
+							  <at-option value=3>粗体+斜体</at-option>
+							</at-select>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">字体大小</div>
+						<div class="col-sm-8">
+							<at-input size="large" v-model="templateItme.fontSize" placeholder="字体大小" type="number" style="width: 200px"></at-input>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">字体颜色R</div>
+						<div class="col-sm-8">
+							<at-input size="large" v-model="templateItme.fontColorR" placeholder="字体颜色R" type="number" style="width: 200px"></at-input>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">字体颜色G</div>
+						<div class="col-sm-8">
+							<at-input size="large" v-model="templateItme.fontColorG" placeholder="字体颜色G" type="number" style="width: 200px"></at-input>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">字体颜色B</div>
+						<div class="col-sm-8">
+							<at-input size="large" v-model="templateItme.fontColorB" placeholder="字体颜色B" type="number" style="width: 200px"></at-input>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">是否多行</div>
+						<div class="col-sm-8">
+							<at-select v-model="templateItme.isMultiLine" size="large" style="width: 200px" placeholder="是否多行">
+							  <at-option value="true">多行</at-option>
+							  <at-option value="false">单行</at-option>
+							</at-select>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">描述实例：换行符 ∫ </div>
+						<div class="col-sm-8">
+							<at-textarea v-model="templateItme.describe" placeholder="描述实例" autosize style="width: 200px;"></at-textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">字间距</div>
+						<div class="col-sm-8">
+							<at-input size="large" v-model="templateItme.wordSpace" placeholder="字间距" type="number" style="width: 200px"></at-input>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">字行距</div>
+						<div class="col-sm-8">
+							<at-input size="large" v-model="templateItme.lineSpace" placeholder="字行距" type="number" style="width: 200px"></at-input>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">是否居中</div>
+						<div class="col-sm-8">
+							<at-select v-model="templateItme.isCenter" size="large" style="width: 200px" placeholder="是否居中">
+							  <at-option value="true">是</at-option>
+							  <at-option value="false">否</at-option>
+							</at-select>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">删除线</div>
+						<div class="col-sm-8">
+							<at-select v-model="templateItme.fontDeletedLine" size="large" style="width: 200px" placeholder="删除线">
+							  <at-option value="true">是</at-option>
+							  <at-option value="false">否</at-option>
+							</at-select>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">下划线</div>
+						<div class="col-sm-8">
+							<at-select v-model="templateItme.fontUnderLine" size="large" style="width: 200px" placeholder="下划线">
+							  <at-option value="true">是</at-option>
+							  <at-option value="false">否</at-option>
+							</at-select>
+						</div>
+					</div>
+				</div>
+
+<!-- 				图片 -->
+				<div id="image_div" v-show="type == 'image'">
+					<div class="form-group">
+						<div class="col-sm-4 control-label">图片路径</div>
+						<div class="col-sm-8">
+							<at-input v-model="templateItme.imagePath" size="large" placeholder="图片路径" style="width: 200px"></at-input>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-4 control-label">图片形状</div>
+						<div class="col-sm-8">
+							<at-select v-model="templateItme.imageShape" size="large" style="width: 200px" placeholder="图片形状">
+							  <at-option value="jx">矩形</at-option>
+							  <at-option value="yx">圆形</at-option>
+							</at-select>
+						</div>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<div class="col-sm-4 control-label">坐标X</div>
+					<div class="col-sm-8">
+						<at-input size="large" v-model="templateItme.x" placeholder="坐标X" type="number" style="width: 200px"></at-input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">坐标Y</div>
+					<div class="col-sm-8">
+						<at-input size="large" v-model="templateItme.y" placeholder="坐标Y" type="number" style="width: 200px"></at-input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">宽</div>
+					<div class="col-sm-8">
+						<at-input size="large" v-model="templateItme.width" placeholder="宽" type="number" style="width: 200px"></at-input>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4 control-label">高</div>
+					<div class="col-sm-8">
+						<at-input size="large" v-model="templateItme.height" placeholder="高" type="number" style="width: 200px"></at-input>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<div class="col-sm-4 control-label"></div>
+					<at-button type="primary" @click="saveOrUpdate">确定</at-button>
+					&nbsp;&nbsp;
+					<at-button type="warning" @click="reload">返回</at-button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script src="../public/js/cms/templateitme.js?v=1"></script>
+</body>
+</html>

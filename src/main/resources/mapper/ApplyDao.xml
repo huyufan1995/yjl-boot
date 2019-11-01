@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.ApplyDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.renren.cms.entity.ApplyEntity" id="applyMap">
+		<result property="id" column="id" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+		<result property="openid" column="openid" />
+		<result property="superiorId" column="superior_id" />
+		<result property="memberId" column="member_id" />
+		<result property="applyCount" column="apply_count" />
+		<result property="templateApplyId" column="template_apply_id" />
+		<result property="name" column="name" />
+		<result property="describe" column="describe" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+		<result property="images" column="images" />
+		<result property="items" column="items" />
+		<result property="permission" column="permission" />
+		<result property="isDel" column="is_del" />
+		<result property="address" column="address" />
+		<result property="addressLongitude" column="address_longitude" />
+		<result property="addressLatitude" column="address_latitude" />
+		<result property="viewCount" column="view_count" />
+	</resultMap>
+	
+	<select id="queryListShareRecord" resultType="io.renren.cms.entity.ApplyEntity">
+		SELECT *,
+			(SELECT real_name from tb_member WHERE id = member_id) realName
+			from tb_apply WHERE id in (SELECT apply_id from tb_apply_record WHERE is_del = 'f'
+			<if test="superiorId != null and superiorId != ''"> and `superior_id` = #{superiorId}</if>
+			<if test="memberId != null and memberId != ''"> and `share_member_id` = #{memberId}</if>
+			<if test="deptId != null and deptId != ''"> and share_member_id in (SELECT member_id from tb_dept_member WHERE dept_id = #{deptId})</if>
+			GROUP BY apply_id)
+		and is_del = 'f'
+		ORDER BY id desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<select id="querySumViewCount" resultType="int">
+		SELECT IFNULL(sum(view_count),0) from tb_apply WHERE is_del = 'f'
+		<if test="superiorId != null and superiorId != ''"> and `superior_id` = #{superiorId}</if>
+		<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+	</select>
+
+	<!-- 发起记录 -->
+	<select id="queryListCreationRecord" resultType="io.renren.cms.entity.ApplyEntity">
+		SELECT
+			a.*,
+			(SELECT real_name from tb_member WHERE id = member_id) realName,
+			(SELECT count(id) from tb_apply_record ar WHERE ar.share_member_id = #{memberId} and ar.is_del = 'f' and ar.apply_id = a.id) recordCount
+		FROM
+			tb_apply a
+		WHERE
+			a.is_del = 'f'
+		AND a.superior_id = #{superiorId}
+		AND (
+			a.permission = 'public'
+			OR a.member_id = #{memberId})
+			ORDER BY a.id DESC
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.ApplyEntity">
+		select * from tb_apply where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.ApplyEntity">
+		SELECT
+			*,
+			(SELECT real_name from tb_member WHERE id = member_id) realName
+		FROM
+			tb_apply
+		WHERE
+			is_del = 'f'
+
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="superiorId != null and superiorId != ''"> and `superior_id` = #{superiorId}</if>
+		<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+		<if test="applyCount != null and applyCount != ''"> and `apply_count` = #{applyCount}</if>
+		<if test="templateApplyId != null and templateApplyId != ''"> and `template_apply_id` = #{templateApplyId}</if>
+		<if test="name != null and name != ''"> and `name` = #{name}</if>
+		<if test="permission != null and permission != ''"> and `permission` = #{permission}</if>
+		<if test="address != null and address != ''"> and `address` = #{address}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(ta.id) from tb_apply ta
+		left join
+		tb_member tm
+		on ta.member_id = tm.id
+		 where ta.is_del = "f"
+		<if test="company != null and company != ''">
+			and tm.`company` like concat('%',#{company},'%')
+		</if>
+		<if test="openid != null and openid != ''"> and ta.`openid` = #{openid}</if>
+		<if test="superiorId != null and superiorId != ''"> and ta.`superior_id` = #{superiorId}</if>
+		<if test="memberId != null and memberId != ''"> and ta.`member_id` = #{memberId}</if>
+		<if test="applyCount != null and applyCount != ''"> and ta.`apply_count` = #{applyCount}</if>
+		<if test="templateApplyId != null and templateApplyId != ''"> and ta.`template_apply_id` = #{templateApplyId}</if>
+		<if test="name != null and name != ''"> and ta.`name` = #{name}</if>
+		<if test="permission != null and permission != ''"> and ta.`permission` = #{permission}</if>
+		<if test="address != null and address != ''"> and ta.`address` = #{address}</if>
+		<if test="deptId != null and deptId != ''">
+			and member_id in (SELECT member_id from tb_dept_member WHERE dept_id = #{deptId})
+		</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ta.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+
+	<insert id="save" parameterType="io.renren.cms.entity.ApplyEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_apply
+		(
+		`ctime`,
+		`utime`,
+		`openid`,
+		`superior_id`,
+		`member_id`,
+		`apply_count`,
+		`template_apply_id`,
+		`name`,
+		`describe`,
+		`start_time`,
+		`end_time`,
+		`images`,
+		`items`,
+		`permission`,
+		`is_del`,
+		`address`,
+		`view_count`,
+		`address_longitude`,
+		`address_latitude`
+		)
+		values
+		(
+		#{ctime},
+		#{utime},
+		#{openid},
+		#{superiorId},
+		#{memberId},
+		#{applyCount},
+		#{templateApplyId},
+		#{name},
+		#{describe},
+		#{startTime},
+		#{endTime},
+		#{images},
+		#{items},
+		#{permission},
+		#{isDel},
+		#{address},
+		#{viewCount},
+		#{addressLongitude},
+		#{addressLatitude}
+		)
+	</insert>
+
+	<update id="update" parameterType="io.renren.cms.entity.ApplyEntity">
+		update tb_apply
+		<set>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
+			<if test="utime != null">`utime` = #{utime}, </if>
+			<if test="openid != null">`openid` = #{openid}, </if>
+			<if test="superiorId != null">`superior_id` = #{superiorId}, </if>
+			<if test="memberId != null">`member_id` = #{memberId}, </if>
+			<if test="applyCount != null">`apply_count` = #{applyCount}, </if>
+			<if test="templateApplyId != null">`template_apply_id` = #{templateApplyId}, </if>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="describe != null">`describe` = #{describe}, </if>
+			<if test="startTime != null">`start_time` = #{startTime}, </if>
+			<if test="endTime != null">`end_time` = #{endTime}, </if>
+			<if test="images != null">`images` = #{images}, </if>
+			<if test="items != null">`items` = #{items}, </if>
+			<if test="permission != null">`permission` = #{permission}, </if>
+			<if test="isDel != null">`is_del` = #{isDel}, </if>
+			<if test="address != null">`address` = #{address}, </if>
+			<if test="viewCount != null">`view_count` = #{viewCount}, </if>
+			<if test="addressLongitude != null">`address_longitude` = #{addressLongitude}, </if>
+			<if test="addressLatitude != null">`address_latitude` = #{addressLatitude}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!-- 物理删除 -->
+	<delete id="delete">
+		delete from tb_apply where id = #{value}
+	</delete>
+
+	<!-- 批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_apply where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 逻辑删除 -->
+	<update id="logicDel">
+		update tb_apply set is_del = 't' where id = #{value}
+	</update>
+
+	<!-- 批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update tb_apply
+		set is_del = 't'
+		where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<select id="queryListVo" resultType="io.renren.api.vo.ApplyEntityVo">
+		SELECT
+		ta.*,tbm.nickname as superiorName,tm.nickname as memberName,tm.company as company
+		FROM
+		tb_apply ta
+		left join
+		tb_member tm
+		on ta.member_id = tm.id
+		left join
+		(select id,nickname from tb_member) tbm
+		on tbm.id = ta.superior_id
+		WHERE
+		ta.is_del = 'f'
+
+		<if test="openid != null and openid != ''"> and ta.`openid` = #{openid}</if>
+		<if test="company != null and company != ''">
+			and tm.`company` like concat('%',#{company},'%')
+		 </if>
+		<if test="superiorId != null and superiorId != ''"> and ta.`superior_id` = #{superiorId}</if>
+		<if test="memberId != null and memberId != ''"> and ta.`member_id` = #{memberId}</if>
+		<if test="applyCount != null and applyCount != ''"> and ta.`apply_count` = #{applyCount}</if>
+		<if test="templateApplyId != null and templateApplyId != ''"> and ta.`template_apply_id` = #{templateApplyId}</if>
+		<if test="name != null and name != ''"> and ta.`name` = #{name}</if>
+		<if test="permission != null and permission != ''"> and ta.`permission` = #{permission}</if>
+		<if test="address != null and address != ''"> and ta.`address` = #{address}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ta.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by ta.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+</mapper>
