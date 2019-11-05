@@ -1,7 +1,7 @@
 spring:
     datasource:
         #jdbc:mysql://27.148.190.53:39999/yykj_test?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
-        url: jdbc:mysql://127.0.0.1:3306/yykj?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+        url: jdbc:mysql://127.0.0.1:3306/yjl?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
         #yykj_test
         username: root
         #SNxtzcZp7jXCwmxy

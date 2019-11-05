@@ -5,7 +5,6 @@ import java.util.Date;
 import io.renren.api.constant.SystemConstant;
 import io.renren.enums.CertTypeEnum;
 import io.renren.enums.MemberTypeEnum;
-import io.renren.enums.PermTypeEnum;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -56,6 +55,4 @@ public class SessionMember {
 	private int staffCount = 0;
 	private Integer deptId;
 	private String deptName;
-	/** 权限 leader 主管 employ 员工 */
-	private String perm = PermTypeEnum.EMPLOY.getCode();
 }

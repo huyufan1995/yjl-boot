@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 
-
 /**
  * 首页数据天数
  * 

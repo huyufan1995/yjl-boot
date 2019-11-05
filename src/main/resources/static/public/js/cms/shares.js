@@ -1,21 +1,12 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: '../member/list',
+        url: '../share/list',
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '头像', name: 'portrait', index: 'portrait', width: 80 },
-			{ label: '昵称', name: 'nickname', index: 'nickname', width: 80 },
-			{ label: '性别 man woman', name: 'gender', index: 'gender', width: 80 },
-			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '删除标志 t f', name: 'isDel', index: 'is_del', width: 80 },
-			{ label: '状态 normal freeze', name: 'status', index: 'status', width: 80 },
-			{ label: '姓名', name: 'realName', index: 'real_name', width: 80 },
-			{ label: '手机号', name: 'mobile', index: 'mobile', width: 80 },
-			{ label: '微信用户ID', name: 'openid', index: 'openid', width: 80 },
-			{ label: '会员类型 common vip supervip', name: 'type', index: 'type', width: 80 },
-			{ label: '公司名称', name: 'company', index: 'company', width: 80 },
-			{ label: '邮箱', name: 'email', index: 'email', width: 80 },
+			{ label: '分享人openid', name: 'sharePeople', index: 'share_people', width: 80 },
+			{ label: '分享时间', name: 'createTime', index: 'create_time', width: 80 },
+			{ label: '资讯Id', name: 'informationId', index: 'information_id', width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
@@ -69,19 +60,19 @@ function logic_del(id){
 		return ;
 	}
 	
-	vm.%Modal.confirm({
+	vm.Modal.confirm({
         title: '提示',
         content: '确定要删除吗？',
         onOk:() => {
         	$.ajax({
     			type: "GET",
-    			url: "../member/logic_del/" + id,
+    			url: "../share/logic_del/" + id,
     		    success: function(r){
     		    	if(r.code == 0){
     					$("#jqGrid").trigger("reloadGrid");
-    		    		vm.%Message.success('操作成功!');
+    		    		vm.Message.success('操作成功!');
     				}else{
-    					vm.%Message.error(r.msg);
+    					vm.Message.error(r.msg);
     				}
     			}
     		});
@@ -95,33 +86,15 @@ var vm = new Vue({
 		showList: true,
 		showModal: false,
 		title: null,
-		member: {},
+		share: {},
 		ruleValidate: {
 											
-																portrait: [
-		                { required: true, message: '请输入头像' }
-		            ], 																nickname: [
-		                { required: true, message: '请输入昵称' }
-		            ], 																gender: [
-		                { required: true, message: '请输入性别 man woman' }
-		            ], 																ctime: [
-		                { required: true, message: '请输入创建时间' }
-		            ], 																isDel: [
-		                { required: true, message: '请输入删除标志 t f' }
-		            ], 																status: [
-		                { required: true, message: '请输入状态 normal freeze' }
-		            ], 																realName: [
-		                { required: true, message: '请输入姓名' }
-		            ], 																mobile: [
-		                { required: true, message: '请输入手机号' }
-		            ], 																openid: [
-		                { required: true, message: '请输入微信用户ID' }
-		            ], 																type: [
-		                { required: true, message: '请输入会员类型 common vip supervip' }
-		            ], 																company: [
-		                { required: true, message: '请输入公司名称' }
-		            ], 																email: [
-		                { required: true, message: '请输入邮箱' }
+																sharePeople: [
+		                { required: true, message: '请输入分享人openid' }
+		            ], 																createTime: [
+		                { required: true, message: '请输入分享时间' }
+		            ], 																informationId: [
+		                { required: true, message: '请输入资讯Id' }
 		            ]							        },
         q:{
 			id: null,
@@ -144,7 +117,7 @@ var vm = new Vue({
 			//vm.showList = false;
 			vm.showModal = true;
 			vm.title = "新增";
-			vm.member = {};
+			vm.share = {};
 		},
 		update: function (event) {
 			var id = getSelectedRow();
@@ -156,21 +129,21 @@ var vm = new Vue({
             vm.getInfo(id)
 		},
 		saveOrUpdate: function (event) {
-			this.%refs['member'].validate((valid) => {
+			this.refs['share'].validate((valid) => {
                 if (valid) {
-                	var url = vm.member.id == null ? "../member/save" : "../member/update";
+                	var url = vm.share.id == null ? "../share/save" : "../share/update";
         			$.ajax({
         				type: "POST",
         			    url: url,
         			    contentType: "application/json",
-        			    data: JSON.stringify(vm.member),
+        			    data: JSON.stringify(vm.share),
         			    success: function(r){
         			    	if(r.code === 0){
         			    		vm.reload();
         			    		vm.showModal = false;
-        			    		vm.%Message.success('操作成功!');
+        			    		vm.Message.success('操作成功!');
         					}else{
-        						vm.%Message.error(r.msg);
+        						vm.Message.error(r.msg);
         					}
         				}
         			});
@@ -183,20 +156,20 @@ var vm = new Vue({
 				return ;
 			}
 			
-			vm.%Modal.confirm({
+			vm.Modal.confirm({
 	        title: '提示',
 	        content: '确定要删除选中的记录？',
 	        onOk:() => {
 	        	$.ajax({
 					type: "POST",
-				    url: "../member/delete",
+				    url: "../share/delete",
 				    data: JSON.stringify(ids),
 				    success: function(r){
 						if(r.code === 0){
 							$("#jqGrid").trigger("reloadGrid");
-    			    		vm.%Message.success('操作成功!');
+    			    		vm.Message.success('操作成功!');
     					}else{
-    						vm.%Message.error(r.msg);
+    						vm.Message.error(r.msg);
     					}
 					}
 				});
@@ -204,16 +177,16 @@ var vm = new Vue({
 	    });
 		},
 		getInfo: function(id){
-			//$.get("../member/info/" + id, function(r){
-            //    vm.member = r.member;
+			//$.get("../share/info/" + id, function(r){
+            //    vm.share = r.share;
             //});
             
             $.ajax({
 				type : "GET",
 				async: false,
-				url : "../member/info/" + id,
+				url : "../share/info/" + id,
 				success : function(r) {
-					vm.member = r.member;
+					vm.share = r.share;
 				}
 			});
 		},

@@ -1,15 +1,13 @@
 package io.renren.cms.service.impl;
 
+import io.renren.cms.dao.SortDao;
+import io.renren.cms.entity.SortEntity;
+import io.renren.cms.service.SortService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-
-import io.renren.cms.dao.SortDao;
-import io.renren.cms.entity.SortEntity;
-import io.renren.cms.service.SortService;
-
 
 
 @Service("sortService")

@@ -1,21 +1,14 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: '../member/list',
+        url: '../information/list',
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '头像', name: 'portrait', index: 'portrait', width: 80 },
-			{ label: '昵称', name: 'nickname', index: 'nickname', width: 80 },
-			{ label: '性别 man woman', name: 'gender', index: 'gender', width: 80 },
-			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '删除标志 t f', name: 'isDel', index: 'is_del', width: 80 },
-			{ label: '状态 normal freeze', name: 'status', index: 'status', width: 80 },
-			{ label: '姓名', name: 'realName', index: 'real_name', width: 80 },
-			{ label: '手机号', name: 'mobile', index: 'mobile', width: 80 },
-			{ label: '微信用户ID', name: 'openid', index: 'openid', width: 80 },
-			{ label: '会员类型 common vip supervip', name: 'type', index: 'type', width: 80 },
-			{ label: '公司名称', name: 'company', index: 'company', width: 80 },
-			{ label: '邮箱', name: 'email', index: 'email', width: 80 },
+			{ label: '', name: 'title', index: 'title', width: 80 },
+			{ label: '', name: 'desc', index: 'desc', width: 80 },
+			{ label: 't:代表逻辑删除,f:不删除', name: 'isDel', index: 'is_del', width: 80 },
+			{ label: '', name: 'createTime', index: 'create_time', width: 80 },
+			{ label: '', name: 'updateTime', index: 'update_time', width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
@@ -69,19 +62,19 @@ function logic_del(id){
 		return ;
 	}
 	
-	vm.%Modal.confirm({
+	vm.Modal.confirm({
         title: '提示',
         content: '确定要删除吗？',
         onOk:() => {
         	$.ajax({
     			type: "GET",
-    			url: "../member/logic_del/" + id,
+    			url: "../information/logic_del/" + id,
     		    success: function(r){
     		    	if(r.code == 0){
     					$("#jqGrid").trigger("reloadGrid");
-    		    		vm.%Message.success('操作成功!');
+    		    		vm.Message.success('操作成功!');
     				}else{
-    					vm.%Message.error(r.msg);
+    					vm.Message.error(r.msg);
     				}
     			}
     		});
@@ -95,33 +88,19 @@ var vm = new Vue({
 		showList: true,
 		showModal: false,
 		title: null,
-		member: {},
+		information: {},
 		ruleValidate: {
 											
-																portrait: [
-		                { required: true, message: '请输入头像' }
-		            ], 																nickname: [
-		                { required: true, message: '请输入昵称' }
-		            ], 																gender: [
-		                { required: true, message: '请输入性别 man woman' }
-		            ], 																ctime: [
-		                { required: true, message: '请输入创建时间' }
+																title: [
+		                { required: true, message: '请输入' }
+		            ], 																desc: [
+		                { required: true, message: '请输入' }
 		            ], 																isDel: [
-		                { required: true, message: '请输入删除标志 t f' }
-		            ], 																status: [
-		                { required: true, message: '请输入状态 normal freeze' }
-		            ], 																realName: [
-		                { required: true, message: '请输入姓名' }
-		            ], 																mobile: [
-		                { required: true, message: '请输入手机号' }
-		            ], 																openid: [
-		                { required: true, message: '请输入微信用户ID' }
-		            ], 																type: [
-		                { required: true, message: '请输入会员类型 common vip supervip' }
-		            ], 																company: [
-		                { required: true, message: '请输入公司名称' }
-		            ], 																email: [
-		                { required: true, message: '请输入邮箱' }
+		                { required: true, message: '请输入t:代表逻辑删除,f:不删除' }
+		            ], 																createTime: [
+		                { required: true, message: '请输入' }
+		            ], 																updateTime: [
+		                { required: true, message: '请输入' }
 		            ]							        },
         q:{
 			id: null,
@@ -141,10 +120,11 @@ var vm = new Vue({
 			vm.q.ctime = null;
 		},
 		add: function(){
-			//vm.showList = false;
-			vm.showModal = true;
+			vm.showList = false;
+			//vm.showModal = ;
+			editor.setValue(null);
 			vm.title = "新增";
-			vm.member = {};
+			vm.information = {};
 		},
 		update: function (event) {
 			var id = getSelectedRow();
@@ -156,21 +136,31 @@ var vm = new Vue({
             vm.getInfo(id)
 		},
 		saveOrUpdate: function (event) {
-			this.%refs['member'].validate((valid) => {
+
+			this.refs['information'].validate((valid) => {
                 if (valid) {
-                	var url = vm.member.id == null ? "../member/save" : "../member/update";
+					var content = editor.getValue();
+					if(!content){
+						vm.$Message.error('请输入详情');
+						return;
+					}
+					var base = new Base64();
+					var result = base.encode(content);//解密为decode
+					console.log("result="+result);
+					vm.information.desc = result;
+                	var url = vm.information.id == null ? "../information/save" : "../information/update";
         			$.ajax({
         				type: "POST",
         			    url: url,
         			    contentType: "application/json",
-        			    data: JSON.stringify(vm.member),
+        			    data: JSON.stringify(vm.information),
         			    success: function(r){
         			    	if(r.code === 0){
         			    		vm.reload();
         			    		vm.showModal = false;
-        			    		vm.%Message.success('操作成功!');
+        			    		vm.Message.success('操作成功!');
         					}else{
-        						vm.%Message.error(r.msg);
+        						vm.Message.error(r.msg);
         					}
         				}
         			});
@@ -183,20 +173,20 @@ var vm = new Vue({
 				return ;
 			}
 			
-			vm.%Modal.confirm({
+			vm.Modal.confirm({
 	        title: '提示',
 	        content: '确定要删除选中的记录？',
 	        onOk:() => {
 	        	$.ajax({
 					type: "POST",
-				    url: "../member/delete",
+				    url: "../information/delete",
 				    data: JSON.stringify(ids),
 				    success: function(r){
 						if(r.code === 0){
 							$("#jqGrid").trigger("reloadGrid");
-    			    		vm.%Message.success('操作成功!');
+    			    		vm.Message.success('操作成功!');
     					}else{
-    						vm.%Message.error(r.msg);
+    						vm.Message.error(r.msg);
     					}
 					}
 				});
@@ -204,16 +194,17 @@ var vm = new Vue({
 	    });
 		},
 		getInfo: function(id){
-			//$.get("../member/info/" + id, function(r){
-            //    vm.member = r.member;
+			//$.get("../information/info/" + id, function(r){
+            //    vm.information = r.information;
             //});
             
             $.ajax({
 				type : "GET",
 				async: false,
-				url : "../member/info/" + id,
+				url : "../information/info/" + id,
 				success : function(r) {
-					vm.member = r.member;
+					editor.setValue(r.information.desc);
+					vm.information = r.information;
 				}
 			});
 		},

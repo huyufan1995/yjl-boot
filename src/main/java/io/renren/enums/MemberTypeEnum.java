@@ -8,8 +8,8 @@ package io.renren.enums;
  */
 public enum MemberTypeEnum {
 	COMMON("common"), // 普通
-	VIP("vip");// vip
-
+	VIP("vip"),// vip
+	SUPERVIP("supervip"); //超级vip
 	private String code;
 
 	MemberTypeEnum(String code) {

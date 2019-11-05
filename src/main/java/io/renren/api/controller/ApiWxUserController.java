@@ -18,9 +18,7 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import io.renren.api.vo.ApiResult;
-import io.renren.cms.entity.SubscibeEntity;
 import io.renren.cms.entity.WxUserEntity;
-import io.renren.cms.service.SubscibeService;
 import io.renren.cms.service.WxUserService;
 import io.renren.config.WxMaConfiguration;
 import io.renren.properties.YykjProperties;
@@ -43,8 +41,7 @@ public class ApiWxUserController {
 	private WxUserService wxUserService;
 	@Autowired
 	private YykjProperties yykjProperties;
-	@Autowired
-	private SubscibeService subscibeService;
+
 
 	@IgnoreAuth
 	@PostMapping("/login")
@@ -157,24 +154,6 @@ public class ApiWxUserController {
 		return ApiResult.ok(temp.getMobile());
 	}
 
-	@IgnoreAuth
-	@PostMapping("/subscibe")
-	@ApiOperation(value = "订阅模板消息")
-	@ApiImplicitParams({
-			@ApiImplicitParam(paramType = "query", dataType = "string", name = "openId", value = "openId", required = true),
-			@ApiImplicitParam(paramType = "query", dataType = "string", name = "formId", value = "formId", required = true),
-			@ApiImplicitParam(paramType = "query", dataType = "string", name = "platform", value = "平台 weixin baidu", required = false)
-	})
-	public ApiResult subscibe(@RequestParam String openId, 
-			@RequestParam String formId,
-			@RequestParam(value = "platform", required = false, defaultValue = "weixin") String platform) {
-		SubscibeEntity subscibeEntity = new SubscibeEntity();
-		subscibeEntity.setCtime(new Date());
-		subscibeEntity.setFormid(formId);
-		subscibeEntity.setOpenid(openId);
-		subscibeEntity.setPlatform(platform);
-		subscibeService.save(subscibeEntity);
-		return ApiResult.ok();
-	}
+
 
 }

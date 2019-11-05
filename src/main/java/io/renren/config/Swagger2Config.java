@@ -37,9 +37,9 @@ public class Swagger2Config {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Swagger2 RESTful API")
-                .description("影约可见：http://www.qichengyi.cn")
+                .description("越柬寮小程序：http://www.qichengyi.cn")
                 .termsOfServiceUrl("http://www.qichengyi.cn")
-                .contact("影约可见")
+                .contact("越柬寮小程序")
                 .version("2.0")
                 .build();
     }
