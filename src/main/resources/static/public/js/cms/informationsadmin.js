@@ -1,6 +1,6 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: '../information/list',
+        url: '../information/adminList',
         datatype: "json",
         colModel: [
 			{ label: '标题', name: 'title', index: 'title', width: 80 },
@@ -10,32 +10,23 @@ $(function () {
 			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 80 ,
 				formatter: function (value, options, row) {
 					if (value == 'pass') {
-						return "<span class='label label-success'>通过</span>";
+						return '通过';
 					}else if (value == 'reject') {
-						return "<span class='label label-danger'>驳回</span>";
+						return '驳回';
 					}else if (value == 'pending') {
-						return "<span class='label label-warning'>审核中</span>";
+						return '审核中';
 					}else{
-						return "<span class='label label-primary'>未提交</span>";
+						return "未提交";
 					}
 				}
 			},
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
-                	var dom = "";
-                	if(row.auditStatus == 'uncommit' || row.auditStatus == 'reject' ){
-                		dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='commitInformation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>提交审核</span></button>&nbsp;";
-					}
-                	if(row.auditStatus == 'pending'){
-						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='revocation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>撤回审核</span></button>&nbsp;";
-					}
-					if(row.showStatus == 't'){
-						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='stopInformation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>暂停资讯</span></button>&nbsp;";
-					}
-					if(row.showStatus == 'f'){
-						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='startInformation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>展示资讯</span></button>&nbsp;";
-					}
+                	var dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='release("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>通过</span></button>&nbsp;";
+
+					dom += "<button type='button' class='ivu-btn ivu-btn-primary' onclick='openAudit("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>不通过</span></button>&nbsp;";
+
                 	dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
                 	return dom;
                 }
@@ -75,13 +66,13 @@ function edit(id){
 	}
 //	vm.showList = false;
 	vm.showModal = true;
-    vm.title = "修改";
-    vm.getInfo(id)
+	vm.title = "修改";
+	vm.getInfo(id)
 }
-function commitInformation(id) {
+function release(id) {
 	$.ajax({
 		type: "GET",
-		url: "../information/commit/" + id,
+		url: "../information/release/" + id,
 		success: function(r){
 			if(r.code == 0){
 				$("#jqGrid").trigger("reloadGrid");
@@ -93,46 +84,10 @@ function commitInformation(id) {
 	});
 }
 
-function stopInformation(id) {
+function openAudit(id) {
+	vm.showAudit = true;
 	vm.information.id = id;
-	vm.information.showStatus = 'f';
-	$.ajax({
-		type: "POST",
-		url: "../information/update",
-		contentType: "application/json",
-		data: JSON.stringify(vm.information),
-		success: function(r){
-			if(r.code === 0){
-				vm.reload();
-				vm.showAudit = false;
-				vm.$Message.success('操作成功!');
-			}else{
-				vm.$Message.error(r.msg);
-			}
-		}
-	});
 }
-
-function startInformation(id) {
-	vm.information.id = id;
-	vm.information.showStatus = 't';
-	$.ajax({
-		type: "POST",
-		url: "../information/update",
-		contentType: "application/json",
-		data: JSON.stringify(vm.information),
-		success: function(r){
-			if(r.code === 0){
-				vm.reload();
-				vm.showAudit = false;
-				vm.$Message.success('操作成功!');
-			}else{
-				vm.$Message.error(r.msg);
-			}
-		}
-	});
-}
-
 //撤回
 function revocation(id) {
 	$.ajax({
@@ -179,6 +134,7 @@ var vm = new Vue({
 	data:{
 		showList: true,
 		showModal: false,
+		showAudit: false,
 		title: null,
 		information: {},
 		ruleValidate: {
@@ -223,7 +179,31 @@ var vm = new Vue({
 			if(id == null){
 				return ;
 			}
-            vm.getInfo(id)
+			vm.showList = false;
+			vm.title = "修改";
+			vm.getInfo(id)
+		},
+		rejectInformation: function(event){
+			if(vm.information.auditMsg == null){
+				vm.$Message.error('请输入不通过意见');
+				return;
+			}
+			$.ajax({
+				type: "POST",
+				url: "../information/reject",
+				contentType: "application/json",
+				data: JSON.stringify(vm.information),
+				success: function(r){
+					if(r.code === 0){
+						vm.reload();
+						vm.showAudit = false;
+						vm.$Message.success('操作成功!');
+					}else{
+						vm.$Message.error(r.msg);
+					}
+				}
+			});
+
 		},
 		saveOrUpdate: function (event) {
 
@@ -295,12 +275,7 @@ var vm = new Vue({
 				success : function(r) {
 					editor.setValue(r.information.content);
 					vm.information = r.information;
-					if(vm.information.auditStatus == 'pending'){
-						vm.$Message.success('此资讯已经提交，请先撤回再修改!');
-						return false;
-					}
-					vm.showList = false;
-					vm.title = "修改";
+
 				}
 			});
 		},

@@ -3,11 +3,11 @@ package io.renren.enums;
 /**
  * 审核状态
  * 
- * @author yujia
+ * @author moran
  *
  */
 public enum AuditStatusEnum {
-	PENDING("pending"), PASS("pass"), REJECT("reject");
+	PENDING("pending"), PASS("pass"), REJECT("reject"),UNCOMMIT("uncommit");
 
 	private String code;
 

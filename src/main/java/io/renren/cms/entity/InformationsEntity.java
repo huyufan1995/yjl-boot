@@ -10,8 +10,7 @@ import lombok.Setter;
 /**
  * 资讯表
  * 
- * @author yujia
- * @email yujiain2008@163.com
+ * @author moran
  * @date 2019-11-05 11:05:36
  */
 @Getter
@@ -24,7 +23,7 @@ public class InformationsEntity implements Serializable {
 	/** 资讯标题 */
 	private String title;
 	/** 资讯内容 */
-	private String desc;
+	private String content;
 	/** t:代表逻辑删除,f:不删除 */
 	private String isDel;
 	/**
@@ -40,8 +39,12 @@ public class InformationsEntity implements Serializable {
 	 */
 	private String vedioLink;
 	/** 创建时间 */
-	private Date createTime;
+	private Date ctime;
 	/**  更新时间*/
 	private Date updateTime;
+	/**
+	 * t是开始f是暂停
+	 */
+	private String showStatus;
 
 }

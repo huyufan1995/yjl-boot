@@ -10,8 +10,7 @@ import lombok.Setter;
 /**
  * 会员
  * 
- * @author yujia
- * @email yujiain2008@163.com
+ * @author moran
  * @date 2019-11-05 15:22:44
  */
 @Getter

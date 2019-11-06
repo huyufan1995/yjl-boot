@@ -4,15 +4,15 @@
 <mapper namespace="io.renren.cms.dao.InformationDao">
 
 	<sql id="base_column" >
-			information.`id`, 			information.`title`, 			information.`desc`, 			information.`is_del`, 			information.`create_time`, 			information.`update_time`  	</sql>
+			information.`id`, 			information.`title`, 			information.`content`, 			information.`is_del`, 			information.`ctime`, 			information.`update_time`  	</sql>
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="io.renren.cms.entity.InformationsEntity" id="informationMap">
         <result property="id" column="id"/>
         <result property="title" column="title"/>
-        <result property="desc" column="desc"/>
+        <result property="content" column="content"/>
         <result property="isDel" column="is_del"/>
-        <result property="createTime" column="create_time"/>
+        <result property="ctime" column="ctime"/>
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
@@ -22,17 +22,19 @@
 
 	<select id="queryList" resultType="io.renren.cms.entity.InformationsEntity">
 		select * from tb_information where 1 = 1
-		
+
 			<if test="title != null and title != ''"> and `title` = #{title}</if>
-			<if test="desc != null and desc != ''"> and `desc` = #{desc}</if>
+			<if test="vedioLink != null and vedioLink != ''"> and `vedio_link` = #{vedioLink}</if>
+			<if test="content != null and content != ''"> and `content` = #{content}</if>
+			<if test="auditStatus != null and auditStatus != ''"> and `audit_status` = #{auditStatus}</if>
 			<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
-			<if test="createTime != null and createTime != ''"> and `create_time` = #{createTime}</if>
+			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
 			<if test="updateTime != null and updateTime != ''"> and `update_time` = #{updateTime}</if>
-		
+
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
 			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
 		</if>
-		
+
         <choose>
             <when test="sidx != null and sidx.trim() != ''">
                 order by ${sidx} ${order}
@@ -45,48 +47,82 @@
 			limit #{offset}, #{limit}
 		</if>
 	</select>
-	
+
  	<select id="queryTotal" resultType="int">
 		select count(id) from tb_information where 1 = 1
 			<if test="title != null and title != ''"> and `title` = #{title}</if>
-			<if test="desc != null and desc != ''"> and `desc` = #{desc}</if>
+			<if test="vedioLink != null and vedioLink != ''"> and `vedio_link` = #{vedioLink}</if>
+			<if test="content != null and content != ''"> and `content` = #{content}</if>
 			<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
-			<if test="createTime != null and createTime != ''"> and `create_time` = #{createTime}</if>
+			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
 			<if test="updateTime != null and updateTime != ''"> and `update_time` = #{updateTime}</if>
 
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
 			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
 		</if>
 	</select>
-	 
-	<insert id="save" parameterType="io.renren.cms.entity.InformationsEntity">
+
+	<insert id="save" parameterType="io.renren.cms.entity.InformationsEntity" useGeneratedKeys="true" keyProperty="id">
 		insert into tb_information
-		(
-			`id`, 
-			`title`, 
-			`desc`, 
-			`is_del`, 
-			`create_time`, 
-			`update_time`
-		)
-		values
-		(
-			#{id}, 
-			#{title}, 
-			#{desc}, 
-			#{isDel}, 
-			#{createTime}, 
-			#{updateTime}
-		)
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="title != null and title != ''">
+				title,
+			</if>
+			<if test="content != null and content != ''">
+				content,
+			</if>
+			<if test="isDel != null and isDel != ''">
+				is_del,
+			</if>
+			<if test="updateTime != null">
+				update_time,
+			</if>
+			<if test="ctime != null">
+				ctime,
+			</if>
+			<if test="auditStatus != null">
+				audit_status,
+			</if>
+			<if test="vedioLink != null">
+				vedio_link,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="title != null and title != ''">
+				#{title},
+			</if>
+			<if test="content != null and content != ''">
+				#{content},
+			</if>
+			<if test="isDel != null and isDel != ''">
+				#{isDel},
+			</if>
+			<if test="updateTime != null">
+				#{updateTime},
+			</if>
+			<if test="ctime != null">
+				#{ctime},
+			</if>
+			<if test="auditStatus != null">
+				#{auditStatus},
+			</if>
+			<if test="vedioLink != null">
+				#{vedioLink},
+			</if>
+		</trim>
 	</insert>
-	 
+
 	<update id="update" parameterType="io.renren.cms.entity.InformationsEntity">
-		update tb_information 
+		update tb_information
 		<set>
 			<if test="title != null">`title` = #{title}, </if>
-			<if test="desc != null">`desc` = #{desc}, </if>
+			<if test="vedioLink != null">`vedio_link` = #{vedioLink}, </if>
+			<if test="content != null">`content` = #{content}, </if>
+			<if test="auditMsg != null">`audit_msg` = #{auditMsg}, </if>
+			<if test="showStatus != null">`show_status` = #{showStatus}, </if>
 			<if test="isDel != null">`is_del` = #{isDel}, </if>
-			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="auditStatus != null">`audit_status` = #{auditStatus}, </if>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
 			<if test="updateTime != null">`update_time` = #{updateTime}</if>
 		</set>
 		where id = #{id}

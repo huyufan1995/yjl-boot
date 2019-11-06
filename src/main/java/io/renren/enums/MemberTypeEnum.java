@@ -3,7 +3,7 @@ package io.renren.enums;
 /**
  * 会员类型
  * 
- * @author yujia
+ * @author moran
  *
  */
 public enum MemberTypeEnum {

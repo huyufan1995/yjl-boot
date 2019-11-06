@@ -52,6 +52,6 @@ public class ApiInformationController {
     public ApiResult applyDataInfo(@RequestParam Integer id) {
         InformationsEntity informationEntity = informationService.queryObject(id);
         Assert.isNullApi(informationEntity, "该数据不存在");
-        return ApiResult.ok(informationEntity.getDesc());
+        return ApiResult.ok(informationEntity.getContent());
     }
 }

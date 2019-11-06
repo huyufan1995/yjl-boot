@@ -18,9 +18,8 @@ import io.swagger.annotations.ApiOperation;
 /**
  * 会员
  * 
- * @author yujia
- * @email yujiain2008@163.com
- * @date 2019-08-21 13:51:48
+ * @author huyufan
+ * @date 2019-11-6 13:51:48
  */
 @Api("会员")
 @RestController

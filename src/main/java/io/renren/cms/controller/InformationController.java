@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.renren.cms.entity.InformationsEntity;
+import io.renren.enums.AuditStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +21,7 @@ import io.renren.utils.R;
 /**
  * 
  * 
- * @author yujia
- * @email yujiain2008@163.com
+ * @author moran
  * @date 2019-11-05 10:36:31
  */
 @RestController
@@ -43,6 +43,22 @@ public class InformationController {
 		
 		PageUtils pageUtil = new PageUtils(informationList, total, query.getLimit(), query.getPage());
 		
+		return R.ok().put("page", pageUtil);
+	}
+
+	/**
+	 * admin管理资讯列表
+	 */
+	@RequestMapping("/adminList")
+	//@RequiresPermissions("information:list")
+	public R adminList(@RequestParam Map<String, Object> params){
+		params.put("auditStatus","pending");
+		Query query = new Query(params);
+		List<InformationsEntity> informationList = informationService.queryList(query);
+		int total = informationService.queryTotal(query);
+
+		PageUtils pageUtil = new PageUtils(informationList, total, query.getLimit(), query.getPage());
+
 		return R.ok().put("page", pageUtil);
 	}
 	
@@ -99,6 +115,59 @@ public class InformationController {
 	public R logicDel(@PathVariable("id") Integer id) {
 		informationService.logicDel(id);
 		return R.ok();
+	}
+
+    /**
+     * 审核通过
+     */
+    @RequestMapping("/release/{id}")
+    //@RequiresPermissions("information:logicDel")
+    public R release(@PathVariable("id") Integer id) {
+        int release = informationService.release(id);
+        if(release>0){
+            return R.ok();
+        }else{
+            return R.error();
+        }
+    }
+
+	/**
+	 * 提交审核
+	 */
+	@RequestMapping("/commit/{id}")
+	//@RequiresPermissions("information:logicDel")
+	public R commit(@PathVariable("id") Integer id) {
+		int release = informationService.commit(id);
+		if(release>0){
+			return R.ok();
+		}else{
+			return R.error();
+		}
+	}
+
+	/**
+	 * 审核不通过
+	 */
+	@RequestMapping("/reject")
+	//@RequiresPermissions("information:logicDel")
+	public R commit(@RequestBody InformationsEntity informationsEntity) {
+		informationsEntity.setAuditStatus(AuditStatusEnum.REJECT.getCode());
+		informationService.update(informationsEntity);
+		return R.ok();
+	}
+
+	/**
+	 * 资讯撤回
+	 */
+	@RequestMapping("/revocation/{id}")
+	//@RequiresPermissions("information:logicDel")
+	public R revocation(@PathVariable("id") Integer id) {
+		int revocation = informationService.revocation(id);
+		if(revocation>0){
+			return R.ok();
+		}else{
+			return R.error();
+		}
 	}
 	
 }

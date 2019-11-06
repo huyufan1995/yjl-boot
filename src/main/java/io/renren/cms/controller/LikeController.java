@@ -20,8 +20,7 @@ import io.renren.utils.R;
 /**
  * 点赞表
  * 
- * @author yujia
- * @email yujiain2008@163.com
+ * @author moran
  * @date 2019-11-05 11:05:36
  */
 @RestController

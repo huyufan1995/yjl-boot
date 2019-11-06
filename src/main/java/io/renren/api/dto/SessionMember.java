@@ -3,7 +3,6 @@ package io.renren.api.dto;
 import java.util.Date;
 
 import io.renren.api.constant.SystemConstant;
-import io.renren.enums.CertTypeEnum;
 import io.renren.enums.MemberTypeEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,8 +43,6 @@ public class SessionMember {
 
 	/** 授权状态 */
 	private String authStatus = SystemConstant.F_STR;
-	/** 认证类型 unknown personage enterprise */
-	private String certType = CertTypeEnum.UNKNOWN.getCode();
 
 	/** 允许最大员工数量 */
 	private Integer staffMaxCount;

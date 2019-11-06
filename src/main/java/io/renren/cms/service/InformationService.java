@@ -8,8 +8,7 @@ import java.util.Map;
 /**
  * 接口
  * 
- * @author yujia
- * @email yujiain2008@163.com
+ * @author huyufan
  * @date 2019-11-05 10:36:31
  */
 public interface InformationService {
@@ -31,4 +30,12 @@ public interface InformationService {
 	int logicDel(Integer id);
 	
 	int logicDelBatch(List<Integer> ids);
+
+	int release(Integer id);
+
+	int commit(Integer id);
+
+	int revocation(Integer id);
+
+	int rejectInformation(Integer id);
 }

@@ -1,10 +1,13 @@
 package io.renren.cms.service.impl;
 
+import io.renren.api.constant.SystemConstant;
 import io.renren.cms.dao.InformationDao;
 import io.renren.cms.entity.InformationsEntity;
+import io.renren.enums.AuditStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +42,10 @@ public class InformationServiceImpl implements InformationService {
 	
 	@Override
 	public void save(InformationsEntity information){
+		information.setIsDel(SystemConstant.F_STR);
+		information.setCtime(new Date());
+		information.setUpdateTime(new Date());
+		information.setAuditStatus(AuditStatusEnum.UNCOMMIT.getCode());
 		informationDao.save(information);
 	}
 	
@@ -66,6 +73,40 @@ public class InformationServiceImpl implements InformationService {
 	public int logicDelBatch(List<Integer> ids) {
 		return informationDao.logicDelBatch(ids);
 	}
-	
-	
+
+	@Override
+	public int release(Integer id) {
+		InformationsEntity entity = new InformationsEntity();
+		entity.setId(id);
+		entity.setShowStatus(SystemConstant.T_STR);
+		entity.setAuditMsg("通过");
+		entity.setAuditStatus(AuditStatusEnum.PASS.getCode());
+		return informationDao.update(entity);
+	}
+
+	@Override
+	public int commit(Integer id) {
+		InformationsEntity entity = new InformationsEntity();
+		entity.setId(id);
+		entity.setAuditStatus(AuditStatusEnum.PENDING.getCode());
+		return informationDao.update(entity);
+	}
+
+	@Override
+	public int revocation(Integer id) {
+		InformationsEntity entity = new InformationsEntity();
+		entity.setId(id);
+		entity.setAuditStatus(AuditStatusEnum.UNCOMMIT.getCode());
+		return informationDao.update(entity);
+	}
+
+	@Override
+	public int rejectInformation(Integer id) {
+		InformationsEntity entity = new InformationsEntity();
+		entity.setId(id);
+		entity.setAuditStatus(AuditStatusEnum.REJECT.getCode());
+		return informationDao.update(entity);
+	}
+
+
 }
