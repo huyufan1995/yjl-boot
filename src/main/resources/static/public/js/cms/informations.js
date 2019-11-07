@@ -181,6 +181,7 @@ var vm = new Vue({
 		showModal: false,
 		title: null,
 		information: {},
+		informationTypeList:[],
 		ruleValidate: {
 											
 																title: [
@@ -217,6 +218,7 @@ var vm = new Vue({
 			editor.setValue(null);
 			vm.title = "新增";
 			vm.information = {};
+			vm.getInformationType();
 		},
 		update: function (event) {
 			var id = getSelectedRow();
@@ -224,6 +226,16 @@ var vm = new Vue({
 				return ;
 			}
             vm.getInfo(id)
+		},
+		getInformationType: function () {
+			$.ajax({
+				url: "../informationstype/queryAll",
+				async: false,
+				type: "GET",
+				success: function (r) {
+					vm.informationTypeList = r.informationTypeList;
+				}
+			});
 		},
 		saveOrUpdate: function (event) {
 

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.InformationTypeDao">
+
+	<sql id="base_column" >
+			informationType.`id`, 			informationType.`name`, 			informationType.`sort`  	</sql>
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.cms.entity.InformationTypeEntity" id="informationTypeMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="sort" column="sort"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.InformationTypeEntity">
+		select * from tb_information_type where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.InformationTypeEntity">
+		select * from tb_information_type where 1 = 1
+		
+			<if test="name != null and name != ''"> and `name` = #{name}</if>
+			<if test="sort != null and sort != ''"> and `sort` = #{sort}</if>
+		
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+		
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(id) from tb_information_type where 1 = 1
+			<if test="name != null and name != ''"> and `name` = #{name}</if>
+			<if test="sort != null and sort != ''"> and `sort` = #{sort}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.cms.entity.InformationTypeEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_information_type
+		(
+			`name`, 
+			`sort`
+		)
+		values
+		(
+			#{name}, 
+			#{sort}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.cms.entity.InformationTypeEntity">
+		update tb_information_type 
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="sort != null">`sort` = #{sort}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<!-- 	物理删除 -->
+	<delete id="delete">
+		delete from tb_information_type where id = #{value}
+	</delete>
+	
+	<!-- 	批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_information_type where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<!-- 	逻辑删除 -->
+	<update id="logicDel">
+		update tb_information_type set is_del = 't' where id = #{value}
+	</update>
+	
+	<!-- 	批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update  tb_information_type
+		set is_del = 't'
+		where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+</mapper>

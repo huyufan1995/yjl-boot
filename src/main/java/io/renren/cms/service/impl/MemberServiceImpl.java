@@ -1,12 +1,20 @@
 package io.renren.cms.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
+import io.renren.api.exception.ApiException;
 import io.renren.cms.dao.MemberDao;
 import io.renren.cms.entity.MemberEntity;
+import io.renren.cms.entity.WxUserEntity;
 import io.renren.cms.service.MemberService;
+import io.renren.cms.service.WxUserService;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -34,6 +42,9 @@ public class MemberServiceImpl implements MemberService {
 
 	@Autowired
 	private TokenService tokenService;
+
+	@Autowired
+	private WxUserService wxUserService;
 
 	
 	@Override
@@ -90,19 +101,18 @@ public class MemberServiceImpl implements MemberService {
 	public SessionMember login(String openid) {
 		MemberEntity memberEntity = memberDao.queryObjectByOpenid(openid);
 		SessionMember sessionMember = new SessionMember();
-/*		if (memberEntity == null || BindStatusEnum.UNBIND.getCode().equals(memberEntity.getBindStatus())
-				|| BindStatusEnum.NOT.getCode().equals(memberEntity.getBindStatus())) {
-			//不是付费会员或者已被解绑
-			CardEntity cardEntity = cardDao.queryObjectByOpenid(openid);
-			if (cardEntity != null) {
-				sessionMember.setNickname(cardEntity.getName());
-				sessionMember.setPortrait(cardEntity.getPortrait());
-			}
-			sessionMember.setOpenid(openid);
-			return sessionMember;
-		}*/
-
-/*		if (StringUtils.equals("freeze", memberEntity.getStatus())) {
+		if(memberEntity ==null ){
+			MemberEntity memberEntity1 = new MemberEntity();
+			memberEntity1.setOpenid(openid);
+			memberEntity1.setCtime(new Date());
+			memberEntity1.setIsDel("f");
+			memberEntity1.setStatus("normal");
+			memberEntity1.setType(MemberTypeEnum.COMMON.getCode());
+			memberEntity1.setShowVip("f");
+			memberDao.save(memberEntity1);
+			return getSessionMember(memberEntity1, sessionMember);
+		}
+		/*if (StringUtils.equals("freeze", memberEntity.getStatus())) {
 			String forbiddenMsg = "该账号已被封禁";
 			ForbiddenMemberEntity forbiddenMemberEntity = null;
 			if (StringUtils.equals(MemberRoleEnum.BOSS.getCode(), memberEntity.getRole())) {
@@ -116,16 +126,21 @@ public class MemberServiceImpl implements MemberService {
 			throw new ApiException(forbiddenMsg, 10001, forbiddenMemberEntity);
 		}*/
 
+		return getSessionMember(memberEntity, sessionMember);
+	}
+
+	private SessionMember getSessionMember(MemberEntity memberEntity, SessionMember sessionMember) {
 		Map<String, Object> map = tokenService.createToken(memberEntity.getId());
 		sessionMember.setOpenid(memberEntity.getOpenid());
 		sessionMember.setToken(map.get("token").toString());
 		sessionMember.setMemberId(memberEntity.getId());
+		sessionMember.setShowVip(memberEntity.getShowVip());
 		if (StringUtils.isNotBlank(memberEntity.getMobile())) {
 			sessionMember.setMobile(memberEntity.getMobile());
 			sessionMember.setMobileCipher(memberEntity.getMobile().replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2"));
 		}
-		sessionMember.setNickname(memberEntity.getNickname());
-		sessionMember.setType(MemberTypeEnum.VIP.getCode());//vip付费会员
+		//sessionMember.setNickname(memberEntity.getNickname());
+		sessionMember.setType(memberEntity.getType());//会员类型
 		return sessionMember;
 	}
 

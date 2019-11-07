@@ -1,5 +1,6 @@
 package io.renren.api.controller;
 
+import io.renren.cms.entity.MemberEntity;
 import io.renren.cms.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,4 +40,15 @@ public class ApiMemberController {
 		SessionMember sessionMember = memberService.login(openid);
 		return ApiResult.ok(sessionMember);
 	}
+
+/*	@IgnoreAuth
+	@PostMapping("/info")
+	@ApiOperation(value = "会员信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(paramType = "query", dataType = "string", name = "openid", value = "openid", required = true)
+	})
+	public ApiResult info(@RequestParam String openid) {
+		MemberEntity memberEntity = memberService.queryObjectByOpenid(openid);
+		return ApiResult.ok(memberEntity);
+	}*/
 }

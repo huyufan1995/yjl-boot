@@ -47,4 +47,6 @@ public class InformationsEntity implements Serializable {
 	 */
 	private String showStatus;
 
+	private Integer type;
+
 }

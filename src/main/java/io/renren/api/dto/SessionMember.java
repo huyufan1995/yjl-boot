@@ -21,35 +21,18 @@ public class SessionMember {
 	private String openid;
 	// 令牌
 	private String token;
-	// 角色
-	private String role;
-	/** 会员类型 common vip */
+	/** 会员类型 common vip*/
 	private String type = MemberTypeEnum.COMMON.getCode();
 	// 手机号
 	private String mobile;
 	//加密手机号
 	private String mobileCipher;
-	// 上级ID
-	private Integer superiorId;
 	/** 头像 */
-	private String portrait = SystemConstant.DEFAULT_CARD_PORTRAIT;
+	private String portrait;
 	/** 姓名 */
-	private String nickname = SystemConstant.DEFAULT_CARD_NAME;
-
-	// 会员开始时间
-	private Date startTime;
-	// 会员结束时间
-	private Date endTime;
-
-	/** 授权状态 */
-	private String authStatus = SystemConstant.F_STR;
-
-	/** 允许最大员工数量 */
-	private Integer staffMaxCount;
-
-	/** 会员到期天数 */
-	private long remainingDay = 0L;
-	private int staffCount = 0;
-	private Integer deptId;
-	private String deptName;
+	private String nickname;
+	/**
+	 * 是否展示vip logo
+	 */
+	private String showVip;
 }

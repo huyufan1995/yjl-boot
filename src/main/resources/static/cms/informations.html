@@ -68,6 +68,12 @@
 		       		<Form-item label="标题" prop="title">
 		            	<i-input v-model="information.title" placeholder="请输入标题" style="width: 300px"></i-input>
 		        	</Form-item>
+					<Form-item label="资讯类别" prop="brandId">
+						<!-- 			    	<i-input v-model="goods.brandId" placeholder="品牌ID" style="width: 300px"></i-input> -->
+						<i-select v-model="information.type" placeholder="资讯类别" style="width: 300px" >
+							<i-option v-for="item in informationTypeList" :value="item.id" :key="item.id">{{ item.name }}</i-option>
+						</i-select>
+					</Form-item>
                     <Form-item label="视频链接地址" prop="vedioLink">
                         <i-input v-model="information.vedioLink" placeholder="请输入视频链接地址" style="width: 300px"></i-input>
                     </Form-item>

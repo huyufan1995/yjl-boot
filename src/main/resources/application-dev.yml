@@ -34,8 +34,8 @@ spring:
 yykj: 
   uploaddir: F:/nginx-1.13.2/html/file/
   visitprefix: http://192.168.2.104/file/
-  appid: wx69b79496c0342beb
-  secret: 7fd51669ca492019587c1a123c85c99c
+  appid: wx8faf64d2d6968e74
+  secret: 23c6cf328c5d27af8a2e86e8a7e82f84
   temppath: F:/
   giftemplatepath: F:/giftemplatepath/
   paynotifyurl: http://tuckyu.natappfree.cc/api/pay/notify

@@ -38,11 +38,13 @@ public class MemberEntity implements Serializable {
 	private String mobile;
 	/** 微信用户ID */
 	private String openid;
-	/** 会员类型 common vip supervip */
+	/** 会员类型 common vip */
 	private String type;
 	/** 公司名称 */
 	private String company;
 	/** 邮箱 */
 	private String email;
+
+	private String showVip;
 
 }
