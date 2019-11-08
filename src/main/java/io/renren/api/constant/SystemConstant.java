@@ -13,6 +13,10 @@ public interface SystemConstant {
 	String T_STR = "t";
 	String F_STR = "f";
 
+	String CHAR_TYPE = "1";
+	String IMAGE_TYPE = "2";
+	String VEDIO_TYPE = "3";
+
 	String FONT_STR = "font";
 	String IMAGE_STR = "image";
 

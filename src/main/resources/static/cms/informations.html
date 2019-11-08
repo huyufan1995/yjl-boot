@@ -68,11 +68,24 @@
 		       		<Form-item label="标题" prop="title">
 		            	<i-input v-model="information.title" placeholder="请输入标题" style="width: 300px"></i-input>
 		        	</Form-item>
-					<Form-item label="资讯类别" prop="brandId">
+					<Form-item label="资讯类别" prop="informationType">
 						<!-- 			    	<i-input v-model="goods.brandId" placeholder="品牌ID" style="width: 300px"></i-input> -->
-						<i-select v-model="information.type" placeholder="资讯类别" style="width: 300px" >
+						<i-select v-model="information.informationType" placeholder="资讯类别" style="width: 300px" >
 							<i-option v-for="item in informationTypeList" :value="item.id" :key="item.id">{{ item.name }}</i-option>
 						</i-select>
+					</Form-item>
+
+					<Form-item label="首页图标" prop="banner">
+					<img :src="bannerImgSrc" class="img-rounded" v-if="showBannerImage" width="150px" height="78px">
+						<Upload
+								:format="['jpg','jpeg','png']"
+								:on-success="handleSuccess1"
+								name="file"
+								:show-upload-list="false"
+								action="../cos/upload/cloud/informationBanner">
+							<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+						</Upload>
+						<span>图片尺寸：690*360px</span>
 					</Form-item>
                     <Form-item label="视频链接地址" prop="vedioLink">
                         <i-input v-model="information.vedioLink" placeholder="请输入视频链接地址" style="width: 300px"></i-input>

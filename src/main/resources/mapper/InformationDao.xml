@@ -30,6 +30,9 @@
 			<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
 			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
 			<if test="updateTime != null and updateTime != ''"> and `update_time` = #{updateTime}</if>
+			<if test="keyword != null and keyword != ''">
+				and (title LIKE concat('%', #{keyword}, '%') or content LIKE concat('%',#{keyword},'%'))
+			 </if>
 
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
 			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
@@ -86,6 +89,15 @@
 			<if test="vedioLink != null">
 				vedio_link,
 			</if>
+			<if test="informationType != null">
+				information_type,
+			</if>
+			<if test="contentType != null">
+				content_type,
+			</if>
+			<if test="banner != null">
+				banner,
+			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="title != null and title != ''">
@@ -108,6 +120,15 @@
 			</if>
 			<if test="vedioLink != null">
 				#{vedioLink},
+			</if>
+			<if test="informationType != null">
+				#{informationType},
+			</if>
+			<if test="contentType != null">
+				#{contentType},
+			</if>
+			<if test="banner != null">
+				#{banner},
 			</if>
 		</trim>
 	</insert>
@@ -156,4 +177,47 @@
 		</foreach>
 	</update>
 
+
+	<select id="queryListDto" resultType="io.renren.api.dto.InformationsEntityDto">
+		SELECT
+		ti.* ,tmm.total as commentTotal
+		FROM
+		tb_information ti
+		LEFT JOIN
+		(SELECT information_id ii,count(id) total,openid FROM tb_comment GROUP BY information_id) tmm
+		on ti.id = tmm.ii
+		left join
+		tb_member tm
+		on tm.openid = tmm.openid
+		WHERE
+		1 = 1
+
+		<if test="title != null and title != ''"> and ti.`title` = #{title}</if>
+		<if test="vedioLink != null and vedioLink != ''"> and ti.`vedio_link` = #{vedioLink}</if>
+		<if test="content != null and content != ''"> and ti.`content` = #{content}</if>
+		<if test="auditStatus != null and auditStatus != ''"> and ti.`audit_status` = #{auditStatus}</if>
+		<if test="isDel != null and isDel != ''"> and ti.`is_del` = #{isDel}</if>
+		<if test="ctime != null and ctime != ''"> and ti.`ctime` = #{ctime}</if>
+		<if test="updateTime != null and updateTime != ''"> and ti.`update_time` = #{updateTime}</if>
+		<if test="informationType != null and informationType != ''"> and ti.`information_type` = #{informationType}</if>
+		<if test="keyword != null and keyword != ''">
+			and (ti.title LIKE concat('%', #{keyword}, '%') or ti.content LIKE concat('%',#{keyword},'%'))
+		</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ti.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by ti.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
 </mapper>

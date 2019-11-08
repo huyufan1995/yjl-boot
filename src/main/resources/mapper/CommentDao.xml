@@ -114,4 +114,15 @@
 		</foreach>
 	</update>
 
+	<select id="queryPortrait" resultType="String">
+		select portrait from tb_comment where 1 = 1
+		<if test="informationId != null and informationId != ''"> and `information_id` = #{informationId}</if>
+		<if test="remark != null and remark != ''"> and `remark` = #{remark}</if>
+		<if test="createTime != null and createTime != ''"> and `create_time` = #{createTime}</if>
+		<if test="commentator != null and commentator != ''"> and `commentator` = #{commentator}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			group by ctime desc limit 0,4
+		</if>
+	</select>
 </mapper>

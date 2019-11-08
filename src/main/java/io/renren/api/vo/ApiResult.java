@@ -1,9 +1,21 @@
 package io.renren.api.vo;
 
+
+
+
+
+import io.swagger.annotations.ApiModel;
+import lombok.Data;
+import org.apache.poi.ss.formula.functions.T;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 统一接口返回
  * 
  */
+@ApiModel(value = "返回类")
 public class ApiResult {
 
 	private Integer statusCode = 200;
@@ -25,12 +37,14 @@ public class ApiResult {
 	public static ApiResult ok(Object data) {
 		return new ApiResult(data);
 	}
+	public static ApiResult ok(List list) {
+		return new ApiResult(list) ;
+	}
 
 	public ApiResult(Object data) {
 		super();
 		this.data = data;
 	}
-
 	public ApiResult(Integer statusCode, String statusMsg, Object data) {
 		super();
 		this.statusCode = statusCode;

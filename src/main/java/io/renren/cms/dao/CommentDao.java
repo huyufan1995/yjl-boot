@@ -17,4 +17,6 @@ public interface CommentDao extends BaseDao<CommentEntity> {
 	int logicDel(Integer id);
 	
 	int logicDelBatch(List<Integer> ids);
+
+    List<String> queryPortrait(int i);
 }

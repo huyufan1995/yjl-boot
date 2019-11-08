@@ -179,6 +179,8 @@ var vm = new Vue({
 	data:{
 		showList: true,
 		showModal: false,
+		bannerImgSrc:null,
+		showBannerImage:false,
 		title: null,
 		information: {},
 		informationTypeList:[],
@@ -225,6 +227,7 @@ var vm = new Vue({
 			if(id == null){
 				return ;
 			}
+			vm.getInformationType();
             vm.getInfo(id)
 		},
 		getInformationType: function () {
@@ -236,6 +239,16 @@ var vm = new Vue({
 					vm.informationTypeList = r.informationTypeList;
 				}
 			});
+		},
+		handleSuccess1 (res, file) {
+			console.log(res)
+			if(res.code != 500){
+				vm.showBannerImage = true;
+				vm.bannerImgSrc = res.data.url;
+				vm.information.banner = vm.bannerImgSrc;
+			}else{
+				this.$Message.success('大小超过3M!');
+			}
 		},
 		saveOrUpdate: function (event) {
 
@@ -307,6 +320,9 @@ var vm = new Vue({
 				success : function(r) {
 					editor.setValue(r.information.content);
 					vm.information = r.information;
+					vm.bannerImgSrc = r.information.banner;
+					vm.showBannerImage = true;
+					vm.informationType = r.information.informationType;
 					if(vm.information.auditStatus == 'pending'){
 						vm.$Message.success('此资讯已经提交，请先撤回再修改!');
 						return false;

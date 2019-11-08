@@ -3,8 +3,10 @@ package io.renren.cms.controller;
 import java.util.List;
 import java.util.Map;
 
+import io.renren.api.constant.SystemConstant;
 import io.renren.cms.entity.InformationsEntity;
 import io.renren.enums.AuditStatusEnum;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -80,17 +82,34 @@ public class InformationController {
 	@RequestMapping("/save")
 	//@RequiresPermissions("information:save")
 	public R save(@RequestBody InformationsEntity information){
+		information = checkInformationType(information);
 		informationService.save(information);
-		
 		return R.ok();
 	}
-	
+
+	/**
+	 * 判断资讯类型 1：纯文字 2：图文 3：视频
+	 * @param information
+	 * @return
+	 */
+	private InformationsEntity checkInformationType(InformationsEntity information) {
+		if (StringUtils.isNotEmpty(information.getVedioLink())) {
+			information.setContentType(SystemConstant.VEDIO_TYPE);
+		} else if (information.getContent().indexOf("<img") > 0) {
+			information.setContentType(SystemConstant.IMAGE_TYPE);
+		} else {
+			information.setContentType(SystemConstant.CHAR_TYPE);
+		}
+		return information;
+	}
+
 	/**
 	 * 修改
 	 */
 	@RequestMapping("/update")
 	//@RequiresPermissions("information:update")
 	public R update(@RequestBody InformationsEntity information){
+		information = checkInformationType(information);
 		informationService.update(information);
 		
 		return R.ok();

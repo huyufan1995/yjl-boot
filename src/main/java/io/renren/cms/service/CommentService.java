@@ -31,4 +31,6 @@ public interface CommentService {
 	int logicDel(Integer id);
 	
 	int logicDelBatch(List<Integer> ids);
+
+	List<String> queryPortrait(int i);
 }

@@ -1,9 +1,11 @@
 package io.renren.cms.service.impl;
 
 import io.renren.api.constant.SystemConstant;
+import io.renren.api.dto.InformationsEntityDto;
 import io.renren.cms.dao.InformationDao;
 import io.renren.cms.entity.InformationsEntity;
 import io.renren.enums.AuditStatusEnum;
+import io.renren.utils.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -106,6 +108,11 @@ public class InformationServiceImpl implements InformationService {
 		entity.setId(id);
 		entity.setAuditStatus(AuditStatusEnum.REJECT.getCode());
 		return informationDao.update(entity);
+	}
+
+	@Override
+	public List<InformationsEntityDto> queryListDto(Map<String, Object> map) {
+		return informationDao.queryListDto(map);
 	}
 
 

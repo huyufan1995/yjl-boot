@@ -1,6 +1,8 @@
 package io.renren.cms.service;
 
+import io.renren.api.dto.InformationsEntityDto;
 import io.renren.cms.entity.InformationsEntity;
+import io.renren.utils.Query;
 
 import java.util.List;
 import java.util.Map;
@@ -38,4 +40,6 @@ public interface InformationService {
 	int revocation(Integer id);
 
 	int rejectInformation(Integer id);
+
+    List<InformationsEntityDto> queryListDto(Map<String, Object> map);
 }

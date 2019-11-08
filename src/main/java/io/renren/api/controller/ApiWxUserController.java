@@ -5,7 +5,9 @@ import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import io.renren.api.vo.ApiResult;
+import io.renren.cms.entity.MemberEntity;
 import io.renren.cms.entity.WxUserEntity;
+import io.renren.cms.service.MemberService;
 import io.renren.cms.service.WxUserService;
 import io.renren.config.WxMaConfiguration;
 import io.renren.properties.YykjProperties;
@@ -19,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +45,9 @@ public class ApiWxUserController {
 	private WxUserService wxUserService;
 	@Autowired
 	private YykjProperties yykjProperties;
+
+	@Autowired
+	private MemberService memberService;
 
 
 	@IgnoreAuth
@@ -107,6 +113,8 @@ public class ApiWxUserController {
 		// 复制新的所有非null来覆盖旧的
 		BeanUtil.copyProperties(userInfo, wxUserEntity, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
 		wxUserService.update(wxUserEntity);
+		MemberEntity memberEntity = memberService.queryObjectByOpenid(wxUserEntity.getOpenId());
+		BeanUtil.copyProperties(wxUserEntity, memberEntity, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
 		return ApiResult.ok(wxUserEntity);
 	}
 

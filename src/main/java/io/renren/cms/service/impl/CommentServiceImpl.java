@@ -66,6 +66,11 @@ public class CommentServiceImpl implements CommentService {
 	public int logicDelBatch(List<Integer> ids) {
 		return commentDao.logicDelBatch(ids);
 	}
-	
-	
+
+	@Override
+	public List<String> queryPortrait(int i) {
+		return commentDao.queryPortrait(i);
+	}
+
+
 }

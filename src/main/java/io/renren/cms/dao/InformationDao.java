@@ -1,15 +1,16 @@
 package io.renren.cms.dao;
 
 import java.util.List;
+import java.util.Map;
 
+import io.renren.api.dto.InformationsEntityDto;
 import io.renren.cms.entity.InformationsEntity;
 import io.renren.dao.BaseDao;
 
 /**
  * 资讯表
  * 
- * @author yujia
- * @email yujiain2008@163.com
+ * @author moran
  * @date 2019-11-05 11:05:36
  */
 public interface InformationDao extends BaseDao<InformationsEntity> {
@@ -17,4 +18,6 @@ public interface InformationDao extends BaseDao<InformationsEntity> {
 	int logicDel(Integer id);
 	
 	int logicDelBatch(List<Integer> ids);
+
+    List<InformationsEntityDto> queryListDto(Map<String, Object> map);
 }
