@@ -220,4 +220,13 @@
 			limit #{offset}, #{limit}
 		</if>
 	</select>
+
+	<select id="queryObjectDto" resultType="io.renren.api.dto.InformationsEntityInfoDto">
+		select ti.*,tc.openid from tb_information ti
+		left join tb_collect tc
+		on ti.id =tc.data_id
+		where ti.id = #{id}
+		and tc.collect_type = 1
+		and tc.openid = #{openid}
+	</select>
 </mapper>

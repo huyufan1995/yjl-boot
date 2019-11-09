@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.InformationBrowsDao">
+
+	<sql id="base_column" >			informationBrows.`ctime`, 			informationBrows.`openid`, 			informationBrows.`information_id`  	</sql>
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.cms.entity.InformationBrowsEntity" id="informationBrowsMap">
+        <result property="ctime" column="ctime"/>
+        <result property="openid" column="openid"/>
+        <result property="informationId" column="information_id"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.InformationBrowsEntity">
+		select * from tb_information_brows where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.InformationBrowsEntity">
+		select * from tb_information_brows where 1 = 1
+		
+			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+			<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+			<if test="informationId != null and informationId != ''"> and `information_id` = #{informationId}</if>
+		
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+		
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(ctime) from tb_information_brows where 1 = 1
+			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+			<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+			<if test="informationId != null and informationId != ''"> and `information_id` = #{informationId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.cms.entity.InformationBrowsEntity">
+		insert into tb_information_brows
+		(
+			`ctime`, 
+			`openid`, 
+			`information_id`
+		)
+		values
+		(
+			#{ctime}, 
+			#{openid}, 
+			#{informationId}
+		)
+		on duplicate key update
+		ctime = #{ctime}
+	</insert>
+
+	<select id="queryPortrait" resultType="String">
+		select tm.portrait from tb_information_brows tib
+		LEFT JOIN tb_member tm
+		on tm.openid = tib.openid
+		where 1 = 1
+		and tib.`information_id` = #{informationId}
+		group by tib.ctime desc limit 0,4
+	</select>
+
+</mapper>

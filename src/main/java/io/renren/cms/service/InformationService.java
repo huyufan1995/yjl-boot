@@ -1,6 +1,7 @@
 package io.renren.cms.service;
 
 import io.renren.api.dto.InformationsEntityDto;
+import io.renren.api.dto.InformationsEntityInfoDto;
 import io.renren.cms.entity.InformationsEntity;
 import io.renren.utils.Query;
 
@@ -42,4 +43,6 @@ public interface InformationService {
 	int rejectInformation(Integer id);
 
     List<InformationsEntityDto> queryListDto(Map<String, Object> map);
+
+    InformationsEntityInfoDto queryObjectDto(Integer id, String openid);
 }

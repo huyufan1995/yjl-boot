@@ -1,24 +1,24 @@
 package io.renren.api.controller;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import io.renren.api.constant.SystemConstant;
+import io.renren.api.dto.CommentEntityDto;
 import io.renren.api.dto.InformationsEntityDto;
+import io.renren.api.dto.InformationsEntityInfoDto;
 import io.renren.api.vo.ApiResult;
 import io.renren.api.vo.ApiResultList;
-import io.renren.cms.entity.BannerEntity;
-import io.renren.cms.entity.InformationTypeEntity;
-import io.renren.cms.entity.InformationsEntity;
-import io.renren.cms.service.BannerService;
-import io.renren.cms.service.CommentService;
-import io.renren.cms.service.InformationService;
-import io.renren.cms.service.InformationTypeService;
+import io.renren.cms.dao.InformationBrowsDao;
+import io.renren.cms.entity.*;
+import io.renren.cms.service.*;
+import io.renren.properties.YykjProperties;
 import io.renren.utils.HTMLSpirit;
 import io.renren.utils.Query;
-import io.renren.utils.RedisUtils;
-import io.renren.utils.annotation.ExtApiIdempotent;
 import io.renren.utils.annotation.IgnoreAuth;
 import io.renren.utils.validator.Assert;
 import io.swagger.annotations.*;
-import org.apache.poi.ss.formula.functions.T;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,9 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 资讯
@@ -42,6 +40,9 @@ public class ApiInformationController {
     private InformationService informationService;
 
     @Autowired
+    private InformationBrowsService informationBrowsService;
+
+    @Autowired
     private InformationTypeService informationTypeService;
 
     @Autowired
@@ -49,6 +50,12 @@ public class ApiInformationController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private CollectService collectService;
+
+    @Autowired
+    private YykjProperties yykjProperties;
 
     @IgnoreAuth
     @ApiOperation(value = "资讯列表", notes = "资讯分页列表",response = InformationsEntityDto.class)
@@ -60,6 +67,7 @@ public class ApiInformationController {
     })
     @PostMapping("/list")
     public ApiResultList list(@ApiIgnore() @RequestParam Map<String, Object> params) {
+        Object informationType = params.get("informationType");
         params.put("isDel", SystemConstant.F_STR);
         Query query = new Query(params);
         List<InformationsEntityDto> informationList = informationService.queryListDto(query);
@@ -70,12 +78,17 @@ public class ApiInformationController {
                 content=content.substring(0,50);
             }
             entityDto.setContent(content);
-            List<String> portrait = commentService.queryPortrait(entityDto.getId());
+            List<String> portrait = informationBrowsService.queryPortrait(entityDto.getId().toString());
             entityDto.setPortrait(portrait);
         }
-        BannerEntity bannerEntity = bannerService.queryObject(1);
         Map<Object,Object> map = new HashMap<>();
-        map.put("banner",bannerEntity);
+        //只有热门类型才会加载首页banner
+        if(Integer.parseInt(informationType.toString())!=1){
+            map.put("banner",null);
+        }else{
+            BannerEntity bannerEntity = bannerService.queryObject(1);
+            map.put("banner",bannerEntity);
+        }
         map.put("list",informationList);
         return new ApiResultList(map);
     }
@@ -83,21 +96,69 @@ public class ApiInformationController {
     @IgnoreAuth
     @ApiOperation(value = "资讯分类列表", notes = "资讯分类列表")
     @PostMapping("/information_type_list")
-    public ApiResult list() {
+    public ApiResult informationTypeList() {
         List<InformationTypeEntity> informationTypeEntities = informationTypeService.queryList(null);
         return ApiResult.ok(informationTypeEntities);
+    }
+
+    @IgnoreAuth
+    @ApiOperation(value = "资讯评论列表", notes = "资讯评论列表")
+    @PostMapping("/information_comment_list")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", dataType = "int", name = "informationId", value = "资讯数据ID", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "openid", value = "openid", required = true)
+    })
+    public ApiResult commentList(@ApiIgnore() @RequestParam Integer informationId,@RequestParam String openid) {
+        HashMap<String,Object> params = new HashMap<>(1);
+        params.put("informationId",informationId);
+        List<CommentEntityDto> commentEntities = commentService.queryListDto(params);
+        for (CommentEntityDto commentEntity : commentEntities) {
+            if(commentEntity.getOpenid().equals(openid)){
+                commentEntity.setLikeFlag(true);
+            }else{
+                commentEntity.setLikeFlag(false);
+            }
+        }
+        return ApiResult.ok(commentEntities);
     }
 
     @IgnoreAuth
     @ApiOperation("资讯数据详情")
     @PostMapping("/information_data_info")
     @ApiImplicitParams({
-            @ApiImplicitParam(paramType = "query", dataType = "int", name = "id", value = "数据ID", required = true)
+            @ApiImplicitParam(paramType = "query", dataType = "int", name = "id", value = "资讯数据ID", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "String", name = "openid", value = "openid", required = true)
     })
-    public ApiResult applyDataInfo(@RequestParam Integer id) {
+    public ApiResult applyDataInfo(@RequestParam Integer id,@RequestParam String openid) {
         InformationsEntity informationEntity = informationService.queryObject(id);
         Assert.isNullApi(informationEntity, "该数据不存在");
-        return ApiResult.ok(informationEntity.getContent());
+        HashMap<String,Object> params = new HashMap<>();
+        params.put("openid",openid);
+        params.put("informationId",id);
+        //资讯浏览量
+        int total = informationBrowsService.queryTotal(params);
+        InformationsEntityInfoDto informationsEntityInfoDto = new InformationsEntityInfoDto();
+        BeanUtil.copyProperties(informationEntity, informationsEntityInfoDto, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
+        informationsEntityInfoDto.setBrowsTotal(total==0?total+1:total);
+        //查询当前资讯是否收藏
+        Boolean collectFlag = collectService.isCollect(id,1,openid);
+        informationsEntityInfoDto.setCollectFlag(collectFlag);
+        //添加资讯浏览记录
+        addInformationBrows(id, openid);
+        return ApiResult.ok(informationsEntityInfoDto);
+    }
+
+    /**
+     * 添加资讯浏览记录
+     * @param id
+     * @param openid
+     */
+    private void addInformationBrows(Integer id, String openid) {
+        InformationBrowsEntity informationBrowsEntity = new InformationBrowsEntity();
+        informationBrowsEntity.setCtime(new Date());
+        informationBrowsEntity.setInformationId(id.toString());
+        informationBrowsEntity.setOpenid(openid);
+        informationBrowsService.save(informationBrowsEntity);
     }
 
 /*    @IgnoreAuth

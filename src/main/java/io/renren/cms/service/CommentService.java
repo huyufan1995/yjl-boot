@@ -1,5 +1,6 @@
 package io.renren.cms.service;
 
+import io.renren.api.dto.CommentEntityDto;
 import io.renren.cms.entity.CommentEntity;
 
 import java.util.List;
@@ -8,8 +9,7 @@ import java.util.Map;
 /**
  * 评论表接口
  * 
- * @author yujia
- * @email yujiain2008@163.com
+ * @author moran
  * @date 2019-11-05 11:05:36
  */
 public interface CommentService {
@@ -32,5 +32,7 @@ public interface CommentService {
 	
 	int logicDelBatch(List<Integer> ids);
 
-	List<String> queryPortrait(int i);
+	List<String> queryPortrait(String informationId);
+
+	List<CommentEntityDto> queryListDto(Map<String, Object> params);
 }

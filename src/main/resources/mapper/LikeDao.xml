@@ -4,12 +4,12 @@
 <mapper namespace="io.renren.cms.dao.LikeDao">
 
 	<sql id="base_column" >
-			like.`id`, 			like.`create_people`, 			like.`create_time`, 			like.`information_id`  	</sql>
+			like.`id`, 			like.`openid`, 			like.`create_time`, 			like.`information_id`  	</sql>
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="io.renren.cms.entity.LikeEntity" id="likeMap">
         <result property="id" column="id"/>
-        <result property="createPeople" column="create_people"/>
+        <result property="openId" column="openid"/>
         <result property="createTime" column="create_time"/>
         <result property="informationId" column="information_id"/>
     </resultMap>
@@ -21,7 +21,7 @@
 	<select id="queryList" resultType="io.renren.cms.entity.LikeEntity">
 		select * from tb_like where 1 = 1
 		
-			<if test="createPeople != null and createPeople != ''"> and `create_people` = #{createPeople}</if>
+			<if test="openId != null and openId != ''"> and `openid` = #{openId}</if>
 			<if test="createTime != null and createTime != ''"> and `create_time` = #{createTime}</if>
 			<if test="informationId != null and informationId != ''"> and `information_id` = #{informationId}</if>
 		
@@ -44,7 +44,7 @@
 	
  	<select id="queryTotal" resultType="int">
 		select count(id) from tb_like where 1 = 1
-			<if test="createPeople != null and createPeople != ''"> and `create_people` = #{createPeople}</if>
+			<if test="openId != null and openId != ''"> and `openid` = #{openId}</if>
 			<if test="createTime != null and createTime != ''"> and `create_time` = #{createTime}</if>
 			<if test="informationId != null and informationId != ''"> and `information_id` = #{informationId}</if>
 
@@ -56,15 +56,13 @@
 	<insert id="save" parameterType="io.renren.cms.entity.LikeEntity">
 		insert into tb_like
 		(
-			`id`, 
-			`create_people`, 
+			`openid`, 
 			`create_time`, 
 			`information_id`
 		)
 		values
 		(
-			#{id}, 
-			#{createPeople}, 
+			#{openId}, 
 			#{createTime}, 
 			#{informationId}
 		)
@@ -73,7 +71,7 @@
 	<update id="update" parameterType="io.renren.cms.entity.LikeEntity">
 		update tb_like 
 		<set>
-			<if test="createPeople != null">`create_people` = #{createPeople}, </if>
+			<if test="openId != null">`openid` = #{openId}, </if>
 			<if test="createTime != null">`create_time` = #{createTime}, </if>
 			<if test="informationId != null">`information_id` = #{informationId}</if>
 		</set>

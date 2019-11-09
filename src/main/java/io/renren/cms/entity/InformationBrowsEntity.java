@@ -8,23 +8,24 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 点赞表
+ * 资讯浏览记录
  * 
  * @author moran
- * @date 2019-11-05 11:05:36
+ * @email ${email}
+ * @date 2019-11-09 14:39:16
  */
 @Getter
 @Setter
-public class LikeEntity implements Serializable {
+public class InformationBrowsEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/**  */
 	private Integer id;
-	/** 点赞人openid */
-	private String openId;
-	/** 点赞时间 */
-	private Date createTime;
+	/** 创建时间 */
+	private Date ctime;
+	/** 资讯浏览记录人openid */
+	private String openid;
 	/** 资讯Id */
-	private Integer informationId;
+	private String informationId;
 
 }

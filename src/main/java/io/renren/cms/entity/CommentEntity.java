@@ -21,12 +21,12 @@ public class CommentEntity implements Serializable {
 	/**  */
 	private Integer id;
 	/** 资讯ID */
-	private Integer informationId;
+	private String informationId;
 	/**  评论内容 */
 	private String remark;
 	/**  评论时间 */
-	private Date createTime;
+	private Date ctime;
 	/** 评论人openid */
-	private String commentator;
+	private String openid;
 
 }

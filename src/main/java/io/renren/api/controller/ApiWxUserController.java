@@ -114,7 +114,12 @@ public class ApiWxUserController {
 		BeanUtil.copyProperties(userInfo, wxUserEntity, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
 		wxUserService.update(wxUserEntity);
 		MemberEntity memberEntity = memberService.queryObjectByOpenid(wxUserEntity.getOpenId());
-		BeanUtil.copyProperties(wxUserEntity, memberEntity, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
+		if(memberEntity != null){
+			memberEntity.setPortrait(wxUserEntity.getAvatarUrl());
+			memberEntity.setNickname(wxUserEntity.getNickName());
+			memberEntity.setGender(wxUserEntity.getGender());
+			memberService.update(memberEntity);
+		}
 		return ApiResult.ok(wxUserEntity);
 	}
 

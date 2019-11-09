@@ -1,7 +1,9 @@
 package io.renren.cms.dao;
 
 import java.util.List;
+import java.util.Map;
 
+import io.renren.api.dto.CommentEntityDto;
 import io.renren.cms.entity.CommentEntity;
 import io.renren.dao.BaseDao;
 
@@ -18,5 +20,7 @@ public interface CommentDao extends BaseDao<CommentEntity> {
 	
 	int logicDelBatch(List<Integer> ids);
 
-    List<String> queryPortrait(int i);
+    List<String> queryPortrait(String informationId);
+
+	List<CommentEntityDto> queryListDto(Map<String, Object> params);
 }

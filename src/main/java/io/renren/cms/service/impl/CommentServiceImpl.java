@@ -1,5 +1,6 @@
 package io.renren.cms.service.impl;
 
+import io.renren.api.dto.CommentEntityDto;
 import io.renren.cms.dao.CommentDao;
 import io.renren.cms.entity.CommentEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,8 +69,13 @@ public class CommentServiceImpl implements CommentService {
 	}
 
 	@Override
-	public List<String> queryPortrait(int i) {
-		return commentDao.queryPortrait(i);
+	public List<String> queryPortrait(String informationId) {
+		return commentDao.queryPortrait(informationId);
+	}
+
+	@Override
+	public List<CommentEntityDto> queryListDto(Map<String, Object> params) {
+		return commentDao.queryListDto(params);
 	}
 
 
