@@ -2,15 +2,16 @@ package io.renren.cms.service;
 
 import io.renren.cms.entity.LikeEntity;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 点赞表接口
  * 
- * @author yujia
- * @email yujiain2008@163.com
- * @date 2019-11-05 11:05:36
+ * @author moran
+ * @email ${email}
+ * @date 2019-11-11 10:03:39
  */
 public interface LikeService {
 	
@@ -31,4 +32,6 @@ public interface LikeService {
 	int logicDel(Integer id);
 	
 	int logicDelBatch(List<Integer> ids);
+
+    Boolean deleteByOpenIdAndLikeTypeAndDataId(HashMap<String, Object> params);
 }

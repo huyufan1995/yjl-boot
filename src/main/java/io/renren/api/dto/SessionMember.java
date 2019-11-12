@@ -35,4 +35,14 @@ public class SessionMember {
 	 * 是否展示vip logo
 	 */
 	private String showVip;
+
+	/**
+	 * 二维码
+	 */
+	private String qrCode;
+
+	/**
+	 * vipCode
+	 */
+	private String vipCode;
 }

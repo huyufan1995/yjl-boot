@@ -11,38 +11,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.renren.cms.entity.LikeEntity;
-import io.renren.cms.service.LikeService;
+import io.renren.cms.entity.ApplyRecordEntity;
+import io.renren.cms.service.ApplyRecordService;
 import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
 import io.renren.utils.R;
 
 
 /**
- * 点赞表
+ * 活动报名记录
  * 
  * @author moran
  * @email ${email}
- * @date 2019-11-11 10:03:39
+ * @date 2019-11-12 09:58:16
  */
 @RestController
-@RequestMapping("like")
-public class LikeController {
+@RequestMapping("applyrecord")
+public class ApplyRecordController {
 	@Autowired
-	private LikeService likeService;
+	private ApplyRecordService applyRecordService;
 	
 	/**
 	 * 列表
 	 */
 	@RequestMapping("/list")
-	//@RequiresPermissions("like:list")
+	//@RequiresPermissions("applyrecord:list")
 	public R list(@RequestParam Map<String, Object> params){
         Query query = new Query(params);
 
-		List<LikeEntity> likeList = likeService.queryList(query);
-		int total = likeService.queryTotal(query);
+		List<ApplyRecordEntity> applyRecordList = applyRecordService.queryList(query);
+		int total = applyRecordService.queryTotal(query);
 		
-		PageUtils pageUtil = new PageUtils(likeList, total, query.getLimit(), query.getPage());
+		PageUtils pageUtil = new PageUtils(applyRecordList, total, query.getLimit(), query.getPage());
 		
 		return R.ok().put("page", pageUtil);
 	}
@@ -52,20 +52,20 @@ public class LikeController {
 	 * 信息
 	 */
 	@RequestMapping("/info/{id}")
-	//@RequiresPermissions("like:info")
+	//@RequiresPermissions("applyrecord:info")
 	public R info(@PathVariable("id") Integer id){
-		LikeEntity like = likeService.queryObject(id);
+		ApplyRecordEntity applyRecord = applyRecordService.queryObject(id);
 		
-		return R.ok().put("like", like);
+		return R.ok().put("applyRecord", applyRecord);
 	}
 	
 	/**
 	 * 保存
 	 */
 	@RequestMapping("/save")
-	//@RequiresPermissions("like:save")
-	public R save(@RequestBody LikeEntity like){
-		likeService.save(like);
+	//@RequiresPermissions("applyrecord:save")
+	public R save(@RequestBody ApplyRecordEntity applyRecord){
+		applyRecordService.save(applyRecord);
 		
 		return R.ok();
 	}
@@ -74,9 +74,9 @@ public class LikeController {
 	 * 修改
 	 */
 	@RequestMapping("/update")
-	//@RequiresPermissions("like:update")
-	public R update(@RequestBody LikeEntity like){
-		likeService.update(like);
+	//@RequiresPermissions("applyrecord:update")
+	public R update(@RequestBody ApplyRecordEntity applyRecord){
+		applyRecordService.update(applyRecord);
 		
 		return R.ok();
 	}
@@ -85,9 +85,9 @@ public class LikeController {
 	 * 删除
 	 */
 	@RequestMapping("/delete")
-	//@RequiresPermissions("like:delete")
+	//@RequiresPermissions("applyrecord:delete")
 	public R delete(@RequestBody Integer[] ids){
-		likeService.deleteBatch(ids);
+		applyRecordService.deleteBatch(ids);
 		
 		return R.ok();
 	}
@@ -96,9 +96,9 @@ public class LikeController {
 	 * 逻辑删除
 	 */
 	@RequestMapping("/logic_del/{id}")
-	//@RequiresPermissions("like:logicDel")
+	//@RequiresPermissions("applyrecord:logicDel")
 	public R logicDel(@PathVariable("id") Integer id) {
-		likeService.logicDel(id);
+		applyRecordService.logicDel(id);
 		return R.ok();
 	}
 	

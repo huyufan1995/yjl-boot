@@ -2,6 +2,7 @@ package io.renren.cms.service;
 
 import io.renren.cms.entity.CollectEntity;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,4 +34,6 @@ public interface CollectService {
 	int logicDelBatch(List<Integer> ids);
 
 	Boolean isCollect(Integer id, Integer collectType, String openid);
+
+	Boolean deleteWithOpenIdAndCollectTypeAndDataId(HashMap<String, Object> params);
 }

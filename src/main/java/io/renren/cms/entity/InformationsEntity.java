@@ -45,7 +45,7 @@ public class InformationsEntity implements Serializable {
 	 * 视频链接地址
 	 */
 	@ApiModelProperty(value = "视频链接地址")
-	private String vedioLink;
+	private String videoLink;
 	/** 创建时间 */
 	private Date ctime;
 	/**  更新时间*/

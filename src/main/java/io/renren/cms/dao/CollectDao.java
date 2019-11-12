@@ -1,5 +1,6 @@
 package io.renren.cms.dao;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.renren.cms.entity.CollectEntity;
@@ -20,4 +21,6 @@ public interface CollectDao extends BaseDao<CollectEntity> {
 	int logicDelBatch(List<Integer> ids);
 
 	Boolean isCollect(@Param(value = "id") Integer id,@Param(value = "collectType") Integer collectType, @Param(value = "openid")String openid);
+
+    Boolean deleteWithOpenIdAndCollectTypeAndDataId(HashMap<String, Object> params);
 }

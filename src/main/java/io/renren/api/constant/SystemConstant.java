@@ -5,17 +5,26 @@ import java.util.List;
 
 public interface SystemConstant {
 
+	String CREATE_PEOPLE = "越柬寮世联会";
+
 	String IMAGE_REG = ".jpg|.jpeg|.png|.bmp|.gif";
 
 	String TRUE_STR = "true";
 	String FALSE_STR = "false";
 
+	String MEMBER_TYPE_MSG = "请先认证";
+
 	String T_STR = "t";
 	String F_STR = "f";
 
-	String CHAR_TYPE = "1";
+	String TEXT_TYPE = "1";
 	String IMAGE_TYPE = "2";
-	String VEDIO_TYPE = "3";
+	String VIDEO_TYPE = "3";
+
+	String INFORMATION_TYPE = "1";
+	String COMMENT_TYPE = "2";
+	String APPLY_TYPE = "3";
+	String MEMBER_TYPE = "4";
 
 	String FONT_STR = "font";
 	String IMAGE_STR = "image";

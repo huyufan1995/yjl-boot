@@ -28,4 +28,14 @@ public class CommentEntityDto extends CommentEntity {
      * 是否点赞
      */
     private Boolean likeFlag;
+
+    /**
+     * 是否展示VIP  logo
+     */
+    private String showVip;
+
+    /**
+     * 会员类型  common游客     vip会员
+     */
+    private String type;
 }

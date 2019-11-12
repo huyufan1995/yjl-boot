@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>文章</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="../public/css/bootstrap.min.css">
+<link rel="stylesheet" href="../public/css/font-awesome.min.css">
+<link rel="stylesheet" href="../public/plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="../public/plugins/ztree/css/metroStyle/metroStyle.css">
+<link rel="stylesheet" href="../public/css/main.css">
+
+<!-- 富翁本编辑器 css-->
+<link rel="stylesheet" type="text/css" href="../public/js/simditor-2.3.6/styles/simditor.css" />
+
+<style type="text/css">
+	.form-horizontal{
+		width:1100px;padding-top:10px;
+	}
+</style>
+
+<script src="../public/libs/jquery.min.js"></script>
+<script src="../public/plugins/layer/layer.js"></script>
+<script src="../public/libs/bootstrap.min.js"></script>
+<script src="../public/libs/vue.min.js"></script>
+<script src="../public/plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="../public/plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="../public/plugins/ztree/jquery.ztree.all.min.js"></script>
+<script src="../public/js/common.js"></script>
+
+<!-- 编辑器 -->
+<script type="text/javascript" src="../public/js/simditor-2.3.6/scripts/module.js"></script>
+<script type="text/javascript" src="../public/js/simditor-2.3.6/scripts/hotkeys.js"></script>
+<script type="text/javascript" src="../public/js/simditor-2.3.6/scripts/uploader.js"></script>
+<script type="text/javascript" src="../public/js/simditor-2.3.6/scripts/simditor.js"></script> 
+</head>
+<body>
+	<div id="rrapp" v-cloak>
+		<div v-show="showList">
+			<div class="grid-btn">
+<!-- 				<a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a> -->
+<!-- 				<a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a> -->
+<!-- 				<a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a> -->
+			</div>
+			<table id="jqGrid"></table>
+			<div id="jqGridPager"></div>
+		</div>
+
+		<div v-show="!showList" class="panel panel-default">
+			<div class="panel-heading">{{title}}</div>
+			<form class="form-horizontal">
+				<div class="form-group">
+					<div class="col-sm-2 control-label">标题</div>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" v-model="article.title" placeholder="标题" disabled/>
+					</div>
+				</div>
+				<div class="form-group" v-if="isInfo">
+					<div class="col-sm-2 control-label">创建时间</div>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" v-model="article.ctime" placeholder="创建时间" :disabled="isInfo"/>
+					</div>
+				</div>
+				<div class="form-group" v-if="isInfo">
+					<div class="col-sm-2 control-label">更新时间</div>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" v-model="article.utime" placeholder="更新时间" :disabled="isInfo"/>
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<div class="col-sm-2 control-label">内容</div>
+					<div class="col-sm-10">
+						<textarea id="editor" name="content" class="form-control" v-model="article.content" placeholder="内容"></textarea>
+<!-- 						<input type="text" class="form-control" v-model="article.content" placeholder="内容" /> -->
+					</div>
+				</div>
+				
+				<div class="form-group">
+					<div class="col-sm-2 control-label"></div>
+					<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定" v-if="!isInfo"/>
+					&nbsp;&nbsp;
+					<input type="button" class="btn btn-warning" @click="reload" value="返回" />
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script src="../public/js/cms/article.js"></script>
+	
+	<script type="text/javascript">
+	    var editor;
+	    $(document).ready(function () {
+	    	editor = new Simditor({
+	    		textarea: $('#editor'),
+			  	upload:{
+			  		url: '../upload/image',
+			    	params: null,
+			    	fileKey: 'upload_file',
+			    	connectionCount: 3,
+			    	leaveConfirm: '图片正在上传中，是否真的离开此页?'
+			  	},
+			  	toolbar: ['title','bold','italic','underline','strikethrough','fontScale','color','ol' ,'ul','blockquote','code','table','link','image','hr','indent','outdent','alignment']
+			});
+	    });
+    </script>
+</body>
+</html>

@@ -3,6 +3,7 @@ package io.renren.cms.service.impl;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
@@ -103,6 +104,7 @@ public class MemberServiceImpl implements MemberService {
 		SessionMember sessionMember = new SessionMember();
 		if(memberEntity ==null ){
 			MemberEntity memberEntity1 = new MemberEntity();
+			memberEntity1.setVipCode(UUID.randomUUID().toString());
 			memberEntity1.setOpenid(openid);
 			memberEntity1.setCtime(new Date());
 			memberEntity1.setIsDel("f");
@@ -139,7 +141,8 @@ public class MemberServiceImpl implements MemberService {
 			sessionMember.setMobile(memberEntity.getMobile());
 			sessionMember.setMobileCipher(memberEntity.getMobile().replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2"));
 		}
-		//sessionMember.setNickname(memberEntity.getNickname());
+		sessionMember.setNickname(memberEntity.getNickname());
+		sessionMember.setPortrait(memberEntity.getPortrait());
 		sessionMember.setType(memberEntity.getType());//会员类型
 		return sessionMember;
 	}

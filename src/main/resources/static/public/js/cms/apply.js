@@ -1,12 +1,16 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: '../information/list',
+        url: '../apply/list',
         datatype: "json",
-        colModel: [
-			{ label: '标题', name: 'title', index: 'title', width: 80 },
-			{ label: '资讯视频地址', name: 'videoLink', index: 'video_link', width: 80 },
+        colModel: [			
+			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
+			{ label: '活动标题', name: 'applyTitle', index: 'apply_title', width: 80 },
+			{ label: '活动开始时间', name: 'startTime', index: 'start_time', width: 80 },
+			{ label: '活动结束时间', name: 'endTime', index: 'end_time', width: 80 },
 			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '修改时间', name: 'updateTime', index: 'update_time', width: 80 },
+			{ label: '活动地址', name: 'applyLocation', index: 'apply_location', width: 80 },
+			{ label: '创建人', name: 'createPeople', index: 'create_people', width: 80 },
+			{ label: '活动详情', name: 'applyContent', index: 'apply_content', width: 80 },
 			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 80 ,
 				formatter: function (value, options, row) {
 					if (value == 'pass') {
@@ -23,21 +27,21 @@ $(function () {
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
-                	var dom = "";
-                	if(row.auditStatus == 'uncommit' || row.auditStatus == 'reject' ){
-                		dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='commitInformation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>提交审核</span></button>&nbsp;";
+					var dom = "";
+					if(row.auditStatus == 'uncommit' || row.auditStatus == 'reject' ){
+						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='commitApply("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>提交审核</span></button>&nbsp;";
 					}
-                	if(row.auditStatus == 'pending'){
+					if(row.auditStatus == 'pending'){
 						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='revocation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>撤回审核</span></button>&nbsp;";
 					}
 					if(row.showStatus == 't'){
-						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='stopInformation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>暂停资讯</span></button>&nbsp;";
+						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='stopApply("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>暂停活动</span></button>&nbsp;";
 					}
 					if(row.showStatus == 'f'){
-						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='startInformation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>展示资讯</span></button>&nbsp;";
+						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='startApply("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>展示活动</span></button>&nbsp;";
 					}
-                	dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
-                	return dom;
+					dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
+					return dom;
                 }
             }
         ],
@@ -67,7 +71,19 @@ $(function () {
         }
     });
 });
-
+function dateF(time) {
+	var date=new Date(time);
+	var year=date.getFullYear();
+	/* 在日期格式中，月份是从0开始的，因此要加0
+     * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+     * */
+	var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
+	var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
+	var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
+	var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
+	// 拼接
+	return year+"-"+month+"-"+day+" "+hours+":"+minutes;
+}
 //修改
 function edit(id){
 	if(id == null){
@@ -78,10 +94,10 @@ function edit(id){
     vm.title = "修改";
     vm.getInfo(id)
 }
-function commitInformation(id) {
+function commitApply(id) {
 	$.ajax({
 		type: "GET",
-		url: "../information/commit/" + id,
+		url: "../apply/commit/" + id,
 		success: function(r){
 			if(r.code == 0){
 				$("#jqGrid").trigger("reloadGrid");
@@ -93,14 +109,14 @@ function commitInformation(id) {
 	});
 }
 
-function stopInformation(id) {
-	vm.information.id = id;
-	vm.information.showStatus = 'f';
+function stopApply(id) {
+	vm.apply.id = id;
+	vm.apply.showStatus = 'f';
 	$.ajax({
 		type: "POST",
-		url: "../information/update",
+		url: "../apply/update",
 		contentType: "application/json",
-		data: JSON.stringify(vm.information),
+		data: JSON.stringify(vm.apply),
 		success: function(r){
 			if(r.code === 0){
 				vm.reload();
@@ -113,14 +129,14 @@ function stopInformation(id) {
 	});
 }
 
-function startInformation(id) {
-	vm.information.id = id;
-	vm.information.showStatus = 't';
+function startApply(id) {
+	vm.apply.id = id;
+	vm.apply.showStatus = 't';
 	$.ajax({
 		type: "POST",
-		url: "../information/update",
+		url: "../apply/update",
 		contentType: "application/json",
-		data: JSON.stringify(vm.information),
+		data: JSON.stringify(vm.apply),
 		success: function(r){
 			if(r.code === 0){
 				vm.reload();
@@ -137,7 +153,7 @@ function startInformation(id) {
 function revocation(id) {
 	$.ajax({
 		type: "GET",
-		url: "../information/revocation/" + id,
+		url: "../apply/revocation/" + id,
 		success: function(r){
 			if(r.code == 0){
 				$("#jqGrid").trigger("reloadGrid");
@@ -160,7 +176,7 @@ function logic_del(id){
         onOk:() => {
         	$.ajax({
     			type: "GET",
-    			url: "../information/logic_del/" + id,
+    			url: "../apply/logic_del/" + id,
     		    success: function(r){
     		    	if(r.code == 0){
     					$("#jqGrid").trigger("reloadGrid");
@@ -179,28 +195,28 @@ var vm = new Vue({
 	data:{
 		showList: true,
 		showModal: false,
+		title: null,
+		dateArr: [],
 		bannerImgSrc:null,
 		showBannerImage:false,
-		title: null,
-		information: {},
-		informationTypeList:[],
+		apply: {},
 		ruleValidate: {
-											
-																title: [
-		                { required: true, message: '请输入' }
-		            ], 														isDel: [
-		                { required: true, message: '请输入t:代表逻辑删除,f:不删除' }
-		            ], 																createTime: [
-		                { required: true, message: '请输入' }
-		            ], 																updateTime: [
-		                { required: true, message: '请输入' }
-		            ]							        },
+						applyTitle: [
+							{ required: true, message: '请输入活动标题' }
+						],
+						dateTimeRange: [
+							{ required: true, message: '请选择活动开始时间' }
+						],
+						applyLocation: [
+							{ required: true, message: '请输入活动地址' }
+						]
+					},
         q:{
 			id: null,
 			sdate: null,
 			edate: null,
 			ctime: [],
-			title: null
+			applyTitle: null
 		}
 	},
 	methods: {
@@ -212,7 +228,7 @@ var vm = new Vue({
 			vm.q.sdate = null;
 			vm.q.edate = null;
 			vm.q.ctime = null;
-			vm.q.title = null;
+			vm.q.applyTitle = null;
 		},
 		add: function(){
 			vm.showList = false;
@@ -220,56 +236,44 @@ var vm = new Vue({
 			vm.bannerImgSrc = null;
 			editor.setValue(null);
 			vm.title = "新增";
-			vm.information = {};
-			vm.getInformationType();
+			vm.apply = {};
 		},
 		update: function (event) {
 			var id = getSelectedRow();
 			if(id == null){
 				return ;
 			}
-			vm.getInformationType();
+			vm.showList = false;
+            vm.title = "修改";
             vm.getInfo(id)
-		},
-		getInformationType: function () {
-			$.ajax({
-				url: "../informationstype/queryAll",
-				async: false,
-				type: "GET",
-				success: function (r) {
-					vm.informationTypeList = r.informationTypeList;
-				}
-			});
 		},
 		handleSuccess1 (res, file) {
 			console.log(res)
 			if(res.code != 500){
 				vm.showBannerImage = true;
 				vm.bannerImgSrc = res.data.url;
-				vm.information.banner = vm.bannerImgSrc;
+				vm.apply.banner = vm.bannerImgSrc;
 			}else{
 				this.$Message.success('大小超过3M!');
 			}
 		},
 		saveOrUpdate: function (event) {
-
-			this.$refs['information'].validate((valid) => {
+			this.$refs['apply'].validate((valid) => {
                 if (valid) {
 					var content = editor.getValue();
 					if(!content){
-						vm.$Message.error('请输入资讯内容');
+						vm.$Message.error('请输入活动详情');
 						return;
 					}
-					/*var base = new Base64();
-					var result = base.encode(content);//解密为decode
-					console.log("result="+result);*/
-					vm.information.content = content;
-                	var url = vm.information.id == null ? "../information/save" : "../information/update";
+					vm.apply.startTime = dateF(vm.apply.dateTimeRange[0]);
+					vm.apply.endTime = dateF(vm.apply.dateTimeRange[1]);
+					vm.apply.applyContent = content;
+                	var url = vm.apply.id == null ? "../apply/save" : "../apply/update";
         			$.ajax({
         				type: "POST",
         			    url: url,
         			    contentType: "application/json",
-        			    data: JSON.stringify(vm.information),
+        			    data: JSON.stringify(vm.apply),
         			    success: function(r){
         			    	if(r.code === 0){
         			    		vm.reload();
@@ -289,13 +293,13 @@ var vm = new Vue({
 				return ;
 			}
 			
-			vm.Modal.confirm({
+			vm.$Modal.confirm({
 	        title: '提示',
 	        content: '确定要删除选中的记录？',
 	        onOk:() => {
 	        	$.ajax({
 					type: "POST",
-				    url: "../information/delete",
+				    url: "../apply/delete",
 				    data: JSON.stringify(ids),
 				    success: function(r){
 						if(r.code === 0){
@@ -310,26 +314,26 @@ var vm = new Vue({
 	    });
 		},
 		getInfo: function(id){
-			//$.get("../information/info/" + id, function(r){
-            //    vm.information = r.information;
+			//$.get("../apply/info/" + id, function(r){
+            //    vm.apply = r.apply;
             //});
             
             $.ajax({
 				type : "GET",
 				async: false,
-				url : "../information/info/" + id,
+				url : "../apply/info/" + id,
 				success : function(r) {
-					editor.setValue(r.information.content);
-					vm.information = r.information;
-					vm.bannerImgSrc = r.information.banner;
+					vm.apply = r.apply;
+					editor.setValue(r.apply.applyContent);
+					vm.bannerImgSrc = r.apply.banner;
+					vm.dateArr[0] =vm.apply.startTime;
+					vm.dateArr[1] =vm.apply.endTime;
+					vm.apply.dateTimeRange = vm.dateArr;
 					vm.showBannerImage = true;
-					vm.informationType = r.information.informationType;
-					if(vm.information.auditStatus == 'pending'){
-						vm.$Message.success('此资讯已经提交，请先撤回再修改!');
+					if(vm.apply.auditStatus == 'pending'){
+						vm.$Message.success('此活动已经提交，请先撤回再修改!');
 						return false;
 					}
-					vm.showList = false;
-					vm.title = "修改";
 				}
 			});
 		},
@@ -337,7 +341,7 @@ var vm = new Vue({
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
-				postData:{"id": vm.q.id, "title":vm.q.title,"sdate":vm.q.sdate, "edate":vm.q.edate},
+				postData:{"id": vm.q.id,"applyTitle":vm.q.applyTitle,"sdate":vm.q.sdate, "edate":vm.q.edate},
                 page:page
             }).trigger("reloadGrid");
 		},

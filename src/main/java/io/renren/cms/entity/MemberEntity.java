@@ -47,4 +47,14 @@ public class MemberEntity implements Serializable {
 
 	private String showVip;
 
+	/**
+	 * 二维码
+	 */
+	private String qrCode;
+
+	/**
+	 * vipCode
+	 */
+	private String vipCode;
+
 }

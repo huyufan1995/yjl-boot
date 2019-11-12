@@ -2,23 +2,22 @@ package io.renren.api.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.db.Page;
 import io.renren.api.constant.SystemConstant;
 import io.renren.api.dto.CommentEntityDto;
 import io.renren.api.dto.InformationsEntityDto;
 import io.renren.api.dto.InformationsEntityInfoDto;
 import io.renren.api.vo.ApiResult;
 import io.renren.api.vo.ApiResultList;
-import io.renren.cms.dao.InformationBrowsDao;
 import io.renren.cms.entity.*;
 import io.renren.cms.service.*;
+import io.renren.enums.AuditStatusEnum;
 import io.renren.properties.YykjProperties;
 import io.renren.utils.HTMLSpirit;
 import io.renren.utils.Query;
 import io.renren.utils.annotation.IgnoreAuth;
 import io.renren.utils.validator.Assert;
 import io.swagger.annotations.*;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,6 +56,9 @@ public class ApiInformationController {
     @Autowired
     private YykjProperties yykjProperties;
 
+    @Autowired
+    private LikeService likeService;
+
     @IgnoreAuth
     @ApiOperation(value = "资讯列表", notes = "资讯分页列表",response = InformationsEntityDto.class)
     @ApiImplicitParams({
@@ -69,6 +71,8 @@ public class ApiInformationController {
     public ApiResultList list(@ApiIgnore() @RequestParam Map<String, Object> params) {
         Object informationType = params.get("informationType");
         params.put("isDel", SystemConstant.F_STR);
+        params.put("showStatus",SystemConstant.T_STR);
+        params.put("auditStatus", AuditStatusEnum.PASS);
         Query query = new Query(params);
         List<InformationsEntityDto> informationList = informationService.queryListDto(query);
         //对内容过滤html标签，并确认是否是50字以内
@@ -105,19 +109,23 @@ public class ApiInformationController {
     @ApiOperation(value = "资讯评论列表", notes = "资讯评论列表")
     @PostMapping("/information_comment_list")
     @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", dataType = "int", name = "page", value = "页码 默认1", required = false),
+            @ApiImplicitParam(paramType = "query", dataType = "int", name = "limit", value = "页大小 默认5", required = false),
             @ApiImplicitParam(paramType = "query", dataType = "int", name = "informationId", value = "资讯数据ID", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "openid", value = "openid", required = true)
     })
-    public ApiResult commentList(@ApiIgnore() @RequestParam Integer informationId,@RequestParam String openid) {
-        HashMap<String,Object> params = new HashMap<>(1);
-        params.put("informationId",informationId);
-        List<CommentEntityDto> commentEntities = commentService.queryListDto(params);
+    public ApiResult commentList(@ApiIgnore() @RequestParam Map<String, Object> params,@RequestParam String openid) {
+        params.put("openid","");
+        Query query = new Query(params);
+        List<CommentEntityDto> commentEntities = commentService.queryListDto(query);
         for (CommentEntityDto commentEntity : commentEntities) {
-            if(commentEntity.getOpenid().equals(openid)){
-                commentEntity.setLikeFlag(true);
-            }else{
-                commentEntity.setLikeFlag(false);
-            }
+            HashMap<String,Object> map = new HashMap<>(3);
+            map.put("dataId",commentEntity.getId());
+            map.put("likeType","2");
+            commentEntity.setLikeTotal(likeService.queryTotal(map));
+            //查询当前人是否点赞
+            map.put("openid",openid);
+            commentEntity.setLikeFlag(likeService.queryTotal(map)>0);
         }
         return ApiResult.ok(commentEntities);
     }
@@ -143,9 +151,29 @@ public class ApiInformationController {
         //查询当前资讯是否收藏
         Boolean collectFlag = collectService.isCollect(id,1,openid);
         informationsEntityInfoDto.setCollectFlag(collectFlag);
+        //查询是否点赞资讯    likeType 1 为资讯相关
+        params.put("likeType","1");
+        params.put("dataId",id);
+        int likeTotal = likeService.queryTotal(params);
+        if(likeTotal>0){
+            informationsEntityInfoDto.setLikeFlag(true);
+        }
         //添加资讯浏览记录
         addInformationBrows(id, openid);
+        //添加资讯评论数量
+        addInformationComment(informationsEntityInfoDto);
+/*        //设置资讯点赞数量  将openId的过滤条件取消，查询所有点赞相关数量
+        params.put("openid","");
+        params.put("likeType","2");
+        informationsEntityInfoDto.setLikeTotal(likeService.queryTotal(params));*/
         return ApiResult.ok(informationsEntityInfoDto);
+    }
+    //添加资讯评论数量
+    private void addInformationComment(InformationsEntityInfoDto informationsEntityInfoDto) {
+        HashMap<String,Object> map = new HashMap<>(1);
+        map.put("informationId",informationsEntityInfoDto.getId());
+        int commentTotal = commentService.queryTotal(map);
+        informationsEntityInfoDto.setCommentTotal(commentTotal);
     }
 
     /**

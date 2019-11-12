@@ -1,13 +1,12 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: '../like/list',
+        url: '../applyrecord/list',
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '点赞人openid', name: 'openid', index: 'openid', width: 80 },
-			{ label: '点赞时间', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '数据ID', name: 'dataId', index: 'data_id', width: 80 },
-			{ label: '点赞类型  1：资讯 2：评论 3：活动', name: 'likeType', index: 'like_type', width: 80 },
+			{ label: '', name: 'applyId', index: 'apply_id', width: 80 },
+			{ label: '活动标题', name: 'applyTitle', index: 'apply_title', width: 80 },
+			{ label: '报名人openid', name: 'openid', index: 'openid', width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
@@ -61,19 +60,19 @@ function logic_del(id){
 		return ;
 	}
 	
-	vm.%Modal.confirm({
+	vm.$Modal.confirm({
         title: '提示',
         content: '确定要删除吗？',
         onOk:() => {
         	$.ajax({
     			type: "GET",
-    			url: "../like/logic_del/" + id,
+    			url: "../applyrecord/logic_del/" + id,
     		    success: function(r){
     		    	if(r.code == 0){
     					$("#jqGrid").trigger("reloadGrid");
-    		    		vm.%Message.success('操作成功!');
+    		    		vm.$Message.success('操作成功!');
     				}else{
-    					vm.%Message.error(r.msg);
+    					vm.$Message.error(r.msg);
     				}
     			}
     		});
@@ -87,17 +86,15 @@ var vm = new Vue({
 		showList: true,
 		showModal: false,
 		title: null,
-		like: {},
+		applyRecord: {},
 		ruleValidate: {
 											
-																openid: [
-		                { required: true, message: '请输入点赞人openid' }
-		            ], 																ctime: [
-		                { required: true, message: '请输入点赞时间' }
-		            ], 																dataId: [
-		                { required: true, message: '请输入数据ID' }
-		            ], 																likeType: [
-		                { required: true, message: '请输入点赞类型  1：资讯 2：评论 3：活动' }
+																applyId: [
+		                { required: true, message: '请输入' }
+		            ], 																applyTitle: [
+		                { required: true, message: '请输入活动标题' }
+		            ], 																openid: [
+		                { required: true, message: '请输入报名人openid' }
 		            ]							        },
         q:{
 			id: null,
@@ -120,7 +117,7 @@ var vm = new Vue({
 			//vm.showList = false;
 			vm.showModal = true;
 			vm.title = "新增";
-			vm.like = {};
+			vm.applyRecord = {};
 		},
 		update: function (event) {
 			var id = getSelectedRow();
@@ -132,21 +129,21 @@ var vm = new Vue({
             vm.getInfo(id)
 		},
 		saveOrUpdate: function (event) {
-			this.%refs['like'].validate((valid) => {
+			this.$refs['applyRecord'].validate((valid) => {
                 if (valid) {
-                	var url = vm.like.id == null ? "../like/save" : "../like/update";
+                	var url = vm.applyRecord.id == null ? "../applyrecord/save" : "../applyrecord/update";
         			$.ajax({
         				type: "POST",
         			    url: url,
         			    contentType: "application/json",
-        			    data: JSON.stringify(vm.like),
+        			    data: JSON.stringify(vm.applyRecord),
         			    success: function(r){
         			    	if(r.code === 0){
         			    		vm.reload();
         			    		vm.showModal = false;
-        			    		vm.%Message.success('操作成功!');
+        			    		vm.$Message.success('操作成功!');
         					}else{
-        						vm.%Message.error(r.msg);
+        						vm.$Message.error(r.msg);
         					}
         				}
         			});
@@ -159,20 +156,20 @@ var vm = new Vue({
 				return ;
 			}
 			
-			vm.%Modal.confirm({
+			vm.$Modal.confirm({
 	        title: '提示',
 	        content: '确定要删除选中的记录？',
 	        onOk:() => {
 	        	$.ajax({
 					type: "POST",
-				    url: "../like/delete",
+				    url: "../applyrecord/delete",
 				    data: JSON.stringify(ids),
 				    success: function(r){
 						if(r.code === 0){
 							$("#jqGrid").trigger("reloadGrid");
-    			    		vm.%Message.success('操作成功!');
+    			    		vm.$Message.success('操作成功!');
     					}else{
-    						vm.%Message.error(r.msg);
+    						vm.$Message.error(r.msg);
     					}
 					}
 				});
@@ -180,16 +177,16 @@ var vm = new Vue({
 	    });
 		},
 		getInfo: function(id){
-			//$.get("../like/info/" + id, function(r){
-            //    vm.like = r.like;
+			//$.get("../applyrecord/info/" + id, function(r){
+            //    vm.applyRecord = r.applyRecord;
             //});
             
             $.ajax({
 				type : "GET",
 				async: false,
-				url : "../like/info/" + id,
+				url : "../applyrecord/info/" + id,
 				success : function(r) {
-					vm.like = r.like;
+					vm.applyRecord = r.applyRecord;
 				}
 			});
 		},

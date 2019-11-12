@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>点赞表</title>
+<title>活动报名记录</title>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -55,18 +55,15 @@
 	        </a>
 	        
                 
-            <i-form ref="like" :model="like" :rules="ruleValidate" :label-width="100" label-position="left">
-		       																		<Form-item label="点赞人openid" prop="openid">
-		            	<i-input v-model="like.openid" placeholder="点赞人openid" style="width: 300px"></i-input>
+            <i-form ref="applyRecord" :model="applyRecord" :rules="ruleValidate" :label-width="100" label-position="left">
+		       																		<Form-item label="" prop="applyId">
+		            	<i-input v-model="applyRecord.applyId" placeholder="" style="width: 300px"></i-input>
 		        	</Form-item>
-																	<Form-item label="点赞时间" prop="ctime">
-		            	<i-input v-model="like.ctime" placeholder="点赞时间" style="width: 300px"></i-input>
+																	<Form-item label="活动标题" prop="applyTitle">
+		            	<i-input v-model="applyRecord.applyTitle" placeholder="活动标题" style="width: 300px"></i-input>
 		        	</Form-item>
-																	<Form-item label="数据ID" prop="dataId">
-		            	<i-input v-model="like.dataId" placeholder="数据ID" style="width: 300px"></i-input>
-		        	</Form-item>
-																	<Form-item label="点赞类型  1：资讯 2：评论 3：活动" prop="likeType">
-		            	<i-input v-model="like.likeType" placeholder="点赞类型  1：资讯 2：评论 3：活动" style="width: 300px"></i-input>
+																	<Form-item label="报名人openid" prop="openid">
+		            	<i-input v-model="applyRecord.openid" placeholder="报名人openid" style="width: 300px"></i-input>
 		        	</Form-item>
 										    </i-form>
 		    
@@ -82,18 +79,15 @@
 	<!-- Modal -->	
 	<Modal v-model="showModal" :title="title" :mask-closable="false" width="800">
 	
-		<i-form ref="like" :model="like" :rules="ruleValidate" :label-width="100" label-position="left">
-																<Form-item label="点赞人openid" prop="openid">
-			    	<i-input v-model="like.openid" placeholder="点赞人openid" style="width: 300px"></i-input>
+		<i-form ref="applyRecord" :model="applyRecord" :rules="ruleValidate" :label-width="100" label-position="left">
+																<Form-item label="" prop="applyId">
+			    	<i-input v-model="applyRecord.applyId" placeholder="" style="width: 300px"></i-input>
 				</Form-item>
-													<Form-item label="点赞时间" prop="ctime">
-			    	<i-input v-model="like.ctime" placeholder="点赞时间" style="width: 300px"></i-input>
+													<Form-item label="活动标题" prop="applyTitle">
+			    	<i-input v-model="applyRecord.applyTitle" placeholder="活动标题" style="width: 300px"></i-input>
 				</Form-item>
-													<Form-item label="数据ID" prop="dataId">
-			    	<i-input v-model="like.dataId" placeholder="数据ID" style="width: 300px"></i-input>
-				</Form-item>
-													<Form-item label="点赞类型  1：资讯 2：评论 3：活动" prop="likeType">
-			    	<i-input v-model="like.likeType" placeholder="点赞类型  1：资讯 2：评论 3：活动" style="width: 300px"></i-input>
+													<Form-item label="报名人openid" prop="openid">
+			    	<i-input v-model="applyRecord.openid" placeholder="报名人openid" style="width: 300px"></i-input>
 				</Form-item>
 								</i-form>
 	        
@@ -104,6 +98,6 @@
 	 </Modal>
 </div>
 
-<script src="../public/js/cms/likes.js"></script>
+<script src="../public/js/cms/applyrecord.js"></script>
 </body>
 </html>

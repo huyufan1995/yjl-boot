@@ -38,4 +38,9 @@ public class InformationsEntityInfoDto extends InformationsEntity {
      * 当前人是否收藏
      */
     private Boolean collectFlag;
+/*
+    *//**
+     * 点赞量
+     *//*
+    private Integer likeTotal;*/
 }

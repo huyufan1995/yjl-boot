@@ -93,12 +93,12 @@ public class InformationController {
 	 * @return
 	 */
 	private InformationsEntity checkInformationType(InformationsEntity information) {
-		if (StringUtils.isNotEmpty(information.getVedioLink())) {
-			information.setContentType(SystemConstant.VEDIO_TYPE);
+		if (StringUtils.isNotEmpty(information.getVideoLink())) {
+			information.setContentType(SystemConstant.VIDEO_TYPE);
 		} else if (information.getContent().indexOf("<img") > 0) {
 			information.setContentType(SystemConstant.IMAGE_TYPE);
 		} else {
-			information.setContentType(SystemConstant.CHAR_TYPE);
+			information.setContentType(SystemConstant.TEXT_TYPE);
 		}
 		return information;
 	}

@@ -4,14 +4,15 @@
 <mapper namespace="io.renren.cms.dao.LikeDao">
 
 	<sql id="base_column" >
-			like.`id`, 			like.`openid`, 			like.`create_time`, 			like.`information_id`  	</sql>
+			like.`id`, 			like.`openid`, 			like.`ctime`, 			like.`data_id`, 			like.`like_type`  	</sql>
 
 	<!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="io.renren.cms.entity.LikeEntity" id="likeMap">
         <result property="id" column="id"/>
-        <result property="openId" column="openid"/>
-        <result property="createTime" column="create_time"/>
-        <result property="informationId" column="information_id"/>
+        <result property="openid" column="openid"/>
+        <result property="ctime" column="ctime"/>
+        <result property="dataId" column="data_id"/>
+        <result property="likeType" column="like_type"/>
     </resultMap>
 
 	<select id="queryObject" resultType="io.renren.cms.entity.LikeEntity">
@@ -21,9 +22,10 @@
 	<select id="queryList" resultType="io.renren.cms.entity.LikeEntity">
 		select * from tb_like where 1 = 1
 		
-			<if test="openId != null and openId != ''"> and `openid` = #{openId}</if>
-			<if test="createTime != null and createTime != ''"> and `create_time` = #{createTime}</if>
-			<if test="informationId != null and informationId != ''"> and `information_id` = #{informationId}</if>
+			<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+			<if test="dataId != null and dataId != ''"> and `data_id` = #{dataId}</if>
+			<if test="likeType != null and likeType != ''"> and `like_type` = #{likeType}</if>
 		
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
 			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
@@ -44,36 +46,40 @@
 	
  	<select id="queryTotal" resultType="int">
 		select count(id) from tb_like where 1 = 1
-			<if test="openId != null and openId != ''"> and `openid` = #{openId}</if>
-			<if test="createTime != null and createTime != ''"> and `create_time` = #{createTime}</if>
-			<if test="informationId != null and informationId != ''"> and `information_id` = #{informationId}</if>
+			<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+			<if test="dataId != null and dataId != ''"> and `data_id` = #{dataId}</if>
+			<if test="likeType != null and likeType != ''"> and `like_type` = #{likeType}</if>
 
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
 			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
 		</if>
 	</select>
 	 
-	<insert id="save" parameterType="io.renren.cms.entity.LikeEntity">
+	<insert id="save" parameterType="io.renren.cms.entity.LikeEntity" useGeneratedKeys="true" keyProperty="id">
 		insert into tb_like
 		(
 			`openid`, 
-			`create_time`, 
-			`information_id`
+			`ctime`, 
+			`data_id`, 
+			`like_type`
 		)
 		values
 		(
-			#{openId}, 
-			#{createTime}, 
-			#{informationId}
+			#{openid}, 
+			#{ctime}, 
+			#{dataId}, 
+			#{likeType}
 		)
 	</insert>
 	 
 	<update id="update" parameterType="io.renren.cms.entity.LikeEntity">
 		update tb_like 
 		<set>
-			<if test="openId != null">`openid` = #{openId}, </if>
-			<if test="createTime != null">`create_time` = #{createTime}, </if>
-			<if test="informationId != null">`information_id` = #{informationId}</if>
+			<if test="openid != null">`openid` = #{openid}, </if>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
+			<if test="dataId != null">`data_id` = #{dataId}, </if>
+			<if test="likeType != null">`like_type` = #{likeType}</if>
 		</set>
 		where id = #{id}
 	</update>
@@ -81,6 +87,13 @@
 	<!-- 	物理删除 -->
 	<delete id="delete">
 		delete from tb_like where id = #{value}
+	</delete>
+
+	<delete id="deleteByOpenIdAndLikeTypeAndDataId" >
+		delete from tb_like where 1=1
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="dataId != null and dataId != ''"> and `data_id` = #{dataId}</if>
+		<if test="likeType != null and likeType != ''"> and `like_type` = #{likeType}</if>
 	</delete>
 	
 	<!-- 	批量物理删除 -->

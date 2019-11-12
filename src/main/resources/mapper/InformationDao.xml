@@ -24,7 +24,7 @@
 		select * from tb_information where 1 = 1
 
 			<if test="title != null and title != ''"> and `title` = #{title}</if>
-			<if test="vedioLink != null and vedioLink != ''"> and `vedio_link` = #{vedioLink}</if>
+			<if test="videoLink != null and videoLink != ''"> and `video_link` = #{videoLink}</if>
 			<if test="content != null and content != ''"> and `content` = #{content}</if>
 			<if test="auditStatus != null and auditStatus != ''"> and `audit_status` = #{auditStatus}</if>
 			<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
@@ -54,7 +54,7 @@
  	<select id="queryTotal" resultType="int">
 		select count(id) from tb_information where 1 = 1
 			<if test="title != null and title != ''"> and `title` = #{title}</if>
-			<if test="vedioLink != null and vedioLink != ''"> and `vedio_link` = #{vedioLink}</if>
+			<if test="videoLink != null and videoLink != ''"> and `video_link` = #{videoLink}</if>
 			<if test="content != null and content != ''"> and `content` = #{content}</if>
 			<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
 			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
@@ -86,8 +86,8 @@
 			<if test="auditStatus != null">
 				audit_status,
 			</if>
-			<if test="vedioLink != null">
-				vedio_link,
+			<if test="videoLink != null">
+				video_link,
 			</if>
 			<if test="informationType != null">
 				information_type,
@@ -118,8 +118,8 @@
 			<if test="auditStatus != null">
 				#{auditStatus},
 			</if>
-			<if test="vedioLink != null">
-				#{vedioLink},
+			<if test="videoLink != null">
+				#{videoLink},
 			</if>
 			<if test="informationType != null">
 				#{informationType},
@@ -137,7 +137,7 @@
 		update tb_information
 		<set>
 			<if test="title != null">`title` = #{title}, </if>
-			<if test="vedioLink != null">`vedio_link` = #{vedioLink}, </if>
+			<if test="videoLink != null">`video_link` = #{videoLink}, </if>
 			<if test="content != null">`content` = #{content}, </if>
 			<if test="auditMsg != null">`audit_msg` = #{auditMsg}, </if>
 			<if test="showStatus != null">`show_status` = #{showStatus}, </if>
@@ -193,7 +193,7 @@
 		1 = 1
 
 		<if test="title != null and title != ''"> and ti.`title` = #{title}</if>
-		<if test="vedioLink != null and vedioLink != ''"> and ti.`vedio_link` = #{vedioLink}</if>
+		<if test="videoLink != null and videoLink != ''"> and ti.`video_link` = #{videoLink}</if>
 		<if test="content != null and content != ''"> and ti.`content` = #{content}</if>
 		<if test="auditStatus != null and auditStatus != ''"> and ti.`audit_status` = #{auditStatus}</if>
 		<if test="isDel != null and isDel != ''"> and ti.`is_del` = #{isDel}</if>

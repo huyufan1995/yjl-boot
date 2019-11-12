@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>资讯列表</title>
+<title>活动</title>
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -12,7 +12,6 @@
 <link rel="stylesheet" href="../public/css/main.css">
 <link rel="stylesheet" href="../public/iview/iview.css">
 <link rel="stylesheet" href="../public/iview/ionicons.min.css">
-
 <script src="../public/libs/jquery.min.js"></script>
 <script src="../public/plugins/layer/layer.js"></script>
 <script src="../public/libs/bootstrap.min.js"></script>
@@ -28,19 +27,18 @@
 <script type="text/javascript" src="../public/js/simditor-2.3.6/scripts/module.js"></script>
 <script type="text/javascript" src="../public/js/simditor-2.3.6/scripts/hotkeys.js"></script>
 <script type="text/javascript" src="../public/js/simditor-2.3.6/scripts/uploader.js"></script>
-<script type="text/javascript" src="../public/js/simditor-2.3.6/scripts/simditor.js"></script>
-<script type="text/javascript" src="../public/js/sys/base64.js"></script>
+<script type="text/javascript" src="../public/js/simditor-2.3.6/scripts/simditor.js"></script>	
 </head>
 <body>
 <div id="rrapp" v-cloak>
 	<div v-show="showList">
 		<div class="grid-btn">
-			<!--<i-button type="error" icon="close" @click="del" style="float:right;margin:0px 5px 0px 0px;">批量删除</i-button>-->
+			<i-button type="error" icon="close" @click="del" style="float:right;margin:0px 5px 0px 0px;">批量删除</i-button>
 			<i-button type="primary" icon="minus" @click="update" style="float:right;margin:0px 5px 0px 0px;">修改</i-button>
 			<i-button type="primary" icon="plus" @click="add" style="float:right;margin:0px 5px 0px 0px;">新增</i-button>
 			
-			<i-input v-model="q.title" placeholder="请输入资讯标题" clearable style="width: 300px"></i-input>
-			<Date-picker v-model="q.ctime" type="daterange" placement="bottom-end" placeholder="请选择资讯创建日期" style="width: 300px" @on-change="formateDate"></Date-picker>
+			<i-input v-model="q.applyTitle" placeholder="请输入活动标题关键字" clearable style="width: 300px"></i-input>
+			<Date-picker v-model="q.ctime" type="daterange" placement="bottom-end" placeholder="请选择创建时间" style="width: 300px" @on-change="formateDate"></Date-picker>
 			
 			<i-button type="primary" icon="ios-search" @click="query">查询</i-button>
 			<i-button type="primary" icon="ios-refresh-empty" @click="reset">重置</i-button>
@@ -64,35 +62,35 @@
 	        </a>
 	        
                 
-            <i-form ref="information" :model="information" :rules="ruleValidate" :label-width="100" label-position="left">
-		       		<Form-item label="标题" prop="title">
-		            	<i-input v-model="information.title" placeholder="请输入标题" style="width: 300px"></i-input>
+            <i-form ref="apply" :model="apply" :rules="ruleValidate" :label-width="100" label-position="left">
+		       		<Form-item label="活动标题" prop="applyTitle">
+		            	<i-input v-model="apply.applyTitle" placeholder="活动标题" style="width: 300px"></i-input>
 		        	</Form-item>
-					<Form-item label="资讯类别" prop="informationType">
-						<!-- 			    	<i-input v-model="goods.brandId" placeholder="品牌ID" style="width: 300px"></i-input> -->
-						<i-select v-model="information.informationType" placeholder="资讯类别" style="width: 300px" >
-							<i-option v-for="item in informationTypeList" :value="item.id" :key="item.id">{{ item.name }}</i-option>
-						</i-select>
+					<Form-item label="活动时间" prop="dateTimeRange">
+						<Date-picker type="datetimerange" v-model="apply.dateTimeRange" format="yyyy-MM-dd HH:mm" placeholder="请选择时间范围" style="width: 300px"></Date-picker>
 					</Form-item>
+					<Form-item label="活动地址" prop="applyLocation">
+		            	<i-input v-model="apply.applyLocation" placeholder="活动地址" style="width: 300px"></i-input>
+		        	</Form-item>
 
-					<Form-item label="资讯封面图" prop="banner">
+				<Form-item label="活动封面图" prop="banner">
 					<img :src="bannerImgSrc" class="img-rounded" v-if="showBannerImage" width="150px" height="78px">
-						<Upload
-								:format="['jpg','jpeg','png']"
-								:on-success="handleSuccess1"
-								name="file"
-								:show-upload-list="false"
-								action="../cos/upload/cloud/informationBanner">
-							<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
-						</Upload>
-						<span>图片尺寸：690*360px</span>
-					</Form-item>
-                    <Form-item label="视频链接地址" prop="videoLink">
-                        <i-input v-model="information.videoLink" placeholder="请输入视频链接地址" style="width: 300px"></i-input>
-                    </Form-item>
-					<Form-item label="内容" prop="content">
-						<textarea id="editor" name="content" v-model="information.content" placeholder="请输入资讯内容"></textarea>
-					</Form-item>
+					<Upload
+							:format="['jpg','jpeg','png']"
+							:on-success="handleSuccess1"
+							name="file"
+							:show-upload-list="false"
+							action="../cos/upload/cloud/applyBanner">
+						<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
+					</Upload>
+					<span>图片尺寸：690*360px</span>
+				</Form-item>
+				<Form-item label="活动视频链接地址" prop="videoLink">
+					<i-input v-model="apply.videoLink" placeholder="请输入活动视频链接地址" style="width: 300px"></i-input>
+				</Form-item>
+				<Form-item label="详情" prop="applyContent">
+					<textarea id="editor" name="applyContent" v-model="apply.applyContent" placeholder="请输入活动详情"></textarea>
+				</Form-item>
 			</i-form>
 		    
 		     <div class="form-group">
@@ -100,28 +98,37 @@
             	<i-button type="primary" @click="saveOrUpdate">确定</i-button>
             	&nbsp;&nbsp;
 				<i-button type="warning" @click="reload">返回</i-button>
-			</div>
+			</div> 
         </Card>
 	</div>
 	
 	<!-- Modal -->	
-	<!--<Modal v-model="showModal" :title="title" :mask-closable="false" width="800">
+	<Modal v-model="showModal" :title="title" :mask-closable="false" width="800">
 	
-		<i-form ref="information" :model="information" :rules="ruleValidate" :label-width="100" label-position="left">
-																<Form-item label="" prop="title">
-			    	<i-input v-model="information.title" placeholder="" style="width: 300px"></i-input>
+		<i-form ref="apply" :model="apply" :rules="ruleValidate" :label-width="100" label-position="left">
+																<Form-item label="活动标题" prop="applyTitle">
+			    	<i-input v-model="apply.applyTitle" placeholder="活动标题" style="width: 300px"></i-input>
 				</Form-item>
-													<Form-item label="" prop="desc">
-			    	<i-input v-model="information.desc" placeholder="" style="width: 300px"></i-input>
+													<Form-item label="活动开始时间" prop="startTime">
+			    	<i-input v-model="apply.startTime" placeholder="活动开始时间" style="width: 300px"></i-input>
 				</Form-item>
-													<Form-item label="t:代表逻辑删除,f:不删除" prop="isDel">
-			    	<i-input v-model="information.isDel" placeholder="t:代表逻辑删除,f:不删除" style="width: 300px"></i-input>
+													<Form-item label="活动结束时间" prop="endTime">
+			    	<i-input v-model="apply.endTime" placeholder="活动结束时间" style="width: 300px"></i-input>
 				</Form-item>
-													<Form-item label="" prop="createTime">
-			    	<i-input v-model="information.createTime" placeholder="" style="width: 300px"></i-input>
+													<Form-item label="创建时间" prop="ctime">
+			    	<i-input v-model="apply.ctime" placeholder="创建时间" style="width: 300px"></i-input>
 				</Form-item>
-													<Form-item label="" prop="updateTime">
-			    	<i-input v-model="information.updateTime" placeholder="" style="width: 300px"></i-input>
+													<Form-item label="活动地址" prop="applyLocation">
+			    	<i-input v-model="apply.applyLocation" placeholder="活动地址" style="width: 300px"></i-input>
+				</Form-item>
+													<Form-item label="创建人" prop="createPeople">
+			    	<i-input v-model="apply.createPeople" placeholder="创建人" style="width: 300px"></i-input>
+				</Form-item>
+													<Form-item label="活动详情" prop="applyContent">
+			    	<i-input v-model="apply.applyContent" placeholder="活动详情" style="width: 300px"></i-input>
+				</Form-item>
+													<Form-item label="t:逻辑删除 f:没有删除" prop="isDel">
+			    	<i-input v-model="apply.isDel" placeholder="t:逻辑删除 f:没有删除" style="width: 300px"></i-input>
 				</Form-item>
 								</i-form>
 	        
@@ -129,17 +136,17 @@
         	<i-button type="warning" @click="showModal = false">取消</i-button>
         	<i-button type="primary" @click="saveOrUpdate">确定</i-button>
     	</div>
-	 </Modal>-->
+	 </Modal>
 </div>
 
-<script src="../public/js/cms/informations.js"></script>
+<script src="../public/js/cms/apply.js"></script>
 <script type="text/javascript">
 	var editor;
 	$(document).ready(function () {
 		editor = new Simditor({
 			textarea: $('#editor'),
 			upload:{
-				url: '../cos/upload/cloud/simditor/information',
+				url: '../cos/upload/cloud/simditor/apply',
 				params: null,
 				fileKey: 'file',
 				connectionCount: 3,

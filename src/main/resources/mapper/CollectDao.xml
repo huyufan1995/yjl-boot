@@ -59,14 +59,16 @@
 			`id`, 
 			`data_id`, 
 			`collect_type`, 
-			`openid`
+			`openid`,
+			`ctime`
 		)
 		values
 		(
 			#{id}, 
 			#{dataId}, 
 			#{collectType}, 
-			#{openid}
+			#{openid},
+			#{ctime}
 		)
 	</insert>
 	 
@@ -83,6 +85,13 @@
 	<!-- 	物理删除 -->
 	<delete id="delete">
 		delete from tb_collect where id = #{value}
+	</delete>
+
+	<delete id="deleteWithOpenIdAndCollectTypeAndDataId">
+		delete from tb_collect where 1=1
+		<if test="dataId != null">and `data_id` = #{dataId}</if>
+		<if test="collectType != null">and `collect_type` = #{collectType}</if>
+		<if test="openid != null">and `openid` = #{openid}</if>
 	</delete>
 	
 	<!-- 	批量物理删除 -->

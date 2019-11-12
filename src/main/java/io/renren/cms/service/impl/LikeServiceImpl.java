@@ -1,13 +1,14 @@
 package io.renren.cms.service.impl;
 
-import io.renren.cms.dao.LikeDao;
-import io.renren.cms.entity.LikeEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.renren.cms.dao.LikeDao;
+import io.renren.cms.entity.LikeEntity;
 import io.renren.cms.service.LikeService;
 
 /**
@@ -66,6 +67,11 @@ public class LikeServiceImpl implements LikeService {
 	public int logicDelBatch(List<Integer> ids) {
 		return likeDao.logicDelBatch(ids);
 	}
-	
-	
+
+	@Override
+	public Boolean deleteByOpenIdAndLikeTypeAndDataId(HashMap<String, Object> params) {
+		return likeDao.deleteByOpenIdAndLikeTypeAndDataId(params);
+	}
+
+
 }

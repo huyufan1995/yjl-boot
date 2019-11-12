@@ -8,28 +8,24 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 收藏
+ * 活动报名记录
  * 
  * @author moran
  * @email ${email}
- * @date 2019-11-09 17:25:18
+ * @date 2019-11-12 09:58:16
  */
 @Getter
 @Setter
-public class CollectEntity implements Serializable {
+public class ApplyRecordEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	/**  */
 	private Integer id;
 	/**  */
-	private Integer dataId;
-	/** 1:资讯 3:活动 4:会员 */
-	private Integer collectType;
-	/** 会员openId */
+	private String applyId;
+	/** 活动标题 */
+	private String applyTitle;
+	/** 报名人openid */
 	private String openid;
-	/**
-	 * 收藏时间
-	 */
-	private Date ctime;
 
 }

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.ApplyDao">
+
+	<sql id="base_column" >
+			apply.`id`, 			apply.`apply_title`, 			apply.`start_time`, 			apply.`end_time`, 			apply.`ctime`, 			apply.`apply_location`, 			apply.`create_people`, 			apply.`apply_content`, 			apply.`is_del`, 			apply.`banner`, 			apply.`video_link`, 			apply.`apply_content_type`, 			apply.`audit_status`, 			apply.`audit_msg`, 			apply.`show_status`  	</sql>
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.renren.cms.entity.ApplyEntity" id="applyMap">
+		<result property="id" column="id"/>
+		<result property="applyTitle" column="apply_title"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="ctime" column="ctime"/>
+		<result property="applyLocation" column="apply_location"/>
+		<result property="createPeople" column="create_people"/>
+		<result property="applyContent" column="apply_content"/>
+		<result property="isDel" column="is_del"/>
+		<result property="banner" column="banner"/>
+		<result property="videoLink" column="video_link"/>
+		<result property="applyContentType" column="apply_content_type"/>
+		<result property="auditStatus" column="audit_status"/>
+		<result property="auditMsg" column="audit_msg"/>
+		<result property="showStatus" column="show_status"/>
+	</resultMap>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.ApplyEntity">
+		select * from tb_apply where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.ApplyEntity">
+		select * from tb_apply where 1 = 1
+
+		<if test="applyTitle != null and applyTitle != ''">
+		and `apply_title` like concat('%',#{applyTitle},'%')
+		</if>
+		<if test="startTime != null and startTime != ''"> and `start_time` = #{startTime}</if>
+		<if test="endTime != null and endTime != ''"> and `end_time` = #{endTime}</if>
+		<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+		<if test="applyLocation != null and applyLocation != ''"> and `apply_location` = #{applyLocation}</if>
+		<if test="createPeople != null and createPeople != ''"> and `create_people` = #{createPeople}</if>
+		<if test="applyContent != null and applyContent != ''"> and `apply_content` = #{applyContent}</if>
+		<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
+		<if test="banner != null and banner != ''"> and `banner` = #{banner}</if>
+		<if test="videoLink != null and videoLink != ''"> and `video_link` = #{videoLink}</if>
+		<if test="applyContentType != null and applyContentType != ''"> and `apply_content_type` = #{applyContentType}</if>
+		<if test="auditStatus != null and auditStatus != ''"> and `audit_status` = #{auditStatus}</if>
+		<if test="auditMsg != null and auditMsg != ''"> and `audit_msg` = #{auditMsg}</if>
+		<if test="showStatus != null and showStatus != ''"> and `show_status` = #{showStatus}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryTotal" resultType="int">
+		select count(id) from tb_apply where 1 = 1
+		<if test="applyTitle != null and applyTitle != ''"> and `apply_title` = #{applyTitle}</if>
+		<if test="startTime != null and startTime != ''"> and `start_time` = #{startTime}</if>
+		<if test="endTime != null and endTime != ''"> and `end_time` = #{endTime}</if>
+		<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+		<if test="applyLocation != null and applyLocation != ''"> and `apply_location` = #{applyLocation}</if>
+		<if test="createPeople != null and createPeople != ''"> and `create_people` = #{createPeople}</if>
+		<if test="applyContent != null and applyContent != ''"> and `apply_content` = #{applyContent}</if>
+		<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
+		<if test="banner != null and banner != ''"> and `banner` = #{banner}</if>
+		<if test="videoLink != null and videoLink != ''"> and `video_link` = #{videoLink}</if>
+		<if test="applyContentType != null and applyContentType != ''"> and `apply_content_type` = #{applyContentType}</if>
+		<if test="auditStatus != null and auditStatus != ''"> and `audit_status` = #{auditStatus}</if>
+		<if test="auditMsg != null and auditMsg != ''"> and `audit_msg` = #{auditMsg}</if>
+		<if test="showStatus != null and showStatus != ''"> and `show_status` = #{showStatus}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+
+	<insert id="save" parameterType="io.renren.cms.entity.ApplyEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_apply
+		(
+			`apply_title`,
+			`start_time`,
+			`end_time`,
+			`ctime`,
+			`apply_location`,
+			`create_people`,
+			`apply_content`,
+			`is_del`,
+			`banner`,
+			`video_link`,
+			`apply_content_type`,
+			`audit_status`,
+			`audit_msg`,
+			`show_status`
+		)
+		values
+		(
+			#{applyTitle},
+			#{startTime},
+			#{endTime},
+			#{ctime},
+			#{applyLocation},
+			#{createPeople},
+			#{applyContent},
+			#{isDel},
+			#{banner},
+			#{videoLink},
+			#{applyContentType},
+			#{auditStatus},
+			#{auditMsg},
+			#{showStatus}
+		)
+	</insert>
+
+	<update id="update" parameterType="io.renren.cms.entity.ApplyEntity">
+		update tb_apply
+		<set>
+			<if test="applyTitle != null">`apply_title` = #{applyTitle}, </if>
+			<if test="startTime != null">`start_time` = #{startTime}, </if>
+			<if test="endTime != null">`end_time` = #{endTime}, </if>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
+			<if test="applyLocation != null">`apply_location` = #{applyLocation}, </if>
+			<if test="createPeople != null">`create_people` = #{createPeople}, </if>
+			<if test="applyContent != null">`apply_content` = #{applyContent}, </if>
+			<if test="isDel != null">`is_del` = #{isDel}, </if>
+			<if test="banner != null">`banner` = #{banner}, </if>
+			<if test="videoLink != null">`video_link` = #{videoLink}, </if>
+			<if test="applyContentType != null">`apply_content_type` = #{applyContentType}, </if>
+			<if test="auditStatus != null">`audit_status` = #{auditStatus}, </if>
+			<if test="auditMsg != null">`audit_msg` = #{auditMsg}, </if>
+			<if test="showStatus != null">`show_status` = #{showStatus}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<!-- 	物理删除 -->
+	<delete id="delete">
+		delete from tb_apply where id = #{value}
+	</delete>
+
+	<!-- 	批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_apply where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+	<!-- 	逻辑删除 -->
+	<update id="logicDel">
+		update tb_apply set is_del = 't' where id = #{value}
+	</update>
+
+	<!-- 	批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update  tb_apply
+		set is_del = 't'
+		where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+</mapper>

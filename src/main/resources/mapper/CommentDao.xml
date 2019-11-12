@@ -42,7 +42,7 @@
 		</if>
 	</select>
 	<select id="queryListDto" resultType="io.renren.api.dto.CommentEntityDto">
-		select tc.*,tm.portrait,tm.nickName,tl.total as likeTotal from tb_comment tc
+		select tc.*,tm.portrait,tm.nickName,tm.show_vip as showVip,tm.type,tl.total as likeTotal from tb_comment tc
 		left join tb_member tm
 		on tc.openid = tm.openid
 		left join (SELECT openid,count(id)total FROM tb_like where like_type =2) tl
@@ -87,7 +87,7 @@
 			`id`, 
 			`information_id`, 
 			`remark`, 
-			`create_time`, 
+			`ctime`,
 			`openid`
 		)
 		values

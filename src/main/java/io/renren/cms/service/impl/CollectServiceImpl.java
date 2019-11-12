@@ -3,6 +3,7 @@ package io.renren.cms.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -70,6 +71,11 @@ public class CollectServiceImpl implements CollectService {
 	@Override
 	public Boolean isCollect(Integer id, Integer collectType, String openid) {
 		return collectDao.isCollect(id,collectType,openid);
+	}
+
+	@Override
+	public Boolean deleteWithOpenIdAndCollectTypeAndDataId(HashMap<String, Object> params) {
+		return collectDao.deleteWithOpenIdAndCollectTypeAndDataId(params);
 	}
 
 
