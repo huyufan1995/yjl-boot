@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * 判断用户是否认证，只有认证后才可以做一些入库操作
+ *  author: moran
  */
 @Aspect
 @Component

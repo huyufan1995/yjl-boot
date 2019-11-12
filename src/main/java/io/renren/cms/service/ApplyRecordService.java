@@ -31,4 +31,6 @@ public interface ApplyRecordService {
 	int logicDel(Integer id);
 	
 	int logicDelBatch(List<Integer> ids);
+
+
 }

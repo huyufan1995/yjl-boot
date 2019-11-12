@@ -12,8 +12,7 @@ import io.renren.cms.service.ShareService;
 
 /**
  * 分享表服务实现
- * @author yujia
- * @email yujiain2008@163.com
+ * @author huyufan
  *
  */
 @Service("shareService")

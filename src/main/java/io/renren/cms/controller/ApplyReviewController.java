@@ -16,38 +16,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.renren.cms.entity.ApplyEntity;
-import io.renren.cms.service.ApplyService;
+import io.renren.cms.entity.ApplyReviewEntity;
+import io.renren.cms.service.ApplyReviewService;
 import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
 import io.renren.utils.R;
 
 
 /**
- * 活动
+ * 活动回顾
  * 
  * @author moran
  * @email ${email}
- * @date 2019-11-11 19:02:39
+ * @date 2019-11-12 17:31:14
  */
 @RestController
-@RequestMapping("apply")
-public class ApplyController {
+@RequestMapping("applyreview")
+public class ApplyReviewController {
 	@Autowired
-	private ApplyService applyService;
+	private ApplyReviewService applyReviewService;
 	
 	/**
 	 * 列表
 	 */
 	@RequestMapping("/list")
-	//@RequiresPermissions("apply:list")
+	//@RequiresPermissions("applyreview:list")
 	public R list(@RequestParam Map<String, Object> params){
         Query query = new Query(params);
 
-		List<ApplyEntity> applyList = applyService.queryList(query);
-		int total = applyService.queryTotal(query);
+		List<ApplyReviewEntity> applyReviewList = applyReviewService.queryList(query);
+		int total = applyReviewService.queryTotal(query);
 		
-		PageUtils pageUtil = new PageUtils(applyList, total, query.getLimit(), query.getPage());
+		PageUtils pageUtil = new PageUtils(applyReviewList, total, query.getLimit(), query.getPage());
 		
 		return R.ok().put("page", pageUtil);
 	}
@@ -57,39 +57,41 @@ public class ApplyController {
 	 * 信息
 	 */
 	@RequestMapping("/info/{id}")
-	//@RequiresPermissions("apply:info")
+	//@RequiresPermissions("applyreview:info")
 	public R info(@PathVariable("id") Integer id){
-		ApplyEntity apply = applyService.queryObject(id);
+		ApplyReviewEntity applyReview = applyReviewService.queryObject(id);
 		
-		return R.ok().put("apply", apply);
+		return R.ok().put("applyReview", applyReview);
 	}
 	
 	/**
 	 * 保存
 	 */
 	@RequestMapping("/save")
-	//@RequiresPermissions("apply:save")
-	public R save(@RequestBody ApplyEntity apply){
-		apply.setCtime(new Date());
-		apply.setCreatePeople(SystemConstant.CREATE_PEOPLE);
-		apply.setIsDel(SystemConstant.F_STR);
-		apply.setAuditStatus(AuditStatusEnum.UNCOMMIT.getCode());
-		if (StringUtils.isNotEmpty(apply.getVideoLink())) {
-			apply.setApplyContentType(SystemConstant.VIDEO_TYPE);
-		} else if (apply.getApplyContent().indexOf("<img") > 0) {
-			apply.setApplyContentType(SystemConstant.IMAGE_TYPE);
+	//@RequiresPermissions("applyreview:save")
+	public R save(@RequestBody ApplyReviewEntity applyReview){
+		applyReview.setCtime(new Date());
+		applyReview.setIsDel(SystemConstant.F_STR);
+		applyReview.setAuditStatus(AuditStatusEnum.UNCOMMIT.getCode());
+
+		if (StringUtils.isNotEmpty(applyReview.getVideoLink())) {
+			applyReview.setApplyReviewType(SystemConstant.VIDEO_TYPE);
+		} else if (applyReview.getApplyReviewContent().indexOf("<img") > 0) {
+			applyReview.setApplyReviewType(SystemConstant.IMAGE_TYPE);
 		} else {
-			apply.setApplyContentType(SystemConstant.TEXT_TYPE);
+			applyReview.setApplyReviewType(SystemConstant.TEXT_TYPE);
 		}
-		applyService.save(apply);
-		
+		applyReviewService.save(applyReview);
 		return R.ok();
 	}
-
+	
+	/**
+	 * 修改
+	 */
 	@RequestMapping("/update")
-	//@RequiresPermissions("apply:update")
-	public R update(@RequestBody ApplyEntity apply){
-		applyService.update(apply);
+	//@RequiresPermissions("applyreview:update")
+	public R update(@RequestBody ApplyReviewEntity applyReview){
+		applyReviewService.update(applyReview);
 		
 		return R.ok();
 	}
@@ -98,9 +100,9 @@ public class ApplyController {
 	 * 删除
 	 */
 	@RequestMapping("/delete")
-	//@RequiresPermissions("apply:delete")
+	//@RequiresPermissions("applyreview:delete")
 	public R delete(@RequestBody Integer[] ids){
-		applyService.deleteBatch(ids);
+		applyReviewService.deleteBatch(ids);
 		
 		return R.ok();
 	}
@@ -109,12 +111,11 @@ public class ApplyController {
 	 * 逻辑删除
 	 */
 	@RequestMapping("/logic_del/{id}")
-	//@RequiresPermissions("apply:logicDel")
+	//@RequiresPermissions("applyreview:logicDel")
 	public R logicDel(@PathVariable("id") Integer id) {
-		applyService.logicDel(id);
+		applyReviewService.logicDel(id);
 		return R.ok();
 	}
-
 	/**
 	 * 审核列表
 	 */
@@ -123,21 +124,20 @@ public class ApplyController {
 	public R adminList(@RequestParam Map<String, Object> params){
 		params.put("auditStatus","pending");
 		Query query = new Query(params);
-		List<ApplyEntity> applyList = applyService.queryList(query);
-		int total = applyService.queryTotal(query);
+		List<ApplyReviewEntity> applyList = applyReviewService.queryList(query);
+		int total = applyReviewService.queryTotal(query);
 
 		PageUtils pageUtil = new PageUtils(applyList, total, query.getLimit(), query.getPage());
 
 		return R.ok().put("page", pageUtil);
 	}
-
 	/**
 	 * 审核通过
 	 */
 	@RequestMapping("/release/{id}")
 	//@RequiresPermissions("information:logicDel")
 	public R release(@PathVariable("id") Integer id) {
-		int release = applyService.release(id);
+		int release = applyReviewService.release(id);
 		if(release>0){
 			return R.ok();
 		}else{
@@ -151,7 +151,7 @@ public class ApplyController {
 	@RequestMapping("/commit/{id}")
 	//@RequiresPermissions("information:logicDel")
 	public R commit(@PathVariable("id") Integer id) {
-		int release = applyService.commit(id);
+		int release = applyReviewService.commit(id);
 		if(release>0){
 			return R.ok();
 		}else{
@@ -164,9 +164,9 @@ public class ApplyController {
 	 */
 	@RequestMapping("/reject")
 	//@RequiresPermissions("information:logicDel")
-	public R commit(@RequestBody ApplyEntity applyEntity) {
-		applyEntity.setAuditStatus(AuditStatusEnum.REJECT.getCode());
-		applyService.update(applyEntity);
+	public R commit(@RequestBody ApplyReviewEntity applyReviewEntity) {
+		applyReviewEntity.setAuditStatus(AuditStatusEnum.REJECT.getCode());
+		applyReviewService.update(applyReviewEntity);
 		return R.ok();
 	}
 
@@ -176,7 +176,7 @@ public class ApplyController {
 	@RequestMapping("/revocation/{id}")
 	//@RequiresPermissions("information:logicDel")
 	public R revocation(@PathVariable("id") Integer id) {
-		int revocation = applyService.revocation(id);
+		int revocation = applyReviewService.revocation(id);
 		if(revocation>0){
 			return R.ok();
 		}else{

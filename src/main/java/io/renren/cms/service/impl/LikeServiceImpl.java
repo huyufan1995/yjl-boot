@@ -13,8 +13,7 @@ import io.renren.cms.service.LikeService;
 
 /**
  * 点赞表服务实现
- * @author yujia
- * @email yujiain2008@163.com
+ * @author huyufan
  *
  */
 @Service("likeService")

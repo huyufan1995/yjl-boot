@@ -1,36 +1,37 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: '../apply/adminList',
+        url: '../applyreview/adminList',
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '活动标题', name: 'applyTitle', index: 'apply_title', width: 80 },
-			{ label: '活动开始时间', name: 'startTime', index: 'start_time', width: 80 },
-			{ label: '活动结束时间', name: 'endTime', index: 'end_time', width: 80 },
-			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '活动地址', name: 'applyLocation', index: 'apply_location', width: 80 },
-			{ label: '活动详情', name: 'applyContent', index: 'apply_content', width: 80 },
+			{ label: '活动id', name: 'applyId', index: 'apply_id', width: 80 },
+			{ label: '活动回顾', name: 'applyReviewContent', index: 'apply_review_content', width: 80 },
+			{ label: 't:展示 f:暂停', name: 'showStatus', index: 'show_status', width: 80 },
 			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 80,
 				formatter: function (value, options, row) {
 					if (value == 'pass') {
-						return '通过';
+						return "<span class='label label-success'>通过</span>";
 					}else if (value == 'reject') {
-						return '驳回';
+						return "<span class='label label-danger'>驳回</span>";
 					}else if (value == 'pending') {
-						return '审核中';
+						return "<span class='label label-warning'>审核中</span>";
 					}else{
-						return "未提交";
+						return "<span class='label label-primary'>未提交</span>";
 					}
 				}
 			},
+			{ label: '审核意见', name: 'auditMsg', index: 'audit_msg', width: 80 },
+			{ label: '1:text文本 2：image图片 3video视频', name: 'applyReviewType', index: 'apply_review_type', width: 80 },
+			{ label: '视频链接', name: 'videoLink', index: 'video_link', width: 80 },
+			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
-                formatter: function (value, options, row) {
+				formatter: function (value, options, row) {
 					var dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='release("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>通过</span></button>&nbsp;";
 					dom += "<button type='button' class='ivu-btn ivu-btn-primary' onclick='openAudit("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>不通过</span></button>&nbsp;";
 					dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
-                	return dom;
-                }
+					return dom;
+				}
             }
         ],
 		viewrecords: true,
@@ -59,33 +60,10 @@ $(function () {
         }
     });
 });
-function dateF(time) {
-	var date=new Date(time);
-	var year=date.getFullYear();
-	/* 在日期格式中，月份是从0开始的，因此要加0
-     * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
-     * */
-	var month= date.getMonth()+1<10 ? "0"+(date.getMonth()+1) : date.getMonth()+1;
-	var day=date.getDate()<10 ? "0"+date.getDate() : date.getDate();
-	var hours=date.getHours()<10 ? "0"+date.getHours() : date.getHours();
-	var minutes=date.getMinutes()<10 ? "0"+date.getMinutes() : date.getMinutes();
-	// 拼接
-	return year+"-"+month+"-"+day+" "+hours+":"+minutes;
-}
-//修改
-function edit(id){
-	if(id == null){
-		return ;
-	}
-//	vm.showList = false;
-	vm.showModal = true;
-    vm.title = "修改";
-    vm.getInfo(id)
-}
 function release(id) {
 	$.ajax({
 		type: "GET",
-		url: "../apply/release/" + id,
+		url: "../applyreview/release/" + id,
 		success: function(r){
 			if(r.code == 0){
 				$("#jqGrid").trigger("reloadGrid");
@@ -99,13 +77,13 @@ function release(id) {
 
 function openAudit(id) {
 	vm.showAudit = true;
-	vm.apply.id = id;
+	vm.applyReview.id = id;
 }
 //撤回
 function revocation(id) {
 	$.ajax({
 		type: "GET",
-		url: "../apply/revocation/" + id,
+		url: "../applyReview/revocation/" + id,
 		success: function(r){
 			if(r.code == 0){
 				$("#jqGrid").trigger("reloadGrid");
@@ -116,6 +94,17 @@ function revocation(id) {
 		}
 	});
 }
+//修改
+function edit(id){
+	if(id == null){
+		return ;
+	}
+//	vm.showList = false;
+	vm.showModal = true;
+    vm.title = "修改";
+    vm.getInfo(id)
+}
+
 //逻辑删除
 function logic_del(id){
 	if(id == null){
@@ -128,7 +117,7 @@ function logic_del(id){
         onOk:() => {
         	$.ajax({
     			type: "GET",
-    			url: "../apply/logic_del/" + id,
+    			url: "../applyreview/logic_del/" + id,
     		    success: function(r){
     		    	if(r.code == 0){
     					$("#jqGrid").trigger("reloadGrid");
@@ -148,28 +137,20 @@ var vm = new Vue({
 		showList: true,
 		showModal: false,
 		title: null,
-		dateArr: [],
 		showAudit: false,
-		bannerImgSrc:null,
-		showBannerImage:false,
-		apply: {},
+		applyReview: {},
 		ruleValidate: {
-						applyTitle: [
-							{ required: true, message: '请输入活动标题' }
-						],
-						dateTimeRange: [
-							{ required: true, message: '请选择活动开始时间' }
-						],
-						applyLocation: [
-							{ required: true, message: '请输入活动地址' }
-						]
-					},
+					applyId: [
+		                { required: false, message: '请输入活动id' }
+		            ], 	applyReviewContent: [
+		                { required: false, message: '请输入活动回顾' }
+		            ]
+		},
         q:{
 			id: null,
 			sdate: null,
 			edate: null,
-			ctime: [],
-			applyTitle: null
+			ctime: []
 		}
 	},
 	methods: {
@@ -181,15 +162,11 @@ var vm = new Vue({
 			vm.q.sdate = null;
 			vm.q.edate = null;
 			vm.q.ctime = null;
-			vm.q.applyTitle = null;
 		},
 		add: function(){
 			vm.showList = false;
-			vm.showBannerImage = false;
-			vm.bannerImgSrc = null;
-			editor.setValue(null);
 			vm.title = "新增";
-			vm.apply = {};
+			vm.applyReview = {};
 		},
 		update: function (event) {
 			var id = getSelectedRow();
@@ -200,26 +177,16 @@ var vm = new Vue({
             vm.title = "修改";
             vm.getInfo(id)
 		},
-		handleSuccess1 (res, file) {
-			console.log(res)
-			if(res.code != 500){
-				vm.showBannerImage = true;
-				vm.bannerImgSrc = res.data.url;
-				vm.apply.banner = vm.bannerImgSrc;
-			}else{
-				this.$Message.success('大小超过3M!');
-			}
-		},
-		rejectApply: function(event){
-			if(vm.apply.auditMsg == null){
+		rejectApplyReview: function(event){
+			if(vm.applyReview.auditMsg == null){
 				vm.$Message.error('请输入不通过意见');
 				return;
 			}
 			$.ajax({
 				type: "POST",
-				url: "../apply/reject",
+				url: "../applyreview/reject",
 				contentType: "application/json",
-				data: JSON.stringify(vm.apply),
+				data: JSON.stringify(vm.applyReview),
 				success: function(r){
 					if(r.code === 0){
 						vm.reload();
@@ -233,22 +200,20 @@ var vm = new Vue({
 
 		},
 		saveOrUpdate: function (event) {
-			this.$refs['apply'].validate((valid) => {
+			this.$refs['applyReview'].validate((valid) => {
                 if (valid) {
 					var content = editor.getValue();
 					if(!content){
-						vm.$Message.error('请输入活动详情');
+						vm.$Message.error('请输入活动回顾');
 						return;
 					}
-					vm.apply.startTime = dateF(vm.apply.dateTimeRange[0]);
-					vm.apply.endTime = dateF(vm.apply.dateTimeRange[1]);
-					vm.apply.applyContent = content;
-                	var url = vm.apply.id == null ? "../apply/save" : "../apply/update";
+					vm.applyReview.applyReviewContent = content;
+                	var url = vm.applyReview.id == null ? "../applyreview/save" : "../applyreview/update";
         			$.ajax({
         				type: "POST",
         			    url: url,
         			    contentType: "application/json",
-        			    data: JSON.stringify(vm.apply),
+        			    data: JSON.stringify(vm.applyReview),
         			    success: function(r){
         			    	if(r.code === 0){
         			    		vm.reload();
@@ -274,7 +239,7 @@ var vm = new Vue({
 	        onOk:() => {
 	        	$.ajax({
 					type: "POST",
-				    url: "../apply/delete",
+				    url: "../applyreview/delete",
 				    data: JSON.stringify(ids),
 				    success: function(r){
 						if(r.code === 0){
@@ -289,24 +254,19 @@ var vm = new Vue({
 	    });
 		},
 		getInfo: function(id){
-			//$.get("../apply/info/" + id, function(r){
-            //    vm.apply = r.apply;
+			//$.get("../applyreview/info/" + id, function(r){
+            //    vm.applyReview = r.applyReview;
             //});
             
             $.ajax({
 				type : "GET",
 				async: false,
-				url : "../apply/info/" + id,
+				url : "../applyreview/info/" + id,
 				success : function(r) {
-					vm.apply = r.apply;
-					editor.setValue(r.apply.applyContent);
-					vm.bannerImgSrc = r.apply.banner;
-					vm.dateArr[0] =vm.apply.startTime;
-					vm.dateArr[1] =vm.apply.endTime;
-					vm.apply.dateTimeRange = vm.dateArr;
-					vm.showBannerImage = true;
-					if(vm.apply.auditStatus == 'pending'){
-						vm.$Message.success('此活动已经提交，请先撤回再修改!');
+					vm.applyReview = r.applyReview;
+					editor.setValue(r.applyReview.applyReviewContent);
+					if(vm.applyReview.auditStatus == 'pending'){
+						vm.$Message.success('此活动回顾已经提交，请先撤回再修改!');
 						return false;
 					}
 				}
@@ -316,7 +276,7 @@ var vm = new Vue({
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
-				postData:{"id": vm.q.id,"applyTitle":vm.q.applyTitle,"sdate":vm.q.sdate, "edate":vm.q.edate},
+				postData:{"id": vm.q.id, "sdate":vm.q.sdate, "edate":vm.q.edate},
                 page:page
             }).trigger("reloadGrid");
 		},
