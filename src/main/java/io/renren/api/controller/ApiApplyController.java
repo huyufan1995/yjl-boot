@@ -52,7 +52,7 @@ public class ApiApplyController {
     @Autowired
     private ApplyRecordService applyRecordService;
 
-    @IgnoreAuth
+
     @ApiOperation(value = "活动列表", notes = "活动分页列表",response = ApplyEntity.class)
     @ApiImplicitParams({
             @ApiImplicitParam(paramType = "query", dataType = "int", name = "page", value = "页码 默认1", required = false),
@@ -60,7 +60,7 @@ public class ApiApplyController {
             @ApiImplicitParam(paramType = "query", dataType = "string", name = "token", value = "令牌", required = false),
     })
     @PostMapping("/list")
-    public ApiResult list(@ApiIgnore() @RequestParam Map<String, Object> params, @ApiIgnore @TokenMember SessionMember sessionMember) {
+    public ApiResult list(@ApiIgnore() @RequestParam Map<String, Object> params) {
         params.put("isDel","f");
         params.put("auditStatus","pass");
         params.put("showStatus","t");
@@ -87,7 +87,7 @@ public class ApiApplyController {
 
                 }else{
                     for (ApplyRecordEntiyDto recordEntiyDto : applyRecordEntiyDtoList) {
-                        if(sessionMember.getOpenid().equals(recordEntiyDto.getOpenid())){
+                        if(params.get("openid").toString().equals(recordEntiyDto.getOpenid())){
                             if(entityDto.getId().equals(recordEntiyDto.getApplyId())){
                                 entityDto.setApplyStatus("已报名");
                             }else{
