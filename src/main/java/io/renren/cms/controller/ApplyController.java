@@ -71,6 +71,7 @@ public class ApplyController {
 	//@RequiresPermissions("apply:save")
 	public R save(@RequestBody ApplyEntity apply){
 		apply.setCtime(new Date());
+		apply.setApplyHot((int)(Math.random()*900 + 100));
 		apply.setCreatePeople(SystemConstant.CREATE_PEOPLE);
 		apply.setIsDel(SystemConstant.F_STR);
 		apply.setAuditStatus(AuditStatusEnum.UNCOMMIT.getCode());

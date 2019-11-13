@@ -104,7 +104,8 @@
 			`apply_content_type`,
 			`audit_status`,
 			`audit_msg`,
-			`show_status`
+			`show_status`,
+			`apply_hot`
 		)
 		values
 		(
@@ -121,7 +122,8 @@
 			#{applyContentType},
 			#{auditStatus},
 			#{auditMsg},
-			#{showStatus}
+			#{showStatus},
+			#{applyHot}
 		)
 	</insert>
 
@@ -142,6 +144,7 @@
 			<if test="auditStatus != null">`audit_status` = #{auditStatus}, </if>
 			<if test="auditMsg != null">`audit_msg` = #{auditMsg}, </if>
 			<if test="showStatus != null">`show_status` = #{showStatus}</if>
+			<if test="applyHot != null">`apply_hot` = #{applyHot}</if>
 		</set>
 		where id = #{id}
 	</update>
@@ -173,5 +176,88 @@
 			#{id}
 		</foreach>
 	</update>
+	<select id="queryListDto" resultType="io.renren.api.dto.ApplyEntityDto">
+		select * from tb_apply where 1 = 1
+
+		<if test="applyTitle != null and applyTitle != ''">
+			and `apply_title` like concat('%',#{applyTitle},'%')
+		</if>
+		<if test="startTime != null and startTime != ''"> and `start_time` = #{startTime}</if>
+		<if test="endTime != null and endTime != ''"> and `end_time` = #{endTime}</if>
+		<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+		<if test="applyLocation != null and applyLocation != ''"> and `apply_location` = #{applyLocation}</if>
+		<if test="createPeople != null and createPeople != ''"> and `create_people` = #{createPeople}</if>
+		<if test="applyContent != null and applyContent != ''"> and `apply_content` = #{applyContent}</if>
+		<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
+		<if test="banner != null and banner != ''"> and `banner` = #{banner}</if>
+		<if test="videoLink != null and videoLink != ''"> and `video_link` = #{videoLink}</if>
+		<if test="applyContentType != null and applyContentType != ''"> and `apply_content_type` = #{applyContentType}</if>
+		<if test="auditStatus != null and auditStatus != ''"> and `audit_status` = #{auditStatus}</if>
+		<if test="auditMsg != null and auditMsg != ''"> and `audit_msg` = #{auditMsg}</if>
+		<if test="showStatus != null and showStatus != ''"> and `show_status` = #{showStatus}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<resultMap id="applyAllMap" type="io.renren.api.dto.ApplyEntityDto">
+		<result property="id" column="id"/>
+		<result property="applyTitle" column="apply_title"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="ctime" column="ctime"/>
+		<result property="applyLocation" column="apply_location"/>
+		<result property="createPeople" column="create_people"/>
+		<result property="applyContent" column="apply_content"/>
+		<result property="isDel" column="is_del"/>
+		<result property="banner" column="banner"/>
+		<result property="videoLink" column="video_link"/>
+		<result property="applyContentType" column="apply_content_type"/>
+		<result property="auditStatus" column="audit_status"/>
+		<result property="auditMsg" column="audit_msg"/>
+		<result property="showStatus" column="show_status"/>
+		<result property="applyHot" column="apply_hot"/>
+		<association property="applyReviewEntity" javaType="io.renren.cms.entity.ApplyReviewEntity">
+			<result property="applyId" column="apply_id"/>
+			<result property="applyReviewContent" column="apply_review_content"/>
+			<result property="showStatus" column="show_status"/>
+			<result property="auditStatus" column="audit_status"/>
+			<result property="auditMsg" column="audit_msg"/>
+			<result property="applyReviewType" column="apply_review_type"/>
+			<result property="videoLink" column="video_link"/>
+			<result property="ctime" column="ctime"/>
+			<result property="isDel" column="is_del"/>
+		</association>
+		<collection property="applyRecordEntiyDto" ofType="io.renren.api.dto.ApplyRecordEntiyDto">
+			<result property="applyId" column="apply_id"/>
+			<result property="openid" column="openid"/>
+			<result property="joinDate" column="ctime"/>
+			<result property="showVip" column="show_vip"/>
+			<result property="nickName" column="nickname"/>
+			<result property="portrait" column="portrait"/>
+		</collection>
+	</resultMap>
+
+	<select id="findAllById" resultMap="applyAllMap">
+        select ta.*,tare.ctime as joinDate,tare.openid,tm.show_vip,tm.nickname as nickName,tm.portrait from  tb_apply ta
+        left join tb_apply_review tar on ta.id = tar.apply_id
+        left join tb_apply_record tare on ta.id =tare.apply_id
+		left join tb_member tm on tare.openid = tm.openid
+		where 1=1
+        and ta.id = #{applyId}
+    </select>
 
 </mapper>

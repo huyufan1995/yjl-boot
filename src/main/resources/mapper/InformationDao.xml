@@ -29,7 +29,6 @@
 			<if test="auditStatus != null and auditStatus != ''"> and `audit_status` = #{auditStatus}</if>
 			<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
 			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
-			<if test="updateTime != null and updateTime != ''"> and `update_time` = #{updateTime}</if>
 			<if test="keyword != null and keyword != ''">
 				and (title LIKE concat('%', #{keyword}, '%') or content LIKE concat('%',#{keyword},'%'))
 			 </if>
@@ -195,10 +194,8 @@
 		<if test="title != null and title != ''"> and ti.`title` = #{title}</if>
 		<if test="videoLink != null and videoLink != ''"> and ti.`video_link` = #{videoLink}</if>
 		<if test="content != null and content != ''"> and ti.`content` = #{content}</if>
-		<if test="auditStatus != null and auditStatus != ''"> and ti.`audit_status` = #{auditStatus}</if>
+		<if test="auditStatus != null"> and ti.`audit_status` = #{auditStatus}</if>
 		<if test="isDel != null and isDel != ''"> and ti.`is_del` = #{isDel}</if>
-		<if test="ctime != null and ctime != ''"> and ti.`ctime` = #{ctime}</if>
-		<if test="updateTime != null and updateTime != ''"> and ti.`update_time` = #{updateTime}</if>
 		<if test="informationType != null and informationType != ''"> and ti.`information_type` = #{informationType}</if>
 		<if test="keyword != null and keyword != ''">
 			and (ti.title LIKE concat('%', #{keyword}, '%') or ti.content LIKE concat('%',#{keyword},'%'))

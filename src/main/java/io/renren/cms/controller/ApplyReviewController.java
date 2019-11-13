@@ -73,7 +73,7 @@ public class ApplyReviewController {
 		applyReview.setCtime(new Date());
 		applyReview.setIsDel(SystemConstant.F_STR);
 		applyReview.setAuditStatus(AuditStatusEnum.UNCOMMIT.getCode());
-
+		// 判断文章类型  文本  图片  视频
 		if (StringUtils.isNotEmpty(applyReview.getVideoLink())) {
 			applyReview.setApplyReviewType(SystemConstant.VIDEO_TYPE);
 		} else if (applyReview.getApplyReviewContent().indexOf("<img") > 0) {

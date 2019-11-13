@@ -2,10 +2,12 @@ package io.renren.cms.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.renren.api.dto.ApplyRecordEntiyDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -76,4 +78,18 @@ public class ApplyEntity implements Serializable {
 	 */
 	private String auditMsg;
 
+	/**
+	 *活动热度
+	 */
+	private Integer applyHot;
+
+	/**
+	 * 活动回顾
+	 */
+	private ApplyReviewEntity applyReviewEntity;
+
+	/**
+	 * 活动报名记录
+	 */
+	private List<ApplyRecordEntiyDto> applyRecordEntiyDto;
 }

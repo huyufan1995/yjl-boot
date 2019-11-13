@@ -1,5 +1,6 @@
 package io.renren.cms.service;
 
+import io.renren.api.dto.ApplyEntityDto;
 import io.renren.cms.entity.ApplyEntity;
 
 import java.util.List;
@@ -37,4 +38,8 @@ public interface ApplyService {
 	int commit(Integer id);
 
 	int release(Integer id);
+
+    List<ApplyEntityDto> queryListDto(Map<String, Object> params);
+
+	ApplyEntityDto findAllById(Integer id);
 }

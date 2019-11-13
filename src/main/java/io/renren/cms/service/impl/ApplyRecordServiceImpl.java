@@ -1,8 +1,10 @@
 package io.renren.cms.service.impl;
 
+import io.renren.api.dto.ApplyRecordEntiyDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +68,16 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
 	public int logicDelBatch(List<Integer> ids) {
 		return applyRecordDao.logicDelBatch(ids);
 	}
-	
-	
+
+	@Override
+	public List<ApplyRecordEntiyDto> queryPortrait(HashMap<String, Object> query) {
+		return applyRecordDao.queryPortrait(query);
+	}
+
+	@Override
+	public Boolean deleteByOpenIdAndApplyId(HashMap<String, Object> params) {
+		return applyRecordDao.deleteByOpenIdAndApplyId(params);
+	}
+
+
 }

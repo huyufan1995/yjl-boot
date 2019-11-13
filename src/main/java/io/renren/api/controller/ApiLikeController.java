@@ -42,14 +42,9 @@ public class ApiLikeController {
     @ApiImplicitParams({
             @ApiImplicitParam(paramType = "query", dataType = "string", name = "token", value = "令牌", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "int", name = "dataId", value = "数据Id", required = true),
-            @ApiImplicitParam(paramType = "query", dataType = "int", name = "likeType", value = "点赞类型 1：资讯 2：评论 3：活动", required = true),
-            @ApiImplicitParam(paramType = "query", dataType = "int", name = "dataId", value = "数据Id", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "int", name = "likeType", value = "点赞类型 1：资讯 2：评论 3：活动", required = true)
     })
     public ApiResult addLike(@RequestParam("dataId") Integer dataId, @RequestParam("likeType") Integer likeType,@ApiIgnore@TokenMember SessionMember sessionMember) {
-       /* String type = sessionMember.getType();
-        if(MemberTypeEnum.COMMON.getCode().toLowerCase().equals(type)){
-            throw new ApiException(SystemConstant.MEMBER_TYPE_MSG, 10001);
-        }*/
         HashMap<String,Object> params = new HashMap<>(5);
         params.put("dataId",dataId);
         params.put("likeType",likeType);

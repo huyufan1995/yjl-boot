@@ -21,11 +21,14 @@ public class ApplyRecordEntity implements Serializable {
 	
 	/**  */
 	private Integer id;
-	/**  */
+	/** 活动Id */
 	private String applyId;
-	/** 活动标题 */
-	private String applyTitle;
 	/** 报名人openid */
 	private String openid;
+
+	/**
+	 * 创建时间
+	 */
+	private Date ctime;
 
 }

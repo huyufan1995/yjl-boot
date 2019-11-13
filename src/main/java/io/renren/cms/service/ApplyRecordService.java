@@ -1,7 +1,9 @@
 package io.renren.cms.service;
 
+import io.renren.api.dto.ApplyRecordEntiyDto;
 import io.renren.cms.entity.ApplyRecordEntity;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,4 +35,7 @@ public interface ApplyRecordService {
 	int logicDelBatch(List<Integer> ids);
 
 
+	List<ApplyRecordEntiyDto> queryPortrait(HashMap<String, Object> query);
+
+	Boolean deleteByOpenIdAndApplyId(HashMap<String, Object> params);
 }
