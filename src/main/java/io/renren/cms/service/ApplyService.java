@@ -2,6 +2,7 @@ package io.renren.cms.service;
 
 import io.renren.api.dto.ApplyEntityDto;
 import io.renren.cms.entity.ApplyEntity;
+import io.renren.utils.Query;
 
 import java.util.List;
 import java.util.Map;
@@ -42,4 +43,8 @@ public interface ApplyService {
     List<ApplyEntityDto> queryListDto(Map<String, Object> params);
 
 	ApplyEntityDto findAllById(Integer id);
+
+	List<ApplyEntityDto> queryListByOpenId(Map<String, Object> params);
+
+	List<ApplyEntityDto> queryListByOpenIdWithCollect(Map<String, Object> params);
 }

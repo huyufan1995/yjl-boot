@@ -61,7 +61,7 @@ public interface SystemConstant {
 	String TMP_DIR = "/mnt/app/yykj/tmp/";
 	
 	/** 小程序路径 官网详情 */
-	String APP_PAGE_PATH_WEBSITE_DETAIL = "pages/gwset/gwlook/gwlook?ownerOpenid={}";
+	String APP_PAGE_PATH_Member_DETAIL = "pages/my/smhx/smhx?code={}";
 	String APP_PAGE_PATH_CARD_DETAIL = "pages/index/mp/mp?id={}&is=1";
 	String APP_PAGE_PATH_ACTIVATE_VIP = "pages/index/index?type=vip&acode={}";
 	/** 报名详情二维码 */

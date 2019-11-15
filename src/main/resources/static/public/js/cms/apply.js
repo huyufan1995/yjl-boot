@@ -10,7 +10,6 @@ $(function () {
 			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
 			{ label: '活动地址', name: 'applyLocation', index: 'apply_location', width: 80 },
 			{ label: '创建人', name: 'createPeople', index: 'create_people', width: 80 },
-			{ label: '活动详情', name: 'applyContent', index: 'apply_content', width: 80 },
 			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 80 ,
 				formatter: function (value, options, row) {
 					if (value == 'pass') {

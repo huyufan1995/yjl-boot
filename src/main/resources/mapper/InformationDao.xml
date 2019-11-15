@@ -179,18 +179,11 @@
 
 	<select id="queryListDto" resultType="io.renren.api.dto.InformationsEntityDto">
 		SELECT
-		ti.* ,tmm.total as commentTotal
+		ti.*
 		FROM
 		tb_information ti
-		LEFT JOIN
-		(SELECT information_id ii,count(id) total,openid FROM tb_comment GROUP BY information_id) tmm
-		on ti.id = tmm.ii
-		left join
-		tb_member tm
-		on tm.openid = tmm.openid
 		WHERE
 		1 = 1
-
 		<if test="title != null and title != ''"> and ti.`title` = #{title}</if>
 		<if test="videoLink != null and videoLink != ''"> and ti.`video_link` = #{videoLink}</if>
 		<if test="content != null and content != ''"> and ti.`content` = #{content}</if>
@@ -226,4 +219,43 @@
 		and tc.collect_type = 1
 		and tc.openid = #{openid}
 	</select>
+
+	<select id="queryListDtoByOpenIdWithCollect" resultType="io.renren.api.dto.InformationsEntityDto">
+		SELECT
+		ti.*
+		FROM
+		tb_information ti
+		left join tb_collect tc
+		on ti.id = tc .data_id
+		WHERE
+		1 = 1
+		and tc.collect_type = 1
+		<if test="openid != null and openid != ''"> and tc.`openid` = #{openid}</if>
+		<if test="title != null and title != ''"> and ti.`title` = #{title}</if>
+		<if test="videoLink != null and videoLink != ''"> and ti.`video_link` = #{videoLink}</if>
+		<if test="content != null and content != ''"> and ti.`content` = #{content}</if>
+		<if test="auditStatus != null"> and ti.`audit_status` = #{auditStatus}</if>
+		<if test="isDel != null and isDel != ''"> and ti.`is_del` = #{isDel}</if>
+		<if test="informationType != null and informationType != ''"> and ti.`information_type` = #{informationType}</if>
+		<if test="keyword != null and keyword != ''">
+			and (ti.title LIKE concat('%', #{keyword}, '%') or ti.content LIKE concat('%',#{keyword},'%'))
+		</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ti.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by ti.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
 </mapper>

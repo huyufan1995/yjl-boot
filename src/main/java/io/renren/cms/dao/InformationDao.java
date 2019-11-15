@@ -24,4 +24,6 @@ public interface InformationDao extends BaseDao<InformationsEntity> {
     List<InformationsEntityDto> queryListDto(Map<String, Object> map);
 
     InformationsEntityInfoDto queryObjectDto(@Param(value = "id") Integer id, @Param(value = "openid")String openid);
+
+    List<InformationsEntityDto> queryListDtoByOpenIdWithCollect(Map<String, Object> map);
 }

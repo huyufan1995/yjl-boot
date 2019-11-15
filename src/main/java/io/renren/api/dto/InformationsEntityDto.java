@@ -15,11 +15,11 @@ import java.util.List;
  */
 public class InformationsEntityDto extends InformationsEntity {
 
-    /**
+/*    *//**
      * 评论数量
-     */
+     *//*
     @ApiModelProperty(value = "评论数量")
-    private Integer commentTotal;
+    private Integer commentTotal;*/
 
     /**
      * 评论人头像

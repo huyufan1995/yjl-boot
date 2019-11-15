@@ -88,14 +88,14 @@
 			`gender`, 
 			`ctime`, 
 			`is_del`, 
-			`status`, 
-			`real_name`, 
+			`status`,
 			`mobile`, 
 			`openid`, 
-			`type`, 
-			`company`, 
+			`type`,
 			`email`,
-			`show_vip`
+			`show_vip`,
+			`code`,
+			`qr_code`
 		)
 		values
 		(
@@ -104,14 +104,14 @@
 			#{gender}, 
 			#{ctime}, 
 			#{isDel}, 
-			#{status}, 
-			#{realName}, 
+			#{status},
 			#{mobile}, 
 			#{openid}, 
-			#{type}, 
-			#{company}, 
+			#{type},
 			#{email},
-			#{showVip}
+			#{showVip},
+			#{code},
+			#{qrCode}
 		)
 	</insert>
 	 
@@ -129,7 +129,21 @@
 			<if test="openid != null">`openid` = #{openid}, </if>
 			<if test="type != null">`type` = #{type}, </if>
 			<if test="company != null">`company` = #{company}, </if>
-			<if test="email != null">`email` = #{email}</if>
+			<if test="email != null">`email` = #{email},</if>
+			<if test="phone != null">`phone = #{phone},</if>
+			<if test="code != null">`code` = #{code},</if>
+			<if test="weixinNumber != null">`weixin_number` = #{weixinNumber},</if>
+			<if test="birthday != null">`birthday` = #{birthday},</if>
+			<if test="nationality != null">`nationality` = #{nationality},</if>
+			<if test="address != null">`address` = #{address},</if>
+			<if test="profile != null">`profile` = #{profile},</if>
+			<if test="companyProfile != null">`company_profile` = #{companyProfile},</if>
+			<if test="haveResource != null">`have_resource` = #{haveResource},</if>
+			<if test="needResource != null">`need_resource` = #{needResource},</if>
+			<if test="code != null">`code` = #{code},</if>
+			<if test="qrCode != null">`qr_code` = #{qrCode},</if>
+			<if test="mobileCountry != null">`mobile_country` = #{mobileCountry},</if>
+			<if test="phoneCountry != null">`phone_country` = #{phoneCountry},</if>
 		</set>
 		where id = #{id}
 	</update>

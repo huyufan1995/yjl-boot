@@ -1,4 +1,4 @@
-package io.renren.api.controller;
+package io.renren.cms.controller;
 
 import com.google.common.collect.Maps;
 import com.qcloud.cos.COSClient;

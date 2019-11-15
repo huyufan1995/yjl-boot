@@ -21,4 +21,5 @@ public class ApplyRecordEntiyDto extends ApplyRecordEntity {
     private String showVip;
 
     private Date joinDate;
+
 }

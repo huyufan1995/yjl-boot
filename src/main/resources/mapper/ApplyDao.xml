@@ -143,7 +143,7 @@
 			<if test="applyContentType != null">`apply_content_type` = #{applyContentType}, </if>
 			<if test="auditStatus != null">`audit_status` = #{auditStatus}, </if>
 			<if test="auditMsg != null">`audit_msg` = #{auditMsg}, </if>
-			<if test="showStatus != null">`show_status` = #{showStatus}</if>
+			<if test="showStatus != null">`show_status` = #{showStatus},</if>
 			<if test="applyHot != null">`apply_hot` = #{applyHot}</if>
 		</set>
 		where id = #{id}
@@ -230,21 +230,15 @@
 		<result property="auditMsg" column="audit_msg"/>
 		<result property="showStatus" column="show_status"/>
 		<result property="applyHot" column="apply_hot"/>
-		<association property="applyReviewEntity" javaType="io.renren.cms.entity.ApplyReviewEntity">
-			<result property="applyId" column="apply_id"/>
+		<association property="applyReviewEntityDto" javaType="io.renren.api.dto.ApplyReviewEntityDto">
 			<result property="applyReviewContent" column="apply_review_content"/>
-			<result property="showStatus" column="show_status"/>
-			<result property="auditStatus" column="audit_status"/>
-			<result property="auditMsg" column="audit_msg"/>
 			<result property="applyReviewType" column="apply_review_type"/>
-			<result property="videoLink" column="video_link"/>
-			<result property="ctime" column="ctime"/>
-			<result property="isDel" column="is_del"/>
+			<result property="reviewVideoLink" column="reviewVideoLink"/>
 		</association>
 		<collection property="applyRecordEntiyDto" ofType="io.renren.api.dto.ApplyRecordEntiyDto">
 			<result property="applyId" column="apply_id"/>
 			<result property="openid" column="openid"/>
-			<result property="joinDate" column="ctime"/>
+			<result property="joinDate" column="joinDate"/>
 			<result property="showVip" column="show_vip"/>
 			<result property="nickName" column="nickname"/>
 			<result property="portrait" column="portrait"/>
@@ -252,12 +246,79 @@
 	</resultMap>
 
 	<select id="findAllById" resultMap="applyAllMap">
-        select ta.*,tare.ctime as joinDate,tare.openid,tm.show_vip,tm.nickname as nickName,tm.portrait from  tb_apply ta
+        select ta.*,tare.ctime as joinDate,tare.openid,tm.show_vip,tm.nickname as nickName,tm.portrait,
+        tar.apply_review_content,tar.video_link as reviewVideoLink,tar.apply_review_type
+        from  tb_apply ta
         left join tb_apply_review tar on ta.id = tar.apply_id
-        left join tb_apply_record tare on ta.id =tare.apply_id
+        left join
+        (select apply_id,openid,ctime from tb_apply_record order by ctime desc ) tare
+        on ta.id =tare.apply_id
 		left join tb_member tm on tare.openid = tm.openid
 		where 1=1
         and ta.id = #{applyId}
     </select>
+
+	<select id="queryListByOpenId" resultType="io.renren.api.dto.ApplyEntityDto">
+		select ta.*
+		from tb_apply ta
+		left join tb_apply_record tar
+		on ta.id = tar.apply_id
+		where 1 = 1
+		<if test="openid != null and openid != ''"> and tar.`openid` = #{openid}</if>
+
+		<if test="isDel != null and isDel != ''"> and ta.`is_del` = #{isDel}</if>
+		<if test="banner != null and banner != ''"> and ta.`banner` = #{banner}</if>
+		<if test="videoLink != null and videoLink != ''"> and ta.`video_link` = #{videoLink}</if>
+		<if test="applyContentType != null and applyContentType != ''"> and ta.`apply_content_type` = #{applyContentType}</if>
+		<if test="auditStatus != null and auditStatus != ''"> and ta.`audit_status` = #{auditStatus}</if>
+		<if test="showStatus != null and showStatus != ''"> and ta.`show_status` = #{showStatus}</if>
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ta.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryListByOpenIdWithCollect" resultType="io.renren.api.dto.ApplyEntityDto">
+		select ta.*
+		from tb_apply ta
+		left join tb_collect tc
+		on tc.data_id = ta.id
+		where 1 = 1
+		and tc.collect_type = 3
+		<if test="openid != null and openid != ''"> and tc.`openid` = #{openid}</if>
+
+		<if test="isDel != null and isDel != ''"> and ta.`is_del` = #{isDel}</if>
+		<if test="banner != null and banner != ''"> and ta.`banner` = #{banner}</if>
+		<if test="videoLink != null and videoLink != ''"> and ta.`video_link` = #{videoLink}</if>
+		<if test="applyContentType != null and applyContentType != ''"> and ta.`apply_content_type` = #{applyContentType}</if>
+		<if test="auditStatus != null and auditStatus != ''"> and ta.`audit_status` = #{auditStatus}</if>
+		<if test="showStatus != null and showStatus != ''"> and ta.`show_status` = #{showStatus}</if>
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ta.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
 
 </mapper>

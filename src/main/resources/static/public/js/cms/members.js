@@ -8,14 +8,26 @@ $(function () {
 			{ label: '昵称', name: 'nickname', index: 'nickname', width: 80 },
 			{ label: '性别 man woman', name: 'gender', index: 'gender', width: 80 },
 			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '删除标志 t f', name: 'isDel', index: 'is_del', width: 80 },
-			{ label: '状态 normal freeze', name: 'status', index: 'status', width: 80 },
 			{ label: '姓名', name: 'realName', index: 'real_name', width: 80 },
 			{ label: '手机号', name: 'mobile', index: 'mobile', width: 80 },
 			{ label: '微信用户ID', name: 'openid', index: 'openid', width: 80 },
-			{ label: '会员类型 common vip supervip', name: 'type', index: 'type', width: 80 },
+			{ label: '游客common 会员vip ', name: 'type', index: 'type', width: 80 },
 			{ label: '公司名称', name: 'company', index: 'company', width: 80 },
 			{ label: '邮箱', name: 'email', index: 'email', width: 80 },
+			{ label: 't:展示vip f:不展示', name: 'showVip', index: 'show_vip', width: 80 },
+			{ label: '手机号2 ：非必填', name: 'phone', index: 'phone', width: 80 },
+			{ label: '微信号', name: 'weixinNumber', index: 'weixin_number', width: 80 },
+			{ label: '出生日期', name: 'birthday', index: 'birthday', width: 80 },
+			{ label: '国籍', name: 'nationality', index: 'nationality', width: 80 },
+			{ label: '当前居住地址', name: 'address', index: 'address', width: 80 },
+			{ label: '个人简介', name: 'profile', index: 'profile', width: 80 },
+			{ label: '公司介绍', name: 'companyProfile', index: 'company_profile', width: 80 },
+			{ label: '拥有资源', name: 'havaResource', index: 'hava_resource', width: 80 },
+			{ label: '需要资源', name: 'needResource', index: 'need_resource', width: 80 },
+			{ label: '会员code', name: 'vipCode', index: 'vip_code', width: 80 },
+			{ label: '二维码', name: 'qrCode', index: 'qr_code', width: 80 },
+			{ label: '手机号1所属地区', name: 'mobileCountry', index: 'mobile_country', width: 80 },
+			{ label: '手机号2所属地区', name: 'phoneCountry', index: 'phone_country', width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
@@ -57,8 +69,8 @@ function edit(id){
 	if(id == null){
 		return ;
 	}
-//	vm.showList = false;
-	vm.showModal = true;
+	vm.showList = false;
+	//vm.showModal = true;
     vm.title = "修改";
     vm.getInfo(id)
 }
@@ -69,7 +81,7 @@ function logic_del(id){
 		return ;
 	}
 	
-	vm.%Modal.confirm({
+	vm.$Modal.confirm({
         title: '提示',
         content: '确定要删除吗？',
         onOk:() => {
@@ -79,9 +91,9 @@ function logic_del(id){
     		    success: function(r){
     		    	if(r.code == 0){
     					$("#jqGrid").trigger("reloadGrid");
-    		    		vm.%Message.success('操作成功!');
+    		    		vm.$Message.success('操作成功!');
     				}else{
-    					vm.%Message.error(r.msg);
+    					vm.$Message.error(r.msg);
     				}
     			}
     		});
@@ -97,32 +109,10 @@ var vm = new Vue({
 		title: null,
 		member: {},
 		ruleValidate: {
-											
-																portrait: [
-		                { required: true, message: '请输入头像' }
-		            ], 																nickname: [
+			nickname: [
 		                { required: true, message: '请输入昵称' }
-		            ], 																gender: [
-		                { required: true, message: '请输入性别 man woman' }
-		            ], 																ctime: [
-		                { required: true, message: '请输入创建时间' }
-		            ], 																isDel: [
-		                { required: true, message: '请输入删除标志 t f' }
-		            ], 																status: [
-		                { required: true, message: '请输入状态 normal freeze' }
-		            ], 																realName: [
-		                { required: true, message: '请输入姓名' }
-		            ], 																mobile: [
-		                { required: true, message: '请输入手机号' }
-		            ], 																openid: [
-		                { required: true, message: '请输入微信用户ID' }
-		            ], 																type: [
-		                { required: true, message: '请输入会员类型 common vip supervip' }
-		            ], 																company: [
-		                { required: true, message: '请输入公司名称' }
-		            ], 																email: [
-		                { required: true, message: '请输入邮箱' }
-		            ]							        },
+		                ]
+		},
         q:{
 			id: null,
 			sdate: null,
@@ -156,7 +146,7 @@ var vm = new Vue({
             vm.getInfo(id)
 		},
 		saveOrUpdate: function (event) {
-			this.%refs['member'].validate((valid) => {
+			this.$refs['member'].validate((valid) => {
                 if (valid) {
                 	var url = vm.member.id == null ? "../member/save" : "../member/update";
         			$.ajax({
@@ -168,9 +158,9 @@ var vm = new Vue({
         			    	if(r.code === 0){
         			    		vm.reload();
         			    		vm.showModal = false;
-        			    		vm.%Message.success('操作成功!');
+        			    		vm.$Message.success('操作成功!');
         					}else{
-        						vm.%Message.error(r.msg);
+        						vm.$Message.error(r.msg);
         					}
         				}
         			});
@@ -183,7 +173,7 @@ var vm = new Vue({
 				return ;
 			}
 			
-			vm.%Modal.confirm({
+			vm.$Modal.confirm({
 	        title: '提示',
 	        content: '确定要删除选中的记录？',
 	        onOk:() => {
@@ -194,9 +184,9 @@ var vm = new Vue({
 				    success: function(r){
 						if(r.code === 0){
 							$("#jqGrid").trigger("reloadGrid");
-    			    		vm.%Message.success('操作成功!');
+    			    		vm.$Message.success('操作成功!');
     					}else{
-    						vm.%Message.error(r.msg);
+    						vm.$Message.error(r.msg);
     					}
 					}
 				});

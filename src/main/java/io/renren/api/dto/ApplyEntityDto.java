@@ -22,4 +22,21 @@ public class ApplyEntityDto extends ApplyEntity {
      * 活动状态
      **/
     private String applyStatus;
+
+    /**
+     * 活动报名人数量
+     */
+    private Integer joinTotal;
+
+
+    /**
+     * 活动回顾
+     */
+    private ApplyReviewEntityDto applyReviewEntityDto;
+
+
+    /**
+     * 是否收藏
+     */
+    private Boolean isCollect;
 }

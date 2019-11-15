@@ -4,6 +4,7 @@ import io.renren.api.constant.SystemConstant;
 import io.renren.api.dto.ApplyEntityDto;
 import io.renren.cms.entity.ApplyEntity;
 import io.renren.enums.AuditStatusEnum;
+import io.renren.utils.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -88,6 +89,16 @@ public class ApplyServiceImpl implements ApplyService {
 	@Override
 	public ApplyEntityDto findAllById(Integer id) {
 		return applyDao.findAllById(id.toString());
+	}
+
+	@Override
+	public List<ApplyEntityDto> queryListByOpenId(Map<String, Object> params) {
+		return applyDao.queryListByOpenId(params);
+	}
+
+	@Override
+	public List<ApplyEntityDto> queryListByOpenIdWithCollect(Map<String, Object> params) {
+		return applyDao.queryListByOpenIdWithCollect(params);
 	}
 
 	@Override

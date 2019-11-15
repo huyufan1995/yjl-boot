@@ -44,5 +44,5 @@ public class SessionMember {
 	/**
 	 * vipCode
 	 */
-	private String vipCode;
+	private String code;
 }

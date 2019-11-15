@@ -8,6 +8,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.renren.api.dto.ApplyRecordEntiyDto;
+import io.renren.api.dto.ApplyReviewEntityDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -83,10 +84,6 @@ public class ApplyEntity implements Serializable {
 	 */
 	private Integer applyHot;
 
-	/**
-	 * 活动回顾
-	 */
-	private ApplyReviewEntity applyReviewEntity;
 
 	/**
 	 * 活动报名记录

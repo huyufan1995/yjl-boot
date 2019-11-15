@@ -1,18 +1,26 @@
 package io.renren.cms.service.impl;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.util.StrUtil;
+import com.qcloud.cos.COSClient;
+import io.renren.api.constant.SystemConstant;
 import io.renren.api.exception.ApiException;
 import io.renren.cms.dao.MemberDao;
 import io.renren.cms.entity.MemberEntity;
 import io.renren.cms.entity.WxUserEntity;
 import io.renren.cms.service.MemberService;
 import io.renren.cms.service.WxUserService;
+import io.renren.config.WxMaConfiguration;
+import io.renren.properties.YykjProperties;
+import io.renren.utils.ProjectUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -37,6 +45,12 @@ public class MemberServiceImpl implements MemberService {
 
 	@Value("${tencent.cos.imagePrefixUrl}")
 	private String imagePrefixUrl;
+
+	@Autowired
+	private YykjProperties yykjProperties;
+
+	@Autowired
+	private COSClient cosClient;
 
 	@Autowired
 	private MemberDao memberDao;
@@ -104,13 +118,24 @@ public class MemberServiceImpl implements MemberService {
 		SessionMember sessionMember = new SessionMember();
 		if(memberEntity ==null ){
 			MemberEntity memberEntity1 = new MemberEntity();
-			memberEntity1.setVipCode(UUID.randomUUID().toString());
-			memberEntity1.setOpenid(openid);
+			//memberEntity1.setCode("6666666");
+			/*memberEntity1.setOpenid(openid);
 			memberEntity1.setCtime(new Date());
 			memberEntity1.setIsDel("f");
 			memberEntity1.setStatus("normal");
 			memberEntity1.setType(MemberTypeEnum.COMMON.getCode());
 			memberEntity1.setShowVip("f");
+			final WxMaService wxMaService = WxMaConfiguration.getMaService(yykjProperties.getAppid());
+			try {
+				File qrcodeFile = wxMaService.getQrcodeService().createWxaCode(
+						StrUtil.format(SystemConstant.APP_PAGE_PATH_Member_DETAIL, memberEntity1.getCode()), 280, false, null, false);
+				String key = ProjectUtils.uploadCosFile(cosClient, qrcodeFile);
+				System.err.println(yykjProperties.getImagePrefixUrl().concat(key));
+				memberEntity1.setQrCode(yykjProperties.getImagePrefixUrl().concat(key));
+			} catch (Exception e) {
+				e.printStackTrace();
+				log.error("===生成会员二维码异常：{}", e.getMessage());
+			}*/
 			memberDao.save(memberEntity1);
 			return getSessionMember(memberEntity1, sessionMember);
 		}
@@ -139,11 +164,15 @@ public class MemberServiceImpl implements MemberService {
 		sessionMember.setShowVip(memberEntity.getShowVip());
 		if (StringUtils.isNotBlank(memberEntity.getMobile())) {
 			sessionMember.setMobile(memberEntity.getMobile());
+/*
 			sessionMember.setMobileCipher(memberEntity.getMobile().replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2"));
+*/
 		}
 		sessionMember.setNickname(memberEntity.getNickname());
 		sessionMember.setPortrait(memberEntity.getPortrait());
 		sessionMember.setType(memberEntity.getType());//会员类型
+		sessionMember.setQrCode(memberEntity.getQrCode());
+		sessionMember.setCode(memberEntity.getCode());
 		return sessionMember;
 	}
 
