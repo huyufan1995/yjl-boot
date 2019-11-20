@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.LeaveDao">
+
+	<sql id="base_column" >
+			leave.`id`, 			leave.`content`, 			leave.`openid`, 			leave.`ctime`, 			leave.`status`, 			leave.`is_del`, 			leave.`member_id`  	</sql>
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.cms.entity.LeaveEntity" id="leaveMap">
+        <result property="id" column="id"/>
+        <result property="content" column="content"/>
+        <result property="openid" column="openid"/>
+        <result property="ctime" column="ctime"/>
+        <result property="status" column="status"/>
+        <result property="isDel" column="is_del"/>
+        <result property="memberId" column="member_id"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.LeaveEntity">
+		select * from tb_leave where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.LeaveEntity">
+		select * from tb_leave where 1 = 1
+		
+			<if test="content != null and content != ''"> and `content` = #{content}</if>
+			<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+			<if test="status != null and status != ''"> and `status` = #{status}</if>
+			<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
+			<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+		
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+		
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(id) from tb_leave where 1 = 1
+			<if test="content != null and content != ''"> and `content` = #{content}</if>
+			<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+			<if test="status != null and status != ''"> and `status` = #{status}</if>
+			<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
+			<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.cms.entity.LeaveEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_leave
+		(
+			`content`, 
+			`openid`, 
+			`ctime`, 
+			`status`, 
+			`is_del`, 
+			`member_id`
+		)
+		values
+		(
+			#{content}, 
+			#{openid}, 
+			#{ctime}, 
+			#{status}, 
+			#{isDel}, 
+			#{memberId}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.cms.entity.LeaveEntity">
+		update tb_leave 
+		<set>
+			<if test="content != null">`content` = #{content}, </if>
+			<if test="openid != null">`openid` = #{openid}, </if>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="isDel != null">`is_del` = #{isDel}, </if>
+			<if test="memberId != null">`member_id` = #{memberId}</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<update id="updateMsgStatus">
+		update tb_leave set status ='t'
+		where member_id = #{memberId}
+	</update>
+	
+	<!-- 	物理删除 -->
+	<delete id="delete">
+		delete from tb_leave where id = #{value}
+	</delete>
+	
+	<!-- 	批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_leave where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<!-- 	逻辑删除 -->
+	<update id="logicDel">
+		update tb_leave set is_del = 't' where id = #{value}
+	</update>
+	
+	<!-- 	批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update  tb_leave
+		set is_del = 't'
+		where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+
+	<select id="queryListByMemberId" resultType="io.renren.api.dto.LeaveEntityDto">
+		select tl.*,tm.portrait,tm.nickname as nickName,tm.type,tm.show_vip as showVip,ll.total as likeTotal
+		from tb_leave tl
+		left join tb_member tm
+		on tl.openid = tm.openid
+		left join (select count(id) total,data_id from tb_like where like_type = 4 group by id) ll
+		on ll.data_id = tl.id
+		where 1 = 1
+
+		<if test="content != null and content != ''"> and tl.`content` = #{content}</if>
+		<if test="ctime != null and ctime != ''"> and tl.`ctime` = #{ctime}</if>
+		<if test="status != null and status != ''"> and tl.`status` = #{status}</if>
+		<if test="isDel != null and isDel != ''"> and tl.`is_del` = #{isDel}</if>
+		<if test="memberId != null and memberId != ''"> and tl.`member_id` = #{memberId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (tlctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by tl.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryListDto" resultType="io.renren.api.dto.LeaveEntityDto">
+		select tl.content,tl.ctime,tm.nickname nickName,tm.show_vip showVip,tm.portrait from tb_leave tl
+		left join tb_member tm
+		on tl.openid = tm.openid
+		where 1 = 1
+		<if test="content != null and content != ''"> and tl.`content` = #{content}</if>
+		<if test="openid != null and openid != ''"> and tl.`openid` = #{openid}</if>
+		<if test="ctime != null and ctime != ''"> and tl.`ctime` = #{ctime}</if>
+		<if test="status != null and status != ''"> and tl.`status` = #{status}</if>
+		<if test="isDel != null and isDel != ''"> and tl.`is_del` = #{isDel}</if>
+		<if test="memberId != null and memberId != ''"> and tl.`member_id` = #{memberId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (tl.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by tl.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+</mapper>

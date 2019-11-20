@@ -13,6 +13,7 @@ import io.renren.config.WxMaConfiguration;
 import io.renren.enums.MemberTypeEnum;
 import io.renren.enums.ResponseCodeEnum;
 import io.renren.utils.R;
+import io.renren.utils.annotation.MemberType;
 import io.renren.utils.annotation.TokenMember;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -43,16 +44,13 @@ public class ApiCollectController {
 
     @PostMapping("/addComment")
     @ApiOperation(value = "添加收藏")
+    @MemberType
     @ApiImplicitParams({
             @ApiImplicitParam(paramType = "query", dataType = "string", name = "token", value = "令牌", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "dataId", value = "数据ID", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "collectType", value = "收藏类型 1：资讯 3：活动 4：会员", required = true),
     })
     public ApiResult addLike(@ApiIgnore CollectEntity collectEntity, @ApiIgnore @TokenMember SessionMember sessionMember) {
-        String type = sessionMember.getType();
-        if (MemberTypeEnum.COMMON.getCode().toLowerCase().equals(type)) {
-            throw new ApiException(SystemConstant.MEMBER_TYPE_MSG, 10001);
-        }
         HashMap<String,Object> params = new HashMap<>(5);
         params.put("dataId",collectEntity.getDataId());
         params.put("collectType",collectEntity.getCollectType());
@@ -62,9 +60,12 @@ public class ApiCollectController {
             collectEntity.setCtime(new Date());
             collectService.save(collectEntity);
             return ApiResult.ok("收藏成功");
-        }else {
-           Boolean delFlag = collectService.deleteWithOpenIdAndCollectTypeAndDataId(params);
         }
-        return ApiResult.ok("取消收藏");
+        Boolean delFlag = collectService.deleteWithOpenIdAndCollectTypeAndDataId(params);
+        if(delFlag){
+            return ApiResult.ok("取消收藏");
+        }else{
+            return ApiResult.ok("取消收藏失败，请联系管理员");
+        }
     }
 }

@@ -100,13 +100,6 @@ public class ApiWxUserController {
 		WxUserEntity wxUserEntity = wxUserService.queryByOpenId(openid);
 		Assert.isNullApi(wxUserEntity, "无法获取用户");
 		final WxMaService wxService = WxMaConfiguration.getMaService(yykjProperties.getAppid());
-
-		// 用户信息校验
-		if (!wxService.getUserService().checkUserInfo(wxUserEntity.getSessionKey(), rawData, signature)) {
-			log.error("获取微信用户信息验证不通过");
-//			return ApiResult.error(500, "检验错误");
-		}
-
 		// 解密用户信息
 		WxMaUserInfo userInfo = wxService.getUserService().getUserInfo(wxUserEntity.getSessionKey(), encryptedData, iv);
 		log.info("获取微信用户信息结果 ===> {}", JSON.toJSONString(userInfo));

@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.renren.api.dto.ApplyRecordEntiyDto;
+import io.renren.api.dto.VerifyMemberInfoDto;
 import io.renren.cms.entity.ApplyRecordEntity;
 import io.renren.dao.BaseDao;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 活动报名记录
@@ -23,4 +25,6 @@ public interface ApplyRecordDao extends BaseDao<ApplyRecordEntity> {
     List<ApplyRecordEntiyDto> queryPortrait(HashMap<String, Object> query);
 
 	Boolean deleteByOpenIdAndApplyId(HashMap<String, Object> params);
+
+    List<VerifyMemberInfoDto> queryVerifyMember(@Param(value = "openid")String openid, @Param(value = "code")String code);
 }

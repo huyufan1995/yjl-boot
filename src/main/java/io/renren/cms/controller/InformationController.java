@@ -1,11 +1,19 @@
 package io.renren.cms.controller;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.hutool.core.util.StrUtil;
+import com.qcloud.cos.COSClient;
 import io.renren.api.constant.SystemConstant;
 import io.renren.cms.entity.InformationsEntity;
+import io.renren.config.WxMaConfiguration;
 import io.renren.enums.AuditStatusEnum;
+import io.renren.properties.YykjProperties;
+import io.renren.utils.ProjectUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,11 +34,18 @@ import io.renren.utils.R;
  * @author moran
  * @date 2019-11-05 10:36:31
  */
+@Slf4j
 @RestController
 @RequestMapping("information")
 public class InformationController {
 	@Autowired
 	private InformationService informationService;
+
+	@Autowired
+	private YykjProperties yykjProperties;
+
+	@Autowired
+	private COSClient cosClient;
 	
 	/**
 	 * 列表
@@ -83,6 +98,17 @@ public class InformationController {
 	//@RequiresPermissions("information:save")
 	public R save(@RequestBody InformationsEntity information){
 		information = checkInformationType(information);
+		final WxMaService wxMaService = WxMaConfiguration.getMaService(yykjProperties.getAppid());
+		try {
+			File qrcodeFile = wxMaService.getQrcodeService().createWxaCode(
+					StrUtil.format(SystemConstant.APP_PAGE_PATH_INFORMATION_DETAIL, information.getId()), 280, false, null, false);
+			String key = ProjectUtils.uploadCosFile(cosClient, qrcodeFile);
+			System.err.println(yykjProperties.getImagePrefixUrl().concat(key));
+			information.setQrCode(yykjProperties.getImagePrefixUrl().concat(key));
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("===生成资讯二维码异常：{}", e.getMessage());
+		}
 		informationService.save(information);
 		return R.ok();
 	}

@@ -74,4 +74,10 @@ public class InformationsEntity implements Serializable {
 	@ApiModelProperty(value = "资讯列表文章banner")
 	private String banner;
 
+	/**
+	 * 二维码
+	 */
+	private String qrCode;
+
+
 }

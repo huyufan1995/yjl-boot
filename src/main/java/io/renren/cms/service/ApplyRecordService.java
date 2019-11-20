@@ -1,6 +1,7 @@
 package io.renren.cms.service;
 
 import io.renren.api.dto.ApplyRecordEntiyDto;
+import io.renren.api.dto.VerifyMemberInfoDto;
 import io.renren.cms.entity.ApplyRecordEntity;
 
 import java.util.HashMap;
@@ -38,4 +39,6 @@ public interface ApplyRecordService {
 	List<ApplyRecordEntiyDto> queryPortrait(HashMap<String, Object> query);
 
 	Boolean deleteByOpenIdAndApplyId(HashMap<String, Object> params);
+
+    List<VerifyMemberInfoDto> queryVerifyMember(String openid, String code);
 }

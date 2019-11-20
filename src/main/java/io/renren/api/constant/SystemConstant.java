@@ -24,7 +24,8 @@ public interface SystemConstant {
 	String INFORMATION_TYPE = "1";
 	String COMMENT_TYPE = "2";
 	String APPLY_TYPE = "3";
-	String MEMBER_TYPE = "4";
+	String MEMBER_MSG = "4";
+	String MEMBER_TYPE ="5";
 
 	String FONT_STR = "font";
 	String IMAGE_STR = "image";
@@ -59,9 +60,10 @@ public interface SystemConstant {
 	
 //	String TMP_DIR = System.getProperty("java.io.tmpdir").concat("/");
 	String TMP_DIR = "/mnt/app/yykj/tmp/";
-	
-	/** 小程序路径 官网详情 */
+
 	String APP_PAGE_PATH_Member_DETAIL = "pages/my/smhx/smhx?code={}";
+	String APP_PAGE_PATH_INFORMATION_DETAIL = "pages/zx/info/info?id={}";
+
 	String APP_PAGE_PATH_CARD_DETAIL = "pages/index/mp/mp?id={}&is=1";
 	String APP_PAGE_PATH_ACTIVATE_VIP = "pages/index/index?type=vip&acode={}";
 	/** 报名详情二维码 */

@@ -120,4 +120,21 @@
 		<if test="applyId != null">and apply_id = #{applyId}</if>
 		<if test="openid != null">and openid = #{openid}</if>
 	</delete>
+
+
+	<select id="queryVerifyMember" resultType="io.renren.api.dto.VerifyMemberInfoDto">
+		SELECT ta.*,tm.portrait,tm.nickname as nickName,tm.show_vip as showVip,tm.id as memberId,tm.code as code from tb_apply ta
+		LEFT JOIN tb_apply_record tar
+		on ta.id = tar.apply_id
+		LEFT JOIN tb_member tm
+		on tm.openid = tar.openid
+		LEFT JOIN tb_apply_verify tav
+		on tav.apply_id = ta.id
+		where 1=1
+		and tav.openid = #{openid}
+		and tm.code = #{code}
+		and ta.audit_status = 'pass'
+		and current_timestamp &lt;= ta.end_time
+		order by ta.start_time asc
+	</select>
 </mapper>

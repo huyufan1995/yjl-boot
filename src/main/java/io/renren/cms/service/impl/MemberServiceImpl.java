@@ -13,7 +13,9 @@ import cn.hutool.core.util.StrUtil;
 import com.qcloud.cos.COSClient;
 import io.renren.api.constant.SystemConstant;
 import io.renren.api.exception.ApiException;
+import io.renren.cms.dao.ForbiddenDao;
 import io.renren.cms.dao.MemberDao;
+import io.renren.cms.entity.ForbiddenMemberEntity;
 import io.renren.cms.entity.MemberEntity;
 import io.renren.cms.entity.WxUserEntity;
 import io.renren.cms.service.MemberService;
@@ -46,14 +48,12 @@ public class MemberServiceImpl implements MemberService {
 	@Value("${tencent.cos.imagePrefixUrl}")
 	private String imagePrefixUrl;
 
-	@Autowired
-	private YykjProperties yykjProperties;
-
-	@Autowired
-	private COSClient cosClient;
 
 	@Autowired
 	private MemberDao memberDao;
+
+	@Autowired
+	private ForbiddenDao forbiddenDao;
 
 	@Autowired
 	private TokenService tokenService;
@@ -118,41 +118,23 @@ public class MemberServiceImpl implements MemberService {
 		SessionMember sessionMember = new SessionMember();
 		if(memberEntity ==null ){
 			MemberEntity memberEntity1 = new MemberEntity();
-			//memberEntity1.setCode("6666666");
-			/*memberEntity1.setOpenid(openid);
+			memberEntity1.setOpenid(openid);
 			memberEntity1.setCtime(new Date());
 			memberEntity1.setIsDel("f");
 			memberEntity1.setStatus("normal");
 			memberEntity1.setType(MemberTypeEnum.COMMON.getCode());
 			memberEntity1.setShowVip("f");
-			final WxMaService wxMaService = WxMaConfiguration.getMaService(yykjProperties.getAppid());
-			try {
-				File qrcodeFile = wxMaService.getQrcodeService().createWxaCode(
-						StrUtil.format(SystemConstant.APP_PAGE_PATH_Member_DETAIL, memberEntity1.getCode()), 280, false, null, false);
-				String key = ProjectUtils.uploadCosFile(cosClient, qrcodeFile);
-				System.err.println(yykjProperties.getImagePrefixUrl().concat(key));
-				memberEntity1.setQrCode(yykjProperties.getImagePrefixUrl().concat(key));
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.error("===生成会员二维码异常：{}", e.getMessage());
-			}*/
 			memberDao.save(memberEntity1);
 			return getSessionMember(memberEntity1, sessionMember);
 		}
-		/*if (StringUtils.equals("freeze", memberEntity.getStatus())) {
+		if (StringUtils.equals("freeze", memberEntity.getStatus())) {
 			String forbiddenMsg = "该账号已被封禁";
-			ForbiddenMemberEntity forbiddenMemberEntity = null;
-			if (StringUtils.equals(MemberRoleEnum.BOSS.getCode(), memberEntity.getRole())) {
-				forbiddenMemberEntity = forbiddenDao.queryObjectBySuperiorId(memberEntity.getId());
-			} else {
-				forbiddenMemberEntity = forbiddenDao.queryObjectByOpenid(openid);
-			}
+			ForbiddenMemberEntity forbiddenMemberEntity = forbiddenDao.queryObjectByOpenid(openid);
 			if (forbiddenMemberEntity != null) {
 				forbiddenMsg = forbiddenMemberEntity.getForbiddenMsg();
 			}
 			throw new ApiException(forbiddenMsg, 10001, forbiddenMemberEntity);
-		}*/
-
+		}
 		return getSessionMember(memberEntity, sessionMember);
 	}
 
@@ -179,6 +161,16 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public MemberEntity queryObjectByCode(String code) {
 		return null;
+	}
+
+	@Override
+	public List<MemberEntity> queryListByMemberBanner(Map<String, Object> map) {
+		return memberDao.queryListByMemberBanner(map);
+	}
+
+	@Override
+	public List<MemberEntity> queryListByIsCollect(Map<String, Object> map) {
+		return memberDao.queryListByIsCollect(map);
 	}
 
 

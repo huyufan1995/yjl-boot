@@ -42,7 +42,7 @@ public class ApiLikeController {
     @ApiImplicitParams({
             @ApiImplicitParam(paramType = "query", dataType = "string", name = "token", value = "令牌", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "int", name = "dataId", value = "数据Id", required = true),
-            @ApiImplicitParam(paramType = "query", dataType = "int", name = "likeType", value = "点赞类型 1：资讯 2：评论 3：活动", required = true)
+            @ApiImplicitParam(paramType = "query", dataType = "int", name = "likeType", value = "点赞类型 1：资讯 2：评论 3：活动 4:会员留言 5：点赞会员" , required = true)
     })
     public ApiResult addLike(@RequestParam("dataId") Integer dataId, @RequestParam("likeType") Integer likeType,@ApiIgnore@TokenMember SessionMember sessionMember) {
         HashMap<String,Object> params = new HashMap<>(5);

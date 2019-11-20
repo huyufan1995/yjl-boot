@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.VerifyRecordDao">
+
+	<sql id="base_column" >
+			verifyRecord.`id`, 			verifyRecord.`apply_id`, 			verifyRecord.`openid`, 			verifyRecord.`member_id`, 			verifyRecord.`ctime`  	</sql>
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.cms.entity.VerifyRecordEntity" id="verifyRecordMap">
+        <result property="id" column="id"/>
+        <result property="applyId" column="apply_id"/>
+        <result property="openid" column="openid"/>
+        <result property="memberId" column="member_id"/>
+        <result property="ctime" column="ctime"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.VerifyRecordEntity">
+		select * from tb_verify_record where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.VerifyRecordEntity">
+		select * from tb_verify_record where 1 = 1
+		
+			<if test="applyId != null and applyId != ''"> and `apply_id` = #{applyId}</if>
+			<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+			<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+		
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+		
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(id) from tb_verify_record where 1 = 1
+			<if test="applyId != null and applyId != ''"> and `apply_id` = #{applyId}</if>
+			<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+			<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.cms.entity.VerifyRecordEntity">
+		insert into tb_verify_record
+		(
+			`id`, 
+			`apply_id`, 
+			`openid`, 
+			`member_id`, 
+			`ctime`
+		)
+		values
+		(
+			#{id}, 
+			#{applyId}, 
+			#{openid}, 
+			#{memberId}, 
+			#{ctime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.cms.entity.VerifyRecordEntity">
+		update tb_verify_record 
+		<set>
+			<if test="applyId != null">`apply_id` = #{applyId}, </if>
+			<if test="openid != null">`openid` = #{openid}, </if>
+			<if test="memberId != null">`member_id` = #{memberId}, </if>
+			<if test="ctime != null">`ctime` = #{ctime}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<!-- 	物理删除 -->
+	<delete id="delete">
+		delete from tb_verify_record where id = #{value}
+	</delete>
+	
+	<!-- 	批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_verify_record where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<!-- 	逻辑删除 -->
+	<update id="logicDel">
+		update tb_verify_record set is_del = 't' where id = #{value}
+	</update>
+	
+	<!-- 	批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update  tb_verify_record
+		set is_del = 't'
+		where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<select id="queryVerifyRecord" resultType="io.renren.api.dto.VerifyApplyDto">
+		SELECT ta.end_time,ta.apply_title,ta.id FROM tb_verify_record tvr
+		LEFT JOIN tb_apply ta
+		on tvr.apply_id = ta.id
+		where 1=1
+		<if test="openid != null">
+		and tvr.openid = #{openid}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryPortrait" resultType="String">
+		select tm.portrait from tb_verify_record tvr
+		LEFT JOIN tb_member tm
+		on tm.id = tvr.member_id
+		where 1 = 1
+		and tvr.`apply_id` = #{applyId}
+		group by tvr.ctime desc limit 0,4
+	</select>
+
+	<select id="queryVerifyPeopleInfo" resultType="io.renren.api.dto.VerifyRecordInfoDto">
+		SELECT tm.portrait,tm.nickname as nickName,tm.show_vip as showVip,tvr.ctime FROM tb_verify_record tvr
+		LEFT JOIN tb_member tm
+		on tm.id = tvr.member_id
+		where 1=1
+		<if test="openid != null">
+			and tvr.openid = #{openid}
+		</if>
+		<if test="openid != null">
+			and tvr.apply_id = #{applyId}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+</mapper>

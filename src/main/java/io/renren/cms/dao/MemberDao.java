@@ -41,4 +41,8 @@ public interface MemberDao extends BaseDao<MemberEntity> {
 	int openMember(Integer id);
 
 	MemberEntity queryObjectByMobile(String mobile);
+
+	List<MemberEntity> queryListByMemberBanner(Map<String, Object> map);
+
+    List<MemberEntity> queryListByIsCollect(Map<String, Object> map);
 }

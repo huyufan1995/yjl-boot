@@ -4,6 +4,8 @@ package io.renren.api.vo;
 
 
 
+import io.renren.enums.ResponseCodeEnum;
+import io.renren.utils.R;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.apache.poi.ss.formula.functions.T;
@@ -33,7 +35,9 @@ public class ApiResult {
 	public static ApiResult error(Integer statusCode, String statusMsg, Object data) {
 		return new ApiResult(statusCode, statusMsg, data);
 	}
-
+	public static ApiResult error(ResponseCodeEnum responseCodeEnum) {
+		return error(responseCodeEnum.getCode(), responseCodeEnum.getMsg());
+	}
 	public static ApiResult ok(Object data) {
 		return new ApiResult(data);
 	}

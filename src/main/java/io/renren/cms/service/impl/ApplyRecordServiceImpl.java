@@ -1,6 +1,7 @@
 package io.renren.cms.service.impl;
 
 import io.renren.api.dto.ApplyRecordEntiyDto;
+import io.renren.api.dto.VerifyMemberInfoDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -77,6 +78,11 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
 	@Override
 	public Boolean deleteByOpenIdAndApplyId(HashMap<String, Object> params) {
 		return applyRecordDao.deleteByOpenIdAndApplyId(params);
+	}
+
+	@Override
+	public List<VerifyMemberInfoDto> queryVerifyMember(String openid, String code) {
+		return applyRecordDao.queryVerifyMember(openid,code);
 	}
 
 

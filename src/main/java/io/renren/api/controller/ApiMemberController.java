@@ -1,6 +1,8 @@
 package io.renren.api.controller;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Maps;
 import com.qcloud.cos.COSClient;
@@ -11,6 +13,7 @@ import io.renren.api.constant.SystemConstant;
 import io.renren.api.dto.*;
 import io.renren.cms.entity.ApplyRecordEntity;
 import io.renren.cms.entity.CollectEntity;
+import io.renren.cms.entity.MemberBannerEntity;
 import io.renren.cms.entity.MemberEntity;
 import io.renren.cms.service.*;
 import io.renren.config.WxMaConfiguration;
@@ -18,9 +21,12 @@ import io.renren.enums.AuditStatusEnum;
 import io.renren.enums.MemberTypeEnum;
 import io.renren.properties.YykjProperties;
 import io.renren.utils.*;
+import io.renren.utils.annotation.TokenMember;
+import io.renren.utils.validator.Assert;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +56,12 @@ public class ApiMemberController {
 	private COSClient cosClient;
 
 	@Autowired
+	private LikeService likeService;
+
+	@Autowired
+	private LeaveService leaveService;
+
+	@Autowired
 	private YykjProperties yykjProperties;
 
 	@Autowired
@@ -72,6 +84,9 @@ public class ApiMemberController {
 
 	@Autowired
 	private InformationService informationService;
+
+	@Autowired
+	private MemberBannerService memberBannerService;
 	
 	@IgnoreAuth
 	@PostMapping("/login")
@@ -184,8 +199,11 @@ public class ApiMemberController {
 				entityDto.setPortrait(portrait);
 			}
 			return ApiResult.ok(informationList);
+		}else{
+			List<MemberEntity> memberEntities = memberService.queryListByIsCollect(query);
+			return ApiResult.ok(memberEntities);
 		}
-		return null;
+
 	}
 
 
@@ -209,11 +227,16 @@ public class ApiMemberController {
 			@ApiImplicitParam(paramType = "query", dataType = "string", name = "address", value = "现居住地址", required = true),
 			@ApiImplicitParam(paramType = "query", dataType = "string", name = "companyProfile", value = "公司简介", required = false),
 			@ApiImplicitParam(paramType = "query", dataType = "string", name = "haveResource", value = "拥有资源", required = false),
-			@ApiImplicitParam(paramType = "query", dataType = "string", name = "needResource", value = "需要资源", required = false)
+			@ApiImplicitParam(paramType = "query", dataType = "string", name = "needResource", value = "需要资源", required = false),
+			@ApiImplicitParam(paramType = "query", dataType = "string", name = "type", value = "common游客 vip 会员", required = true)
 	})
 	public ApiResult info(@ApiIgnore()MemberEntity memberEntity) {
+		if(memberEntity.getType().equals(MemberTypeEnum.VIP)){
+			memberEntity.setType(MemberTypeEnum.COMMON.getCode());
+		}
+		memberEntity.setAuditStatus(AuditStatusEnum.PENDING.getCode());
 		memberService.update(memberEntity);
-		return ApiResult.ok(memberEntity);
+		return ApiResult.ok();
 	}
 
 
@@ -302,10 +325,101 @@ public class ApiMemberController {
 			System.err.println(yykjProperties.getImagePrefixUrl().concat(key));
 		} catch (Exception e) {
 			e.printStackTrace();
-			log.error("===生成会员邀请二维码异常：{}", e.getMessage());
+			log.error("===生成会员二维码异常：{}", e.getMessage());
 		}
 		return null;
 	}
+	@IgnoreAuth
+	@ApiOperation(value = "认证会员列表", notes = "认证会员列表")
+	@PostMapping("/member_vip_list")
+	@ApiImplicitParams({
+			@ApiImplicitParam(paramType = "query", dataType = "int", name = "page", value = "页码 默认1", required = false),
+			@ApiImplicitParam(paramType = "query", dataType = "int", name = "limit", value = "页大小 默认5", required = false),
+			@ApiImplicitParam(paramType = "query", dataType = "int", name = "nickname", value = "搜索", required = false)
+	})
+	public ApiResult memberVipList(@ApiIgnore() @RequestParam Map<String, Object> params) {
+		params.put("openid","");
+		params.put("type","vip");
+		params.put("status","normal");
+		List<MemberEntity> memberEntities = memberService.queryList(params);
+		List<MemberBannerEntity> memberBannerEntities = memberBannerService.queryList(null);
+		HashMap<String,Object> map = new HashMap<>(2);
+		map.put("banner",memberBannerEntities);
+		map.put("list",memberEntities);
+		return  ApiResult.ok(map);
+	}
 
 
+	@IgnoreAuth
+	@PostMapping("/authenticationInfo")
+	@ApiOperation(value = "会员认证信息")
+	@ApiImplicitParams({
+			@ApiImplicitParam(paramType = "query", dataType = "string", name = "openid", value = "openid", required = true)
+	})
+	public ApiResult info(@RequestParam String openid) {
+		MemberEntity memberEntity = memberService.queryObjectByOpenid(openid);
+		return ApiResult.ok(memberEntity);
+	}
+
+
+	@PostMapping("/memberInfo")
+	@ApiOperation(value = "会员信息(有留言板)")
+	@ApiImplicitParams({
+			@ApiImplicitParam(paramType = "query", dataType = "string", name = "memberId", value = "被查看人会员ID", required = false),
+			@ApiImplicitParam(paramType = "query", dataType = "string", name = "token", value = "令牌", required = true),
+	})
+	public ApiResult memberInfo(@RequestParam String memberId,@ApiIgnore @TokenMember SessionMember sessionMember) {
+		MemberEntity memberEntity = new MemberEntity();
+		if(StringUtils.isNotEmpty(memberId)){
+			memberEntity = memberService.queryObject(Integer.parseInt(memberId));
+		}else{
+			memberEntity = memberService.queryObjectByOpenid(sessionMember.getOpenid());
+		}
+		Assert.isNullApi(memberEntity,"会员信息为空");
+		MemberEntityDto memberEntityDto = new MemberEntityDto();
+		BeanUtil.copyProperties(memberEntity, memberEntityDto, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
+		HashMap<String,Object> map = new HashMap<>(3);
+		map.put("dataId",memberId);
+		map.put("openid",sessionMember.getOpenid());
+		map.put("collectType", SystemConstant.MEMBER_MSG);
+		memberEntityDto.setIsCollect(collectService.queryTotal(map)>0);
+		//查询是否点赞
+		map.put("likeType",SystemConstant.MEMBER_TYPE);
+		memberEntityDto.setIsLike(likeService.queryTotal(map)>0);
+		//留言数量
+		HashMap<String,Object> q = new HashMap<>(1);
+		q.put("memberId",memberEntity.getId());
+		memberEntityDto.setLeaveTotal(leaveService.queryTotal(q));
+		return ApiResult.ok(memberEntityDto);
+	}
+
+	@PostMapping("/memberMsg")
+	@ApiOperation(value = "会员消息状态")
+	@ApiImplicitParams({
+			@ApiImplicitParam(paramType = "query", dataType = "string", name = "token", value = "令牌", required = true),
+	})
+	public ApiResult memberMsg(@ApiIgnore @TokenMember SessionMember sessionMember) {
+		HashMap param = new HashMap(2);
+		param.put("memberId",sessionMember.getMemberId());
+		param.put("status","f");
+		Map<String,Object> map= new HashMap<>(1);
+		map.put("read",leaveService.queryTotal(param)> 0);
+		return ApiResult.ok(map);
+	}
+
+	@PostMapping("/memberMsgList")
+	@ApiOperation(value = "会员我的留言列表")
+	@ApiImplicitParams({
+			@ApiImplicitParam(paramType = "query", dataType = "string", name = "token", value = "令牌", required = true),
+			@ApiImplicitParam(paramType = "query", dataType = "int", name = "page", value = "页码 默认1", required = false),
+			@ApiImplicitParam(paramType = "query", dataType = "int", name = "limit", value = "页大小 默认5", required = false)
+	})
+	public ApiResult memberMsgList(@ApiIgnore @TokenMember SessionMember sessionMember) {
+		HashMap param = new HashMap(1);
+		param.put("memberId",sessionMember.getMemberId());
+		Query query = new Query(param);
+		List<LeaveEntityDto> list = leaveService.queryListDto(query);
+		leaveService.updateMsgStatus(sessionMember.getMemberId());
+		return ApiResult.ok(list);
+	}
 }

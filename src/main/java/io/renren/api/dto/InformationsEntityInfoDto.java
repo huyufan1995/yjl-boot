@@ -21,12 +21,12 @@ public class InformationsEntityInfoDto extends InformationsEntity {
     /**
      * 是否分享
      */
-    private Boolean shareFlag;
+    private Boolean isShare;
 
     /**
      * 是否点赞
      */
-    private Boolean likeFlag;
+    private Boolean isLike;
 
 
     /**
@@ -37,10 +37,16 @@ public class InformationsEntityInfoDto extends InformationsEntity {
     /**
      * 当前人是否收藏
      */
-    private Boolean collectFlag;
+    private Boolean isCollect;
 /*
     *//**
      * 点赞量
      *//*
     private Integer likeTotal;*/
+
+
+    /**
+     * 资讯详情描述
+     */
+    private String informationDesc;
 }

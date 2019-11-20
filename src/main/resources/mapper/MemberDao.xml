@@ -42,7 +42,7 @@
 			<if test="type != null and type != ''"> and `type` = #{type}</if>
 			<if test="company != null and company != ''"> and `company` = #{company}</if>
 			<if test="email != null and email != ''"> and `email` = #{email}</if>
-		
+			<if test="code != null and code != ''"> and `code` = #{code}</if>
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
 			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
 		</if>
@@ -116,34 +116,36 @@
 	</insert>
 	 
 	<update id="update" parameterType="io.renren.cms.entity.MemberEntity">
-		update tb_member 
+		update tb_member
 		<set>
-			<if test="portrait != null">`portrait` = #{portrait}, </if>
-			<if test="nickname != null">`nickname` = #{nickname}, </if>
-			<if test="gender != null">`gender` = #{gender}, </if>
-			<if test="ctime != null">`ctime` = #{ctime}, </if>
-			<if test="isDel != null">`is_del` = #{isDel}, </if>
-			<if test="status != null">`status` = #{status}, </if>
-			<if test="realName != null">`real_name` = #{realName}, </if>
-			<if test="mobile != null">`mobile` = #{mobile}, </if>
-			<if test="openid != null">`openid` = #{openid}, </if>
-			<if test="type != null">`type` = #{type}, </if>
-			<if test="company != null">`company` = #{company}, </if>
-			<if test="email != null">`email` = #{email},</if>
-			<if test="phone != null">`phone = #{phone},</if>
-			<if test="code != null">`code` = #{code},</if>
+			<if test="portrait != null">`portrait` =#{portrait},</if>
+			<if test="nickname != null">`nickname`=#{nickname},</if>
+			<if test="gender != null">`gender`=#{gender},</if>
+			<if test="ctime != null">`ctime`=#{ctime},</if>
+			<if test="isDel != null">`is_del`=#{isDel},</if>
+			<if test="status != null">`status`=#{status},</if>
+			<if test="realName != null">`real_name`=#{realName},</if>
+			<if test="mobile != null">`mobile`=#{mobile},</if>
+			<if test="openid != null">`openid`=#{openid},</if>
+			<if test="type != null">`type`=#{type},</if>
+			<if test="company != null">`company`=#{company},</if>
+			<if test="email != null">`email`=#{email},</if>
+			<if test="phone != null">`phone`=#{phone},</if>
+			<if test="code != null">`code`=#{code},</if>
 			<if test="weixinNumber != null">`weixin_number` = #{weixinNumber},</if>
 			<if test="birthday != null">`birthday` = #{birthday},</if>
-			<if test="nationality != null">`nationality` = #{nationality},</if>
-			<if test="address != null">`address` = #{address},</if>
-			<if test="profile != null">`profile` = #{profile},</if>
-			<if test="companyProfile != null">`company_profile` = #{companyProfile},</if>
-			<if test="haveResource != null">`have_resource` = #{haveResource},</if>
-			<if test="needResource != null">`need_resource` = #{needResource},</if>
-			<if test="code != null">`code` = #{code},</if>
-			<if test="qrCode != null">`qr_code` = #{qrCode},</if>
-			<if test="mobileCountry != null">`mobile_country` = #{mobileCountry},</if>
-			<if test="phoneCountry != null">`phone_country` = #{phoneCountry},</if>
+			<if test="nationality != null">`nationality`=#{nationality},</if>
+			<if test="address != null">`address`=#{address},</if>
+			<if test="profile != null">`profile`= #{profile},</if>
+			<if test="companyProfile != null">`company_profile`=#{companyProfile},</if>
+			<if test="haveResource != null">`have_resource`=#{haveResource},</if>
+			<if test="needResource != null">`need_resource`=#{needResource},</if>
+			<if test="code != null">`code`=#{code},</if>
+			<if test="qrCode != null">`qr_code`=#{qrCode},</if>
+			<if test="mobileCountry != null">`mobile_country`=#{mobileCountry},</if>
+			<if test="phoneCountry != null">`phone_country`=#{phoneCountry},</if>
+			<if test="auditStatus != null">`audit_status`=#{auditStatus},</if>
+			<if test="auditMsg != null">`audit_msg`=#{auditMsg}</if>
 		</set>
 		where id = #{id}
 	</update>
@@ -177,5 +179,72 @@
 			#{id}
 		</foreach>
 	</update>
+	<select id="queryListByMemberBanner" resultType="io.renren.cms.entity.MemberEntity">
+		select t.*
+		FROM tb_member t
+		,tb_member_banner tmb
+		WHERE t.id &lt;&gt; tmb.member_id
+		<if test="portrait != null and portrait != ''"> and t.`portrait` = #{portrait}</if>
+		<if test="nickname != null and nickname != ''"> and t.`nickname` = #{nickname}</if>
+		<if test="gender != null and gender != ''"> and t.`gender` = #{gender}</if>
+		<if test="ctime != null and ctime != ''"> and t.`ctime` = #{ctime}</if>
+		<if test="isDel != null and isDel != ''"> and t.`is_del` = #{isDel}</if>
+		<if test="status != null and status != ''"> and t.`status` = #{status}</if>
+		<if test="realName != null and realName != ''"> and t.`real_name` = #{realName}</if>
+		<if test="mobile != null and mobile != ''"> and t.`mobile` = #{mobile}</if>
+		<if test="openid != null and openid != ''"> and t.`openid` = #{openid}</if>
+		<if test="type != null and type != ''"> and t.`type` = #{type}</if>
+		<if test="company != null and company != ''"> and t.`company` = #{company}</if>
+		<if test="email != null and email != ''"> and t.`email` = #{email}</if>
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (t.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
 
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by t.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+
+	<select id="queryListByIsCollect" resultType="io.renren.cms.entity.MemberEntity">
+		select tm.* from tb_member tm
+		left join tb_collect tc
+		on tm.id = tc.data_id
+		where 1 = 1
+		<if test="portrait != null and portrait != ''"> and `portrait` = #{portrait}</if>
+		<if test="nickname != null and nickname != ''"> and `nickname` = #{nickname}</if>
+		<if test="gender != null and gender != ''"> and `gender` = #{gender}</if>
+		<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+		<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
+		<if test="status != null and status != ''"> and `status` = #{status}</if>
+		<if test="realName != null and realName != ''"> and `real_name` = #{realName}</if>
+		<if test="mobile != null and mobile != ''"> and `mobile` = #{mobile}</if>
+		<if test="openid != null and openid != ''"> and tc.`openid` = #{openid}</if>
+		<if test="type != null and type != ''"> and `type` = #{type}</if>
+		<if test="company != null and company != ''"> and `company` = #{company}</if>
+		<if test="email != null and email != ''"> and `email` = #{email}</if>
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
 </mapper>

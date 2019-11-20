@@ -5,13 +5,13 @@ import java.util.Map;
 
 import io.renren.api.dto.SessionMember;
 import io.renren.cms.entity.MemberEntity;
+import io.renren.utils.Query;
 
 /**
  * 会员接口
  * 
- * @author yujia
- * @email yujiain2008@163.com
- * @date 2019-08-21 13:51:48
+ * @author moran
+ * @date 2019-11-18 13:51:48
  */
 public interface MemberService {
 
@@ -39,4 +39,7 @@ public interface MemberService {
 
 	MemberEntity queryObjectByCode(String code);
 
+	List<MemberEntity> queryListByMemberBanner(Map<String, Object> map);
+
+    List<MemberEntity> queryListByIsCollect(Map<String, Object> map);
 }

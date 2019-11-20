@@ -4,7 +4,7 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '头像', name: 'portrait', index: 'portrait', width: 80 },
+			{ label: '会员号', name: 'code', index: 'code', width: 80 },
 			{ label: '昵称', name: 'nickname', index: 'nickname', width: 80 },
 			{ label: '性别 man woman', name: 'gender', index: 'gender', width: 80 },
 			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
@@ -31,7 +31,7 @@ $(function () {
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
-                	var dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='edit("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>修改</span></button>&nbsp;";
+                	var dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='showMember("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>认证</span></button>&nbsp;";
                 	dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
                 	return dom;
                 }
@@ -75,6 +75,16 @@ function edit(id){
     vm.getInfo(id)
 }
 
+function showMember(id){
+	if(id == null){
+		return ;
+	}
+	//vm.showList = false;
+	vm.showModal2 = true;
+	vm.title = "修改";
+	vm.getInfo(id)
+}
+
 //逻辑删除
 function logic_del(id){
 	if(id == null){
@@ -107,6 +117,8 @@ var vm = new Vue({
 		showList: true,
 		showModal: false,
 		title: null,
+		showModal4: false,
+		showModal2: false,
 		member: {},
 		ruleValidate: {
 			nickname: [
@@ -117,7 +129,8 @@ var vm = new Vue({
 			id: null,
 			sdate: null,
 			edate: null,
-			ctime: []
+			ctime: [],
+			code:null
 		}
 	},
 	methods: {
@@ -129,6 +142,7 @@ var vm = new Vue({
 			vm.q.sdate = null;
 			vm.q.edate = null;
 			vm.q.ctime = null;
+			vm.q.code = null;
 		},
 		add: function(){
 			//vm.showList = false;
@@ -144,6 +158,31 @@ var vm = new Vue({
 			vm.showList = false;
             vm.title = "修改";
             vm.getInfo(id)
+		},
+		noPass: function (event) {
+			vm.showModal2 = false;
+			vm.showModal4 = true;
+			vm.title = "请输入不通过原因";
+		},
+		memberPass: function(event){
+			vm.member.auditMsg = null;
+			$.ajax({
+				type: "POST",
+				url: "../member/updateType",
+				contentType: "application/json",
+				data: JSON.stringify(vm.member),
+				success: function(r){
+					if(r.code === 0){
+						vm.reload();
+						vm.showModal = false;
+						vm.showModal4 = false;
+						vm.member.auditMsg = null;
+						vm.$Message.success('操作成功!');
+					}else{
+						vm.$Message.error(r.msg);
+					}
+				}
+			});
 		},
 		saveOrUpdate: function (event) {
 			this.$refs['member'].validate((valid) => {
@@ -211,7 +250,7 @@ var vm = new Vue({
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
-				postData:{"id": vm.q.id, "sdate":vm.q.sdate, "edate":vm.q.edate},
+				postData:{"id": vm.q.id,"code":vm.q.code, "sdate":vm.q.sdate, "edate":vm.q.edate},
                 page:page
             }).trigger("reloadGrid");
 		},

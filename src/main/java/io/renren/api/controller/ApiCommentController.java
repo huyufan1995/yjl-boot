@@ -46,17 +46,17 @@ public class ApiCommentController {
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "informationId", value = "资讯Id", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "remark", value = "评论内容", required = true),
     })
-    public R addLike(@ApiIgnore CommentEntity commentEntity, @ApiIgnore @TokenMember SessionMember sessionMember) {
+    public ApiResult addLike(@ApiIgnore CommentEntity commentEntity, @ApiIgnore @TokenMember SessionMember sessionMember) {
         String type = sessionMember.getType();
         if (MemberTypeEnum.COMMON.getCode().toLowerCase().equals(type)) {
             throw new ApiException(SystemConstant.MEMBER_TYPE_MSG, 10001);
         }
         final WxMaService wxMaService = WxMaConfiguration.getMaService(yykjProperties.getAppid());
         if(!wxMaService.getSecCheckService().checkMessage(commentEntity.getRemark())) {
-            return R.error(ResponseCodeEnum.SEC_MSG_ILLEGALITY);
+            return ApiResult.error(ResponseCodeEnum.SEC_MSG_ILLEGALITY);
         }
         commentEntity.setCtime(new Date());
         commentService.save(commentEntity);
-        return R.ok("评论成功");
+        return ApiResult.ok("评论成功");
     }
 }

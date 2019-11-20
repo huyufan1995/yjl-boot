@@ -27,7 +27,7 @@ public class CommentEntityDto extends CommentEntity {
     /**
      * 是否点赞
      */
-    private Boolean likeFlag;
+    private Boolean isLike;
 
     /**
      * 是否展示VIP  logo

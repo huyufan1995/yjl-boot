@@ -125,7 +125,7 @@ public class ApiInformationController {
             commentEntity.setLikeTotal(likeService.queryTotal(map));
             //查询当前人是否点赞
             map.put("openid",openid);
-            commentEntity.setLikeFlag(likeService.queryTotal(map)>0);
+            commentEntity.setIsLike(likeService.queryTotal(map)>0);
         }
         return ApiResult.ok(commentEntities);
     }
@@ -150,13 +150,13 @@ public class ApiInformationController {
         informationsEntityInfoDto.setBrowsTotal(total==0?total+1:total);
         //查询当前资讯是否收藏
         Boolean collectFlag = collectService.isCollect(id,1,openid);
-        informationsEntityInfoDto.setCollectFlag(collectFlag);
+        informationsEntityInfoDto.setIsCollect(collectFlag);
         //查询是否点赞资讯    likeType 1 为资讯相关
         params.put("likeType","1");
         params.put("dataId",id);
         int likeTotal = likeService.queryTotal(params);
         if(likeTotal>0){
-            informationsEntityInfoDto.setLikeFlag(true);
+            informationsEntityInfoDto.setIsLike(true);
         }
         //添加资讯浏览记录
         addInformationBrows(id, openid);
@@ -166,6 +166,13 @@ public class ApiInformationController {
         params.put("openid","");
         params.put("likeType","2");
         informationsEntityInfoDto.setLikeTotal(likeService.queryTotal(params));*/
+
+        //设置资讯详情描述
+        String content = HTMLSpirit.getTextFromHtml(informationsEntityInfoDto.getContent());
+        if(content.length()>100){
+            content=content.substring(0,100);
+        }
+        informationsEntityInfoDto.setInformationDesc(content);
         return ApiResult.ok(informationsEntityInfoDto);
     }
     //添加资讯评论数量

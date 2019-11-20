@@ -113,4 +113,8 @@ public class MemberEntity implements Serializable {
 	 * 需要资源
 	 */
 	private String needResource;
+
+	private String auditMsg;
+
+	private String auditStatus;
 }
