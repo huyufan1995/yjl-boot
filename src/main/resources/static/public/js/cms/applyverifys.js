@@ -86,6 +86,8 @@ var vm = new Vue({
 		showModal: false,
 		title: null,
 		applyVerify: {},
+		memberList:[],
+		applyList:[],
 		ruleValidate: {
 											
 																applyId: [
@@ -115,6 +117,8 @@ var vm = new Vue({
 			vm.showModal = true;
 			vm.title = "新增";
 			vm.applyVerify = {};
+			vm.getMemberList();
+			vm.getApplyList();
 		},
 		update: function (event) {
 			var id = getSelectedRow();
@@ -124,6 +128,26 @@ var vm = new Vue({
 			vm.showList = false;
             vm.title = "修改";
             vm.getInfo(id)
+		},
+		getMemberList: function () {
+			$.ajax({
+				url: "../member/queryListAll",
+				async: false,
+				type: "GET",
+				success: function (r) {
+					vm.memberList = r.memberList;
+				}
+			});
+		},
+		getApplyList: function () {
+			$.ajax({
+				url: "../apply/queryAll",
+				async: false,
+				type: "GET",
+				success: function (r) {
+					vm.applyList = r.applyList;
+				}
+			});
 		},
 		saveOrUpdate: function (event) {
 			this.$refs['applyVerify'].validate((valid) => {

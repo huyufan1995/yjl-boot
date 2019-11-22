@@ -40,5 +40,5 @@ public interface ApplyRecordService {
 
 	Boolean deleteByOpenIdAndApplyId(HashMap<String, Object> params);
 
-    List<VerifyMemberInfoDto> queryVerifyMember(String openid, String code);
+    List<VerifyMemberInfoDto> queryVerifyMember(String code);
 }

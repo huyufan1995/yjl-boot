@@ -164,7 +164,7 @@ public class MemberController {
 		return R.ok();
 	}
 	/**
-	 * 查询所有会员
+	 * 查询所有会员  设置会员banner用的方法
 	 */
 	@RequestMapping("/queryAll")
 	//@RequiresPermissions("informationtype:delete")
@@ -203,4 +203,15 @@ public class MemberController {
 		return R.ok();
 	}
 
+
+	/**
+	 * 查询所有会员  设置核销员用的方法
+	 */
+	@RequestMapping("/queryListAll")
+	//@RequiresPermissions("informationtype:delete")
+	public R queryListAll(){
+		List<MemberEntity> memberEntities = memberService.queryList(null);
+
+		return R.ok().put("memberList", memberEntities);
+	}
 }

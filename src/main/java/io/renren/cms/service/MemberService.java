@@ -42,4 +42,6 @@ public interface MemberService {
 	List<MemberEntity> queryListByMemberBanner(Map<String, Object> map);
 
     List<MemberEntity> queryListByIsCollect(Map<String, Object> map);
+
+	void updateVerify(String verify, String openid);
 }

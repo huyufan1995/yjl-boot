@@ -6,15 +6,22 @@ $(function () {
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
 			{ label: '会员号', name: 'code', index: 'code', width: 80 },
 			{ label: '昵称', name: 'nickname', index: 'nickname', width: 80 },
-			{ label: '性别 man woman', name: 'gender', index: 'gender', width: 80 },
+			{ label: '性别', name: 'gender', index: 'gender', width: 80,
+				formatter: function (value, options, row) {
+					if(value == '1'){
+						return "<span class='label label-warning'>男</span>";
+					}else if (value == '2'){
+						return "<span class='label label-warning'>女</span>";
+					}else{
+						return "<span class='label label-warning'>未知</span>";
+					}
+				}
+			},
 			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '姓名', name: 'realName', index: 'real_name', width: 80 },
+			{ label: '认证状态', name: 'auditStatus', index: 'audit_status', width: 80 },
 			{ label: '手机号', name: 'mobile', index: 'mobile', width: 80 },
-			{ label: '微信用户ID', name: 'openid', index: 'openid', width: 80 },
-			{ label: '游客common 会员vip ', name: 'type', index: 'type', width: 80 },
-			{ label: '公司名称', name: 'company', index: 'company', width: 80 },
 			{ label: '邮箱', name: 'email', index: 'email', width: 80 },
-			{ label: 't:展示vip f:不展示', name: 'showVip', index: 'show_vip', width: 80 },
+			{ label: 'VIP', name: 'showVip', index: 'show_vip', width: 80 },
 			{ label: '手机号2 ：非必填', name: 'phone', index: 'phone', width: 80 },
 			{ label: '微信号', name: 'weixinNumber', index: 'weixin_number', width: 80 },
 			{ label: '出生日期', name: 'birthday', index: 'birthday', width: 80 },
@@ -24,15 +31,24 @@ $(function () {
 			{ label: '公司介绍', name: 'companyProfile', index: 'company_profile', width: 80 },
 			{ label: '拥有资源', name: 'havaResource', index: 'hava_resource', width: 80 },
 			{ label: '需要资源', name: 'needResource', index: 'need_resource', width: 80 },
-			{ label: '会员code', name: 'vipCode', index: 'vip_code', width: 80 },
-			{ label: '二维码', name: 'qrCode', index: 'qr_code', width: 80 },
+			{ label: '二维码', name: 'qrCode', index: 'qr_code', width: 80,
+				formatter: function (value, options, row) {
+					if(value == null){
+						return "<span>无</span>";
+					}
+					return "<img src='"+value+"' width='80px' height='50px'/>";
+				}
+			},
 			{ label: '手机号1所属地区', name: 'mobileCountry', index: 'mobile_country', width: 80 },
 			{ label: '手机号2所属地区', name: 'phoneCountry', index: 'phone_country', width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
-                	var dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='showMember("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>认证</span></button>&nbsp;";
-                	dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
+
+                	var dom ="<button type='button' class='ivu-btn ivu-btn-primary' onclick='showDesc("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>查看</span></button>&nbsp;";
+					if(row.auditStatus =='pending'){
+						dom +="<button type='button' class='ivu-btn ivu-btn-primary' onclick='showMember("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>认证</span></button>&nbsp;";
+					}
                 	return dom;
                 }
             }
@@ -64,6 +80,9 @@ $(function () {
     });
 });
 
+function showDesc(v){
+	vm.show(v);
+}
 //修改
 function edit(id){
 	if(id == null){
@@ -159,6 +178,15 @@ var vm = new Vue({
             vm.title = "修改";
             vm.getInfo(id)
 		},
+		show: function (id) {
+			//var id = getSelectedRow();
+			if(id == null){
+				return ;
+			}
+			vm.showList = false;
+			vm.title = "查看";
+			vm.getInfo(id)
+		},
 		noPass: function (event) {
 			vm.showModal2 = false;
 			vm.showModal4 = true;
@@ -176,6 +204,7 @@ var vm = new Vue({
 						vm.reload();
 						vm.showModal = false;
 						vm.showModal4 = false;
+						vm.showModal2 =false;
 						vm.member.auditMsg = null;
 						vm.$Message.success('操作成功!');
 					}else{

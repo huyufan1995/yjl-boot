@@ -1,23 +1,34 @@
 package io.renren.api.controller;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Page;
+import com.qcloud.cos.COSClient;
 import io.renren.api.constant.SystemConstant;
 import io.renren.api.dto.CommentEntityDto;
 import io.renren.api.dto.InformationsEntityDto;
 import io.renren.api.dto.InformationsEntityInfoDto;
+import io.renren.api.dto.SessionMember;
 import io.renren.api.vo.ApiResult;
 import io.renren.api.vo.ApiResultList;
 import io.renren.cms.entity.*;
 import io.renren.cms.service.*;
+import io.renren.config.WxMaConfiguration;
 import io.renren.enums.AuditStatusEnum;
 import io.renren.properties.YykjProperties;
 import io.renren.utils.HTMLSpirit;
+import io.renren.utils.ProjectUtils;
 import io.renren.utils.Query;
 import io.renren.utils.annotation.IgnoreAuth;
+import io.renren.utils.annotation.TokenMember;
 import io.renren.utils.validator.Assert;
 import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.error.WxErrorException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -33,10 +45,13 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/information")
 @Api("资讯")
+@Slf4j
 public class ApiInformationController {
 
     @Autowired
     private InformationService informationService;
+    @Autowired
+    private COSClient cosClient;
 
     @Autowired
     private InformationBrowsService informationBrowsService;
@@ -48,6 +63,9 @@ public class ApiInformationController {
     private BannerService bannerService;
 
     @Autowired
+    private TemplateService templateService;
+
+    @Autowired
     private CommentService commentService;
 
     @Autowired
@@ -55,6 +73,9 @@ public class ApiInformationController {
 
     @Autowired
     private YykjProperties yykjProperties;
+
+    @Autowired
+    private MemberService memberService;
 
     @Autowired
     private LikeService likeService;
@@ -144,7 +165,9 @@ public class ApiInformationController {
         params.put("openid",openid);
         params.put("informationId",id);
         //资讯浏览量
-        int total = informationBrowsService.queryTotal(params);
+        HashMap<String,Object> qid = new HashMap<>(1);
+        qid.put("informationId",id);
+        int total = informationBrowsService.queryTotal(qid);
         InformationsEntityInfoDto informationsEntityInfoDto = new InformationsEntityInfoDto();
         BeanUtil.copyProperties(informationEntity, informationsEntityInfoDto, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
         informationsEntityInfoDto.setBrowsTotal(total==0?total+1:total);
@@ -196,6 +219,62 @@ public class ApiInformationController {
         informationBrowsService.save(informationBrowsEntity);
     }
 
+    @ApiOperation("资讯分享")
+    @PostMapping("/information_share_image")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "query", dataType = "int", name = "informationId", value = "资讯Id", required = true),
+            @ApiImplicitParam(paramType = "query", dataType = "string", name = "token", value = "令牌", required = true)
+    })
+    public ApiResult viewShareImage(@RequestParam Integer informationId,@ApiIgnore @TokenMember SessionMember sessionMember) {
+        MemberEntity memberEntity = memberService.queryObject(sessionMember.getMemberId());
+        InformationsEntity informationsEntity = informationService.queryObject(informationId);
+        Assert.isNullApi(informationsEntity, "资讯不存在");
+        TemplateEntity templateEntity = templateService.queryObject(503);
+        Assert.isNullApi(templateEntity, "模板不存在");
+        templateEntity.setImageTemplate(yykjProperties.getVisitprefix() + templateEntity.getImageTemplate());
+        List<TemplateItmeEntity> templateItmeList = templateService.queryListByTemplateId(503);
+        if (CollectionUtil.isEmpty(templateItmeList)) {
+            return ApiResult.error(500, "模板参数不存在");
+        }
+        for (TemplateItmeEntity templateItme : templateItmeList) {
+            //小程序码
+            if (templateItme.getId().equals(2652)) {
+              templateItme.setImagePath(informationsEntity.getQrCode());
+            }
+            //banner
+            if (templateItme.getId().equals(2650)) {
+                templateItme.setImagePath(informationsEntity.getBanner());
+            }
+            //会员头像
+            if (templateItme.getId().equals(2651)) {
+                templateItme.setImagePath(memberEntity.getPortrait());
+            }
+            //标题
+            if (templateItme.getId().equals(2653)) {
+                templateItme.setDescribe(informationsEntity.getTitle().replaceAll(SystemConstant.REGEX_CASE_INTRO, "$1∫"));
+            }
+            //详情
+            if (templateItme.getId().equals(2654)) {
+                //设置资讯详情描述
+                String content = HTMLSpirit.getTextFromHtml(informationsEntity.getContent());
+                if(content.length()>50){
+                    content=content.substring(0,50)+"...";
+                }
+                templateItme.setDescribe(content.replaceAll(SystemConstant.REGEX_CASE_INTRO, "$1∫"));
+            }
+            //会员名
+            if (templateItme.getId().equals(2655)) {
+                templateItme.setDescribe(memberEntity.getNickname());
+
+            }
+        }
+
+        File generateShareImage = ProjectUtils.generateShareImage(templateItmeList, templateEntity);
+        String shareImageUrl = ProjectUtils.uploadCosFile(cosClient, generateShareImage);
+        String fullUrl = yykjProperties.getImagePrefixUrl() + shareImageUrl;
+        log.info("==============资讯分享图片：{}", fullUrl);
+        return ApiResult.ok(fullUrl);
+    }
 /*    @IgnoreAuth
     @ApiOperation("测试接口幂等性")
     @PostMapping("/informationTest")

@@ -117,4 +117,6 @@ public class MemberEntity implements Serializable {
 	private String auditMsg;
 
 	private String auditStatus;
+
+	private String verify;
 }

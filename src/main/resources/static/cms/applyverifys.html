@@ -62,7 +62,7 @@
 																	<Form-item label="核销员openid" prop="openid">
 		            	<i-input v-model="applyVerify.openid" placeholder="核销员openid" style="width: 300px"></i-input>
 		        	</Form-item>
-										    </i-form>
+			</i-form>
 		    
 		    <!-- <div class="form-group">
 				<div class="col-sm-2 control-label"></div> 
@@ -77,13 +77,17 @@
 	<Modal v-model="showModal" :title="title" :mask-closable="false" width="800">
 	
 		<i-form ref="applyVerify" :model="applyVerify" :rules="ruleValidate" :label-width="100" label-position="left">
-																<Form-item label="活动id" prop="applyId">
-			    	<i-input v-model="applyVerify.applyId" placeholder="活动id" style="width: 300px"></i-input>
+				<Form-item label="活动id" prop="applyId">
+					<i-select v-model="applyVerify.applyId" placeholder="会员" style="width: 300px" >
+						<i-option v-for="item in applyList" :value="item.id" :key="item.id">{{ item.applyTitle }}</i-option>
+					</i-select>
 				</Form-item>
-													<Form-item label="核销员openid" prop="openid">
-			    	<i-input v-model="applyVerify.openid" placeholder="核销员openid" style="width: 300px"></i-input>
+				<Form-item label="核销员openid" prop="openid">
+					<i-select v-model="applyVerify.openid" placeholder="会员" style="width: 300px" >
+						<i-option v-for="item in memberList" :value="item.openid" :key="item.openid">{{ item.nickname }}</i-option>
+					</i-select>
 				</Form-item>
-								</i-form>
+		</i-form>
 	        
         <div slot="footer">
         	<i-button type="warning" @click="showModal = false">取消</i-button>

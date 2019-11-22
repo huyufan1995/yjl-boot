@@ -12,6 +12,7 @@ import io.renren.cms.entity.ApplyRecordEntity;
 import io.renren.cms.entity.InformationsEntity;
 import io.renren.cms.entity.LikeEntity;
 import io.renren.cms.service.ApplyRecordService;
+import io.renren.cms.service.ApplyReviewService;
 import io.renren.cms.service.ApplyService;
 import io.renren.cms.service.CollectService;
 import io.renren.utils.HTMLSpirit;
@@ -24,6 +25,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,6 +54,9 @@ public class ApiApplyController {
 
     @Autowired
     private ApplyService applyService;
+
+    @Autowired
+    private ApplyReviewService applyReviewService;
 
     @Autowired
     private ApplyRecordService applyRecordService;
@@ -82,22 +88,24 @@ public class ApiApplyController {
             entityDto.setApplyContent(content);
             HashMap<String, Object> q = new HashMap<>(3);
             q.put("applyId", entityDto.getId());
-            q.put("offset", 0);
-            q.put("limit", 4);
             List<ApplyRecordEntiyDto> applyRecordEntiyDtoList = applyRecordService.queryPortrait(q);
             // 处理报名人头像
-            entityDto.setPortrait(applyRecordEntiyDtoList.stream().map(ApplyRecordEntiyDto::getPortrait).collect(Collectors.toList()));
+            entityDto.setPortrait(applyRecordEntiyDtoList.stream().map(ApplyRecordEntiyDto::getPortrait).limit(4).collect(Collectors.toList()));
             if (new Date().after(entityDto.getStartTime())) {
                 entityDto.setApplyStatus("已结束");
             } else {
                 if (applyRecordEntiyDtoList.isEmpty()) {
                     entityDto.setApplyStatus("立即报名");
-
                 } else {
-                    for (ApplyRecordEntiyDto recordEntiyDto : applyRecordEntiyDtoList) {
+                    //根据当前所以报名人的头像集合遍历是否有 报名
+                    Loop:for (ApplyRecordEntiyDto recordEntiyDto : applyRecordEntiyDtoList) {
                         if (params.get("openid").toString().equals(recordEntiyDto.getOpenid())) {
                             entityDto.setApplyStatus("已报名");
+                            break Loop;
                         }
+                    }
+                    if(StringUtils.isEmpty(entityDto.getApplyStatus())){
+                        entityDto.setApplyStatus("立即报名");
                     }
                 }
             }
@@ -112,7 +120,7 @@ public class ApiApplyController {
             @ApiImplicitParam(paramType = "query", dataType = "string", name = "token", value = "令牌", required = true),
             @ApiImplicitParam(paramType = "query", dataType = "int", name = "applyId", value = "活动Id", required = true)
     })
-    public ApiResult addLike(@RequestParam("applyId") String applyId, @ApiIgnore @TokenMember SessionMember sessionMember) {
+    public ApiResult addLike(@RequestParam("applyId") String applyId,@ApiIgnore @TokenMember SessionMember sessionMember) {
         HashMap<String, Object> params = new HashMap<>(5);
         params.put("applyId", applyId);
         params.put("openid", sessionMember.getOpenid());
@@ -121,6 +129,8 @@ public class ApiApplyController {
             applyRecordEntity.setApplyId(applyId);
             applyRecordEntity.setOpenid(sessionMember.getOpenid());
             applyRecordEntity.setCtime(new Date());
+            applyRecordEntity.setMemberId(sessionMember.getMemberId());
+            applyRecordEntity.setVerifyStatus(SystemConstant.F_STR);
             applyRecordService.save(applyRecordEntity);
         } else {
             Boolean isApply = applyRecordService.deleteByOpenIdAndApplyId(params);
@@ -139,34 +149,44 @@ public class ApiApplyController {
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "openid", value = "openid", required = true)
     })
     public ApiResult applyDataInfo(@RequestParam Integer id, @RequestParam String openid) {
-        ApplyEntityDto applyEntityDto = applyService.findAllById(id);
-        Assert.isNullApi(applyEntityDto, "该数据不存在");
+        ApplyEntityDto applyEntityDto = getApplyEntityDto(id, openid);
+        return ApiResult.ok(applyEntityDto);
+    }
+
+    /**
+     * 封装活动详情数据
+     * @param id
+     * @param openid
+     * @return
+     */
+    private ApplyEntityDto getApplyEntityDto(Integer id,String openid) {
+        ApplyEntity applyEntity = applyService.queryObject(id);
+        HashMap<String,Object> qs = new HashMap<>(1);
+        qs.put("applyId",id);
+        List<ApplyRecordEntiyDto> applyRecordEntiyDtoList = applyRecordService.queryPortrait(qs);
+        qs.put("showStatus","t");
+        qs.put("auditStatus","pass");
+        ApplyReviewEntityDto applyReviewEntityDto = applyReviewService.queryObjectDto(qs);
+        ApplyEntityDto applyEntityDto = new ApplyEntityDto();
+        BeanUtil.copyProperties(applyEntity, applyEntityDto, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
+        applyEntityDto.setApplyRecordEntiyDto(applyRecordEntiyDtoList);
+        applyEntityDto.setApplyReviewEntityDto(applyReviewEntityDto);
         if (new Date().after(applyEntityDto.getStartTime())) {
             applyEntityDto.setApplyStatus("已结束");
         } else {
-                /*for (ApplyRecordEntiyDto recordEntiyDto : applyEntityDto.getApplyRecordEntiyDto()) {
-                    if(openid.equals(recordEntiyDto.getOpenid())){
-                        if(applyEntityDto.getId().equals(recordEntiyDto.getApplyId())){
-                            applyEntityDto.setApplyStatus("已报名");
-                        }else{
-                            applyEntityDto.setApplyStatus("立即报名");
-                        }
-                    }
-                }*/
-            List<ApplyRecordEntiyDto> recordEntiyDtoList = applyEntityDto.getApplyRecordEntiyDto();
-            if(recordEntiyDtoList.isEmpty()){
+            if(applyRecordEntiyDtoList.isEmpty()){
                 applyEntityDto.setApplyStatus("立即报名");
             }
             Loop:
-            for (int i = 0; i < recordEntiyDtoList.size(); i++) {
-                ApplyRecordEntiyDto recordEntiyDto = recordEntiyDtoList.get(i);
-
+            for (int i = 0; i < applyRecordEntiyDtoList.size(); i++) {
+                ApplyRecordEntiyDto recordEntiyDto = applyRecordEntiyDtoList.get(i);
                 if (openid.equals(recordEntiyDto.getOpenid())) {
                      applyEntityDto.setApplyStatus("已报名");
                 }
-                if (i + 1 == 4) {
-                    break Loop;
-                }
+            }
+            if(StringUtils.isEmpty(applyEntityDto.getApplyStatus())){
+                applyEntityDto.setApplyStatus("立即报名");
+
             }
         }
         HashMap<String, Object> q = new HashMap<>(2);
@@ -176,6 +196,6 @@ public class ApiApplyController {
         applyEntityDto.setIsCollect(collectService.queryTotal(q) > 0);
         //设置报名人数
         applyEntityDto.setJoinTotal(applyEntityDto.getApplyRecordEntiyDto().size());
-        return ApiResult.ok(applyEntityDto);
+        return applyEntityDto;
     }
 }

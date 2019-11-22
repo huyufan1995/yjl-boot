@@ -81,8 +81,8 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
 	}
 
 	@Override
-	public List<VerifyMemberInfoDto> queryVerifyMember(String openid, String code) {
-		return applyRecordDao.queryVerifyMember(openid,code);
+	public List<VerifyMemberInfoDto> queryVerifyMember(String code) {
+		return applyRecordDao.queryVerifyMember(code);
 	}
 
 

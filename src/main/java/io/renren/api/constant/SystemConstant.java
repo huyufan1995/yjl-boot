@@ -33,10 +33,12 @@ public interface SystemConstant {
 	String IMAGE_SHAPE_YX = "yx";//圆形
 	String IMAGE_SHAPE_JX = "jx";//矩形
 
-	/** 默认名片头像*/
-	String DEFAULT_CARD_PORTRAIT = "http://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/app/DEFAULT_CARD_PORTRAIT.png";
-	/** 默认名片头像 随机*/
-	String DEFAULT_CARD_RANDOM_PORTRAIT = "http://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/app/head/{}.jpg";
+	String IMAGE_HUIYUAN ="https://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/yjl/app/me/huiyuan.png";
+	String VIP_LOGO ="https://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/yjl/app/me/vip.png";
+	/** 默认文本类型越柬寮图片*/
+	String DEFAULT_TEXT_IMG = "https://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/yjl/app/me/19cc12ac22c54f500357825cdefe4fa.png";
+	/** 默认视频类型腾讯图片*/
+	String DEFAULT_VEDIO_IMG = "https://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/yjl/app/me/146f60bf607370d301d72d5115d2367.png";
 	/** 默认名片姓名*/
 	String DEFAULT_CARD_NAME = "暂无昵称";
 	String DEFAULT_CARD_POSITION = "暂无职位信息";
@@ -58,8 +60,8 @@ public interface SystemConstant {
 	/** 最大上传图片大小 */
 	int MAX_UPLOAD_FILE_SIZE = 3145728;// 3MB
 	
-//	String TMP_DIR = System.getProperty("java.io.tmpdir").concat("/");
-	String TMP_DIR = "/mnt/app/yykj/tmp/";
+	String TMP_DIR = System.getProperty("java.io.tmpdir").concat("/");
+	//String TMP_DIR = "/mnt/app/yykj/tmp/";
 
 	String APP_PAGE_PATH_Member_DETAIL = "pages/my/smhx/smhx?code={}";
 	String APP_PAGE_PATH_INFORMATION_DETAIL = "pages/zx/info/info?id={}";

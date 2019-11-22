@@ -1,5 +1,6 @@
 package io.renren.cms.service;
 
+import io.renren.api.dto.ApplyReviewEntityDto;
 import io.renren.cms.entity.ApplyReviewEntity;
 
 import java.util.List;
@@ -37,4 +38,6 @@ public interface ApplyReviewService {
 	int commit(Integer id);
 
 	int release(Integer id);
+
+    ApplyReviewEntityDto queryObjectDto(Map<String, Object> map);
 }

@@ -3,8 +3,11 @@ package io.renren.cms.controller;
 import java.util.List;
 import java.util.Map;
 
+import io.renren.api.constant.SystemConstant;
+import io.renren.cms.service.MemberService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +33,9 @@ import io.renren.utils.R;
 public class ApplyVerifyController {
 	@Autowired
 	private ApplyVerifyService applyVerifyService;
+
+	@Autowired
+	private MemberService memberService;
 	
 	/**
 	 * 列表
@@ -64,9 +70,10 @@ public class ApplyVerifyController {
 	 */
 	@RequestMapping("/save")
 	//@RequiresPermissions("applyverify:save")
+	@Transactional
 	public R save(@RequestBody ApplyVerifyEntity applyVerify){
 		applyVerifyService.save(applyVerify);
-		
+		memberService.updateVerify(SystemConstant.T_STR,applyVerify.getOpenid());
 		return R.ok();
 	}
 	

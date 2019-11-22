@@ -196,16 +196,12 @@
 		<if test="auditMsg != null and auditMsg != ''"> and `audit_msg` = #{auditMsg}</if>
 		<if test="showStatus != null and showStatus != ''"> and `show_status` = #{showStatus}</if>
 
-		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
-			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
-		</if>
-
 		<choose>
 			<when test="sidx != null and sidx.trim() != ''">
 				order by ${sidx} ${order}
 			</when>
 			<otherwise>
-				order by id desc
+				order by ctime desc
 			</otherwise>
 		</choose>
 		<if test="offset != null and limit != null">
@@ -255,6 +251,7 @@
         on ta.id =tare.apply_id
 		left join tb_member tm on tare.openid = tm.openid
 		where 1=1
+		and tm.type='vip'
         and ta.id = #{applyId}
     </select>
 
@@ -319,6 +316,11 @@
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}
 		</if>
+	</select>
+
+	<select id="queryAll" resultType="io.renren.cms.entity.ApplyEntity">
+		select ta.id,ta.apply_title from tb_apply ta where 1 = 1
+		and current_timestamp &lt;= ta.end_time
 	</select>
 
 </mapper>

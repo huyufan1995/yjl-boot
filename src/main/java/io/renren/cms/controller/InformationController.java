@@ -119,12 +119,19 @@ public class InformationController {
 	 * @return
 	 */
 	private InformationsEntity checkInformationType(InformationsEntity information) {
+		// 如果没有传类banner图，则根据类型设置相应的banner图
 		if (StringUtils.isNotEmpty(information.getVideoLink())) {
 			information.setContentType(SystemConstant.VIDEO_TYPE);
+			if(StringUtils.isEmpty(information.getBanner())){
+				information.setBanner(SystemConstant.DEFAULT_VEDIO_IMG);
+			}
 		} else if (information.getContent().indexOf("<img") > 0) {
 			information.setContentType(SystemConstant.IMAGE_TYPE);
 		} else {
 			information.setContentType(SystemConstant.TEXT_TYPE);
+		}
+		if(StringUtils.isEmpty(information.getBanner())){
+			information.setBanner(SystemConstant.DEFAULT_TEXT_IMG);
 		}
 		return information;
 	}

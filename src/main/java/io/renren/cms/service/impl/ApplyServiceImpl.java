@@ -102,6 +102,11 @@ public class ApplyServiceImpl implements ApplyService {
 	}
 
 	@Override
+	public List<ApplyEntity> queryAll() {
+		return applyDao.queryAll();
+	}
+
+	@Override
 	public int commit(Integer id) {
 		ApplyEntity entity = new ApplyEntity();
 		entity.setId(id);

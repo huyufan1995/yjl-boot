@@ -7,6 +7,7 @@ import io.renren.api.dto.VerifyApplyDto;
 import io.renren.api.dto.VerifyRecordInfoDto;
 import io.renren.cms.entity.VerifyRecordEntity;
 import io.renren.dao.BaseDao;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 核销记录
@@ -26,4 +27,6 @@ public interface VerifyRecordDao extends BaseDao<VerifyRecordEntity> {
 	List<String> queryPortrait(String applyId);
 
 	List<VerifyRecordInfoDto> queryVerifyPeopleInfo(Map<String, Object> param);
+
+    boolean updateVerifyStatus(@Param(value = "memberId") String memberId,@Param(value = "applyId") String applyId);
 }

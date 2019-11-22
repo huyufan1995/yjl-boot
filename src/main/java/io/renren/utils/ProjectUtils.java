@@ -1,43 +1,39 @@
 package io.renren.utils;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.HeadlessException;
-import java.awt.Image;
-import java.awt.Transparency;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.swing.ImageIcon;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.qcloud.cos.COSClient;
-import com.qcloud.cos.model.PutObjectRequest;
-import com.qcloud.cos.model.PutObjectResult;
-import com.qcloud.cos.model.StorageClass;
-
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.http.HttpUtil;
+import com.google.common.collect.Lists;
+import com.qcloud.cos.COSClient;
+import com.qcloud.cos.model.PutObjectRequest;
+import com.qcloud.cos.model.PutObjectResult;
+import com.qcloud.cos.model.StorageClass;
 import io.renren.api.constant.SystemConstant;
+import io.renren.api.dto.SessionMember;
 import io.renren.api.kit.PicKit;
+import io.renren.cms.entity.ApplyEntity;
+import io.renren.cms.entity.TemplateEntity;
+import io.renren.cms.entity.TemplateItmeEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * 项目工具
@@ -120,6 +116,92 @@ public class ProjectUtils {
 		}
 	}
 
+	public static File generateShareImage(List<TemplateItmeEntity> items, TemplateEntity templateEntity) {
+
+		String imageTemplate = templateEntity.getImageTemplate();
+		BufferedImage templateBufferedImage = PicKit.loadImageUrl(imageTemplate);
+
+		//先处理图片
+		for (TemplateItmeEntity templateItmeEntity : items) {
+			if ("image".equals(templateItmeEntity.getType())) {
+				//处理图片
+				if (StringUtils.isBlank(templateItmeEntity.getImagePath())) {
+					continue;
+				}
+				if ("jx".equals(templateItmeEntity.getImageShape())) {
+					//矩形
+					BufferedImage bufferedImageIn = PicKit.loadImageUrl(templateItmeEntity.getImagePath());
+					Image scale = ImgUtil.scale(bufferedImageIn, templateItmeEntity.getWidth(),
+							templateItmeEntity.getHeight());
+					PicKit.writeImg(ImgUtil.toBufferedImage(scale), templateBufferedImage, templateItmeEntity.getX(),
+							templateItmeEntity.getY());
+				} else if ("yx".equals(templateItmeEntity.getImageShape())) {
+					//圆形
+					Image scale = ImgUtil.scale(PicKit.loadImageUrl(templateItmeEntity.getImagePath()),
+							templateItmeEntity.getWidth(), templateItmeEntity.getHeight());
+					BufferedImage bufferedImageYX = PicKit.transferImgForRoundImgage(ImgUtil.toBufferedImage(scale));
+					PicKit.writeImg(bufferedImageYX, templateBufferedImage, templateItmeEntity.getX(),
+							templateItmeEntity.getY());
+				}
+			}
+		}
+
+		//后处理文字
+		for (TemplateItmeEntity templateItmeEntity : items) {
+			if ("font".equals(templateItmeEntity.getType())) {
+				//处理文字
+				if (StringUtils.isBlank(templateItmeEntity.getDescribe())) {
+					continue;
+				}
+
+				Font font = new Font(templateItmeEntity.getFontName(), templateItmeEntity.getFontStyle(),
+						templateItmeEntity.getFontSize());
+				Color fontColor = new Color(templateItmeEntity.getFontColorR(), templateItmeEntity.getFontColorG(),
+						templateItmeEntity.getFontColorB());
+				templateItmeEntity.setY(templateItmeEntity.getY() + templateItmeEntity.getFontSize());//TODO
+
+				if (templateItmeEntity.getIsMultiLine().equals("true")) {
+					//多行
+					PicKit.writeStrings(templateBufferedImage, templateItmeEntity.getDescribe().split("∫"), font,
+							fontColor, templateItmeEntity.getX(), templateItmeEntity.getY(),
+							templateItmeEntity.getWordSpace(), templateItmeEntity.getLineSpace(), false);
+				} else {
+					//单行
+					if (templateItmeEntity.getIsCenter().equals("true")) {
+						//水平居中
+						PicKit.writeStringCenter(templateBufferedImage, templateItmeEntity.getDescribe(), font,
+								fontColor, templateItmeEntity.getY(), templateItmeEntity.getWordSpace());
+					} else {
+						//非水平居中
+						if (templateItmeEntity.getFontDeletedLine().equals("true")) {
+							//删除线
+							PicKit.drawDeletedLine(templateBufferedImage, font, fontColor,
+									templateItmeEntity.getDescribe(), templateItmeEntity.getX(),
+									templateItmeEntity.getY(), 0, templateItmeEntity.getDescribe().length());
+						}
+
+						if (templateItmeEntity.getFontUnderLine().equals("true")) {
+							//下化线
+							PicKit.drawUnderLine(templateBufferedImage, font, fontColor,
+									templateItmeEntity.getDescribe(), templateItmeEntity.getX(),
+									templateItmeEntity.getY(), 0, templateItmeEntity.getDescribe().length());
+						}
+
+						if (templateItmeEntity.getFontUnderLine().equals("false")
+								&& templateItmeEntity.getFontDeletedLine().equals("false")) {
+							//正常文字
+							PicKit.writeString(templateBufferedImage, templateItmeEntity.getDescribe(), font, fontColor,
+									templateItmeEntity.getX(), templateItmeEntity.getY(),
+									templateItmeEntity.getWordSpace());
+						}
+					}
+				}
+			}
+		}
+		File tempFile = FileUtil.file(SystemConstant.TMP_DIR + IdUtil.fastSimpleUUID() + ".jpg");
+		PicKit.writeImageLocal(tempFile, templateBufferedImage);
+		return tempFile;
+	}
 
 	public static BufferedImage toBufferedImage(Image image) {
 		if (image instanceof BufferedImage) {

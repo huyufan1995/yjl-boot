@@ -132,6 +132,7 @@
 		LEFT JOIN tb_member tm
 		on tm.id = tvr.member_id
 		where 1 = 1
+		and tm.type='vip'
 		and tvr.`apply_id` = #{applyId}
 		group by tvr.ctime desc limit 0,4
 	</select>
@@ -141,6 +142,7 @@
 		LEFT JOIN tb_member tm
 		on tm.id = tvr.member_id
 		where 1=1
+		and tm.type='vip'
 		<if test="openid != null">
 			and tvr.openid = #{openid}
 		</if>
@@ -151,4 +153,10 @@
 			limit #{offset}, #{limit}
 		</if>
 	</select>
+
+	<update id="updateVerifyStatus">
+        update tb_apply_record set `verify_status` = 't'
+        where member_id = #{memberId}
+        and apply_id =#{applyId}
+    </update>
 </mapper>

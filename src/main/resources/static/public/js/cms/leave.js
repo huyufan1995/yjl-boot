@@ -63,7 +63,7 @@ function logic_del(id){
 		return ;
 	}
 	
-	vm.%Modal.confirm({
+	vm.$Modal.confirm({
         title: '提示',
         content: '确定要删除吗？',
         onOk:() => {
@@ -73,9 +73,9 @@ function logic_del(id){
     		    success: function(r){
     		    	if(r.code == 0){
     					$("#jqGrid").trigger("reloadGrid");
-    		    		vm.%Message.success('操作成功!');
+    		    		vm.$Message.success('操作成功!');
     				}else{
-    					vm.%Message.error(r.msg);
+    					vm.$Message.error(r.msg);
     				}
     			}
     		});
@@ -138,7 +138,7 @@ var vm = new Vue({
             vm.getInfo(id)
 		},
 		saveOrUpdate: function (event) {
-			this.%refs['leave'].validate((valid) => {
+			this.$refs['leave'].validate((valid) => {
                 if (valid) {
                 	var url = vm.leave.id == null ? "../leave/save" : "../leave/update";
         			$.ajax({
@@ -150,9 +150,9 @@ var vm = new Vue({
         			    	if(r.code === 0){
         			    		vm.reload();
         			    		vm.showModal = false;
-        			    		vm.%Message.success('操作成功!');
+        			    		vm.$Message.success('操作成功!');
         					}else{
-        						vm.%Message.error(r.msg);
+        						vm.$Message.error(r.msg);
         					}
         				}
         			});
@@ -165,7 +165,7 @@ var vm = new Vue({
 				return ;
 			}
 			
-			vm.%Modal.confirm({
+			vm.$Modal.confirm({
 	        title: '提示',
 	        content: '确定要删除选中的记录？',
 	        onOk:() => {
@@ -176,9 +176,9 @@ var vm = new Vue({
 				    success: function(r){
 						if(r.code === 0){
 							$("#jqGrid").trigger("reloadGrid");
-    			    		vm.%Message.success('操作成功!');
+    			    		vm.$Message.success('操作成功!');
     					}else{
-    						vm.%Message.error(r.msg);
+    						vm.$Message.error(r.msg);
     					}
 					}
 				});

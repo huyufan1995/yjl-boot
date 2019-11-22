@@ -138,7 +138,7 @@
 		left join (select count(id) total,data_id from tb_like where like_type = 4 group by id) ll
 		on ll.data_id = tl.id
 		where 1 = 1
-
+		and tm.type ='vip'
 		<if test="content != null and content != ''"> and tl.`content` = #{content}</if>
 		<if test="ctime != null and ctime != ''"> and tl.`ctime` = #{ctime}</if>
 		<if test="status != null and status != ''"> and tl.`status` = #{status}</if>
@@ -167,6 +167,7 @@
 		left join tb_member tm
 		on tl.openid = tm.openid
 		where 1 = 1
+		and tm.type ='vip'
 		<if test="content != null and content != ''"> and tl.`content` = #{content}</if>
 		<if test="openid != null and openid != ''"> and tl.`openid` = #{openid}</if>
 		<if test="ctime != null and ctime != ''"> and tl.`ctime` = #{ctime}</if>

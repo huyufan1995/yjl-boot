@@ -3,6 +3,7 @@ package io.renren.cms.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +67,11 @@ public class ApplyVerifyServiceImpl implements ApplyVerifyService {
 	public int logicDelBatch(List<Integer> ids) {
 		return applyVerifyDao.logicDelBatch(ids);
 	}
-	
-	
+
+	@Override
+	public List<ApplyVerifyEntity> queryListWithVerifyMember(HashMap<String, Object> param) {
+		return applyVerifyDao.queryListWithVerifyMember(param);
+	}
+
+
 }

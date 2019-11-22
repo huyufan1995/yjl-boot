@@ -26,5 +26,5 @@ public interface ApplyRecordDao extends BaseDao<ApplyRecordEntity> {
 
 	Boolean deleteByOpenIdAndApplyId(HashMap<String, Object> params);
 
-    List<VerifyMemberInfoDto> queryVerifyMember(@Param(value = "openid")String openid, @Param(value = "code")String code);
+    List<VerifyMemberInfoDto> queryVerifyMember(@Param(value = "code")String code);
 }

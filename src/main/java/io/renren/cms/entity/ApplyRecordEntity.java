@@ -31,4 +31,21 @@ public class ApplyRecordEntity implements Serializable {
 	 */
 	private Date ctime;
 
+	/**
+	 * 报名数据姓名
+	 */
+	private String name;
+
+	/**
+	 * 报名数据手机号
+	 */
+	private Integer phone;
+
+	private Integer memberId;
+
+	/**
+	 * 核销状态
+	 */
+	private String verifyStatus;
+
 }

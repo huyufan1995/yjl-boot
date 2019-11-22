@@ -1,8 +1,8 @@
 spring:
     datasource:
-        url: jdbc:mysql://27.148.190.53:39999/yykj_test?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
-        username: yykj_test
-        password: SNxtzcZp7jXCwmxy
+        url: jdbc:mysql://27.148.190.53:39999/yjl?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+        username: yjl
+        password: YStZFArNxxDLCeHc
         #连接池的配置信息
         initialSize: 10
         minIdle: 10

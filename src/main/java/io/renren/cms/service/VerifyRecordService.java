@@ -40,4 +40,6 @@ public interface VerifyRecordService {
 	List<String> queryPortrait(String id);
 
 	List<VerifyRecordInfoDto> queryVerifyPeopleInfo(Map<String, Object> param);
+
+    boolean updateVerifyStatus(String memberId,String applyId);
 }

@@ -56,14 +56,18 @@
 			`id`, 
 			`apply_id`, 
 			`openid`,
-			`ctime`
+			`ctime`,
+			`member_id`,
+			`verify_status`
 		)
 		values
 		(
 			#{id}, 
 			#{applyId}, 
 			#{openid},
-			#{ctime}
+			#{ctime},
+			#{memberId},
+			#{verifyStatus}
 		)
 	</insert>
 	 
@@ -104,7 +108,7 @@
 	</update>
 
 	<select id="queryPortrait" resultType="io.renren.api.dto.ApplyRecordEntiyDto">
-		select tar.*,tm.portrait,tm.nickname as nickName,tm.show_vip as showVip from tb_apply_record tar
+		select tar.*,tm.portrait,tm.nickname as nickName,tm.show_vip as showVip,tar.ctime as joinDate from tb_apply_record tar
 		LEFT JOIN tb_member tm
 		on tm.openid = tar.openid
 		where 1 = 1
@@ -123,18 +127,24 @@
 
 
 	<select id="queryVerifyMember" resultType="io.renren.api.dto.VerifyMemberInfoDto">
-		SELECT ta.*,tm.portrait,tm.nickname as nickName,tm.show_vip as showVip,tm.id as memberId,tm.code as code from tb_apply ta
-		LEFT JOIN tb_apply_record tar
-		on ta.id = tar.apply_id
-		LEFT JOIN tb_member tm
-		on tm.openid = tar.openid
-		LEFT JOIN tb_apply_verify tav
-		on tav.apply_id = ta.id
-		where 1=1
-		and tav.openid = #{openid}
-		and tm.code = #{code}
-		and ta.audit_status = 'pass'
-		and current_timestamp &lt;= ta.end_time
-		order by ta.start_time asc
+	SELECT
+		ta.*,
+		tm.portrait,
+		tm.nickname AS nickName,
+		tm.show_vip AS showVip,
+		tm.id AS memberId,
+		tm.code AS code
+		FROM
+		`tb_apply_record` tar
+		LEFT JOIN tb_member tm ON tar.openid = tm.openid
+		LEFT JOIN tb_apply ta ON ta.id = tar.apply_id
+		WHERE
+		1 = 1
+		AND tar.verify_status ='f'
+		AND tm.code = #{code}
+		GROUP BY
+		ta.start_time ASC
 	</select>
+
+
 </mapper>

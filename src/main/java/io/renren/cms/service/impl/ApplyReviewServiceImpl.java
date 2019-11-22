@@ -1,6 +1,7 @@
 package io.renren.cms.service.impl;
 
 import io.renren.api.constant.SystemConstant;
+import io.renren.api.dto.ApplyReviewEntityDto;
 import io.renren.cms.entity.ApplyEntity;
 import io.renren.enums.AuditStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,11 @@ public class ApplyReviewServiceImpl implements ApplyReviewService {
 		entity.setAuditMsg("通过");
 		entity.setAuditStatus(AuditStatusEnum.PASS.getCode());
 		return applyReviewDao.update(entity);
+	}
+
+	@Override
+	public ApplyReviewEntityDto queryObjectDto(Map<String, Object> map) {
+		return applyReviewDao.queryObjectDto(map);
 	}
 
 	@Override

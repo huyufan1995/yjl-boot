@@ -3,6 +3,7 @@ package io.renren.api.controller;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Maps;
 import com.qcloud.cos.COSClient;
@@ -11,10 +12,7 @@ import com.qcloud.cos.model.PutObjectResult;
 import com.qcloud.cos.model.StorageClass;
 import io.renren.api.constant.SystemConstant;
 import io.renren.api.dto.*;
-import io.renren.cms.entity.ApplyRecordEntity;
-import io.renren.cms.entity.CollectEntity;
-import io.renren.cms.entity.MemberBannerEntity;
-import io.renren.cms.entity.MemberEntity;
+import io.renren.cms.entity.*;
 import io.renren.cms.service.*;
 import io.renren.config.WxMaConfiguration;
 import io.renren.enums.AuditStatusEnum;
@@ -60,6 +58,12 @@ public class ApiMemberController {
 
 	@Autowired
 	private LeaveService leaveService;
+
+	@Autowired
+	private TemplateService templateService;
+
+	@Autowired
+	private TemplateItmeService templateItmeService;
 
 	@Autowired
 	private YykjProperties yykjProperties;
@@ -200,7 +204,9 @@ public class ApiMemberController {
 			}
 			return ApiResult.ok(informationList);
 		}else{
-			List<MemberEntity> memberEntities = memberService.queryListByIsCollect(query);
+			params.put("type","vip");
+			Query q = new Query(params);
+			List<MemberEntity> memberEntities = memberService.queryListByIsCollect(q);
 			return ApiResult.ok(memberEntities);
 		}
 
@@ -231,7 +237,7 @@ public class ApiMemberController {
 			@ApiImplicitParam(paramType = "query", dataType = "string", name = "type", value = "common游客 vip 会员", required = true)
 	})
 	public ApiResult info(@ApiIgnore()MemberEntity memberEntity) {
-		if(memberEntity.getType().equals(MemberTypeEnum.VIP)){
+		if(memberEntity.getType().equals(MemberTypeEnum.VIP.getCode())){
 			memberEntity.setType(MemberTypeEnum.COMMON.getCode());
 		}
 		memberEntity.setAuditStatus(AuditStatusEnum.PENDING.getCode());
@@ -414,12 +420,64 @@ public class ApiMemberController {
 			@ApiImplicitParam(paramType = "query", dataType = "int", name = "page", value = "页码 默认1", required = false),
 			@ApiImplicitParam(paramType = "query", dataType = "int", name = "limit", value = "页大小 默认5", required = false)
 	})
-	public ApiResult memberMsgList(@ApiIgnore @TokenMember SessionMember sessionMember) {
-		HashMap param = new HashMap(1);
-		param.put("memberId",sessionMember.getMemberId());
-		Query query = new Query(param);
+	public ApiResult memberMsgList(@RequestParam Map<String, Object> params,@ApiIgnore @TokenMember SessionMember sessionMember) {
+		params.put("openid","");
+		params.put("memberId",sessionMember.getMemberId());
+		Query query = new Query(params);
 		List<LeaveEntityDto> list = leaveService.queryListDto(query);
 		leaveService.updateMsgStatus(sessionMember.getMemberId());
 		return ApiResult.ok(list);
+	}
+
+	@ApiOperation("会员分享")
+	@PostMapping("/member_share_image")
+	@ApiImplicitParams({
+			@ApiImplicitParam(paramType = "query", dataType = "string", name = "token", value = "令牌", required = true)
+	})
+	public ApiResult viewShareImage(@ApiIgnore @TokenMember SessionMember sessionMember) {
+		MemberEntity memberEntity = memberService.queryObject(sessionMember.getMemberId());
+		Assert.isNullApi(memberEntity, "会员不存在");
+		TemplateEntity templateEntity = templateService.queryObject(507);
+		Assert.isNullApi(templateEntity, "模板不存在");
+		templateEntity.setImageTemplate(yykjProperties.getVisitprefix() + templateEntity.getImageTemplate());
+		List<TemplateItmeEntity> templateItmeList = templateService.queryListByTemplateId(507);
+		if (CollectionUtil.isEmpty(templateItmeList)) {
+			return ApiResult.error(500, "模板参数不存在");
+		}
+		for (TemplateItmeEntity templateItme : templateItmeList) {
+			//小程序码
+			if (templateItme.getId().equals(2673)) {
+				templateItme.setImagePath(memberEntity.getPortrait());
+			}
+			//会员 img
+			if (templateItme.getId().equals(2674)) {
+				templateItme.setImagePath(SystemConstant.IMAGE_HUIYUAN);
+			}
+			//vip logo
+			if (templateItme.getId().equals(2675)) {
+				templateItme.setImagePath(SystemConstant.VIP_LOGO);
+			}
+			//会员二维码
+			if (templateItme.getId().equals(2676)) {
+				templateItme.setImagePath(memberEntity.getQrCode());
+			}
+
+			//会员Code
+			if (templateItme.getId().equals(2678)) {
+				templateItme.setDescribe("ID:"+memberEntity.getCode());
+
+			}
+			//会员Name
+			if (templateItme.getId().equals(2677)) {
+				templateItme.setDescribe(memberEntity.getNickname());
+
+			}
+		}
+
+		File generateShareImage = ProjectUtils.generateShareImage(templateItmeList, templateEntity);
+		String shareImageUrl = ProjectUtils.uploadCosFile(cosClient, generateShareImage);
+		String fullUrl = yykjProperties.getImagePrefixUrl() + shareImageUrl;
+		log.info("==============会员分享图片：{}", fullUrl);
+		return ApiResult.ok(fullUrl);
 	}
 }

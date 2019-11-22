@@ -50,7 +50,7 @@ public class MemberTypeAop {
 
 			MemberEntity member = memberService.queryObject((Integer) object);
 			if(MemberTypeEnum.COMMON.getCode().toLowerCase().equals(member.getType())){
-				throw new ApiException(SystemConstant.MEMBER_TYPE_MSG, 10001);
+				throw new ApiException(SystemConstant.MEMBER_TYPE_MSG, 10101);
 			}
 		}
 

@@ -100,4 +100,15 @@
 		</foreach>
 	</update>
 
+
+	<select id="queryListWithVerifyMember" resultType="io.renren.cms.entity.ApplyVerifyEntity">
+		select tav.* from tb_apply_verify tav
+		left join tb_apply ta
+		on tav.apply_id = ta.id
+		where 1 = 1
+		<if test="applyId != null and applyId != ''"> and `apply_id` = #{applyId}</if>
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		group by ta.start_time asc
+	</select>
+
 </mapper>

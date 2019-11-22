@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.TemplateDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.cms.entity.TemplateEntity" id="templateMap">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="imageTemplate" column="image_template"/>
+        <result property="imageTemplate" column="image_template"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="isDel" column="is_del"/>
+        <result property="ctime" column="ctime"/>
+        <result property="utime" column="utime"/>
+        <result property="useCnt" column="use_cnt"/>
+        <result property="viewCnt" column="view_cnt"/>
+        <result property="praiseCnt" column="praise_cnt"/>
+        <result property="isFree" column="is_free"/>
+        <result property="width" column="width"/>
+        <result property="height" column="height"/>
+        <result property="isRelease" column="is_release"/>
+        <result property="isFun" column="is_fun"/>
+        <result property="praiseNum" column="praiseNum"/>
+    </resultMap>
+    
+    <resultMap type="io.renren.cms.entity.TemplateEntity" id="templateCategoryMap" extends="templateMap">
+    	<result property="categoryEntity.name" column="categoryName"/>
+    </resultMap>
+    
+    <select id="queryListByTemplateId" resultType="io.renren.cms.entity.TemplateItmeEntity">
+		select * from tb_template_itme where is_del = 'false' and template_id = #{value} order by sort_num asc
+	</select>
+    
+    <select id="queryListIndex" resultType="io.renren.cms.entity.TemplateEntity">
+    	SELECT * from tb_template WHERE is_del = 'false' and is_release = 'true' and is_fun = 'f' ORDER BY utime desc LIMIT 12
+    </select>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.TemplateEntity">
+		select * from tb_template where id = #{value}
+	</select>
+	
+	<select id="queryPraiseInfo" resultType="io.renren.cms.entity.TemplateEntity">
+		select t1.*,
+		(select count(id) from tb_praise_record t2 where t1.id=t2.template_id and t2.create_time&gt;=CONCAT(#{createTime},' 00:00:00') and t2.praise_status='praise')  praiseNum 
+		from tb_template t1 
+		where t1.id=#{templateId}
+	</select>
+	<select id="queryPraiseListApi" resultType="io.renren.cms.entity.TemplateEntity">
+		select t1.*,
+		(select count(id) from tb_praise_record t2 where t1.id=t2.template_id and t2.create_time&gt;=CONCAT(#{createTime},' 00:00:00') and t2.praise_status='praise')  praiseNum 
+		from tb_template t1  where t1.is_del = 'false'
+		 <if test="isRelease != null and isRelease != ''">
+			and t1.is_release = #{isRelease}
+		</if>
+		<if test="isFun != null and isFun != ''">
+			and t1.is_fun = #{isFun}
+		</if>
+		order by praiseNum desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="queryHotListApi" resultType="io.renren.cms.entity.TemplateEntity">
+		select t1.*,count(t2.template_id) use_cnt
+		 from 
+		 tb_template t1
+		 left join tb_use_record t2 on t1.id=t2.template_id
+		 where t1.is_del = 'false'
+		 <if test="isRelease != null and isRelease != ''">
+			and t1.is_release = #{isRelease}
+		</if>
+		<if test="isFun != null and isFun != ''">
+			and t1.is_fun = #{isFun}
+		</if>
+		 <if test="createTime != null and createTime != ''">
+			and t2.use_time &gt; #{createTime}
+		</if>
+		 
+		 group by t2.template_id 
+		 order by use_cnt desc
+		 
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<select id="queryListApi" resultType="io.renren.cms.entity.TemplateEntity">
+		select * from tb_template where is_del = 'false' 
+		
+		<if test="isRelease != null and isRelease != ''">
+			and is_release = #{isRelease}
+		</if>
+		
+		<if test="categoryId != null and categoryId != ''">
+			and category_id = #{categoryId}
+		</if>
+		
+		<if test="isFun != null and isFun != ''">
+			and is_fun = #{isFun}
+		</if>
+		
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by utime desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryList" resultMap="templateCategoryMap">
+		select t1.*,t2.name categoryName from tb_template t1
+		left join tb_category t2 on t1.category_id=t2.id
+		 where t1.is_del = 'false'
+		
+		<if test="categoryId != null and categoryId != ''">
+			and t1.category_id = #{categoryId}
+		</if>
+		
+		<if test="isFun != null and isFun != ''">
+			and t1.is_fun = #{isFun}
+		</if>
+		
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by t1.utime desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from tb_template where is_del = 'false'
+		<if test="categoryId != null and categoryId != ''">
+			and category_id = #{categoryId}
+		</if>
+		<if test="isRelease != null and isRelease != ''">
+			and is_release = #{isRelease}
+		</if>
+		<if test="isFun != null and isFun != ''">
+			and is_fun = #{isFun}
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.cms.entity.TemplateEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_template
+		(
+			`name`, 
+			`image_template`, 
+			`image_example`, 
+			`category_id`, 
+			`is_del`, 
+			`ctime`, 
+			`utime`, 
+			`use_cnt`, 
+			`view_cnt`, 
+			`praise_cnt`, 
+			`is_fun`, 
+			`is_free`, 
+			`is_release`, 
+			`width`, 
+			`height`
+		)
+		values
+		(
+			#{name}, 
+			#{imageTemplate}, 
+			#{imageExample}, 
+			#{categoryId}, 
+			#{isDel}, 
+			#{ctime}, 
+			#{utime}, 
+			#{useCnt}, 
+			#{viewCnt}, 
+			#{praiseCnt}, 
+			#{isFun}, 
+			#{isFree}, 
+			#{isRelease}, 
+			#{width}, 
+			#{height}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.cms.entity.TemplateEntity">
+		update tb_template 
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="imageTemplate != null">`image_template` = #{imageTemplate}, </if>
+			<if test="imageExample != null">`image_example` = #{imageExample}, </if>
+			<if test="categoryId != null">`category_id` = #{categoryId}, </if>
+			<if test="isDel != null">`is_del` = #{isDel}, </if>
+			<if test="ctime != null">`ctime` = #{ctime}, </if>
+			<if test="utime != null">`utime` = #{utime}, </if>
+			<if test="useCnt != null">`use_cnt` = #{useCnt}, </if>
+			<if test="viewCnt != null">`view_cnt` = #{viewCnt}, </if>
+			<if test="praiseCnt != null">`praise_cnt` = #{praiseCnt}, </if>
+			<if test="isFun != null">`is_fun` = #{isFun}, </if>
+			<if test="isFree != null">`is_free` = #{isFree}, </if>
+			<if test="isRelease != null">`is_release` = #{isRelease}, </if>
+			<if test="width != null">`width` = #{width}, </if>
+			<if test="height != null">`height` = #{height}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from tb_template where id = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from tb_template where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<update id="releaseBatch">
+		update tb_template set is_release = 'true' where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+	
+	<update id="cancelReleaseBatch">
+		update tb_template set is_release = 'false' where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+</mapper>

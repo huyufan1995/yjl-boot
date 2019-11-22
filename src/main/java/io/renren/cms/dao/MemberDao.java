@@ -5,6 +5,7 @@ import java.util.Map;
 
 import io.renren.cms.entity.MemberEntity;
 import io.renren.dao.BaseDao;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 会员
@@ -45,4 +46,6 @@ public interface MemberDao extends BaseDao<MemberEntity> {
 	List<MemberEntity> queryListByMemberBanner(Map<String, Object> map);
 
     List<MemberEntity> queryListByIsCollect(Map<String, Object> map);
+
+    void updateVerify(@Param(value = "verify") String verify,@Param(value = "openid") String openid);
 }

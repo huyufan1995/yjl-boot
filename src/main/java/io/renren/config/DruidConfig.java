@@ -1,7 +1,9 @@
 package io.renren.config;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.sql.DataSource;
 
@@ -110,11 +112,12 @@ public class DruidConfig {
         if(maxPoolPreparedStatementPerConnectionSize != null) {
             datasource.setMaxPoolPreparedStatementPerConnectionSize(maxPoolPreparedStatementPerConnectionSize);
         }
-
         if(connectionProperties != null) {
             datasource.setConnectionProperties(connectionProperties);
         }
-
+        String connectionInitSqls = "SET NAMES utf8mb4";
+        StringTokenizer tokenizer = new StringTokenizer(connectionInitSqls, ";");
+        datasource.setConnectionInitSqls(Collections.list(tokenizer));//重点设置该参数
         List<Filter> filters = new ArrayList<>();
         filters.add(statFilter());
         filters.add(wallFilter());

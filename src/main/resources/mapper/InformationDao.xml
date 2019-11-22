@@ -97,6 +97,9 @@
 			<if test="banner != null">
 				banner,
 			</if>
+			<if test="qrCode != null">
+				qr_code,
+			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="title != null and title != ''">
@@ -128,6 +131,9 @@
 			</if>
 			<if test="banner != null">
 				#{banner},
+			</if>
+			<if test="qrCode != null">
+				#{qrCode},
 			</if>
 		</trim>
 	</insert>

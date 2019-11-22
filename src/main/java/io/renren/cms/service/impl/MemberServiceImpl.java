@@ -144,6 +144,7 @@ public class MemberServiceImpl implements MemberService {
 		sessionMember.setToken(map.get("token").toString());
 		sessionMember.setMemberId(memberEntity.getId());
 		sessionMember.setShowVip(memberEntity.getShowVip());
+		sessionMember.setVerify(memberEntity.getVerify());
 		if (StringUtils.isNotBlank(memberEntity.getMobile())) {
 			sessionMember.setMobile(memberEntity.getMobile());
 /*
@@ -171,6 +172,11 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public List<MemberEntity> queryListByIsCollect(Map<String, Object> map) {
 		return memberDao.queryListByIsCollect(map);
+	}
+
+	@Override
+	public void updateVerify(String verify, String openid) {
+		memberDao.updateVerify(verify,openid);
 	}
 
 

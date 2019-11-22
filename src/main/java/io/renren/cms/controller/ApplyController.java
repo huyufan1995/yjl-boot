@@ -70,21 +70,30 @@ public class ApplyController {
 	@RequestMapping("/save")
 	//@RequiresPermissions("apply:save")
 	public R save(@RequestBody ApplyEntity apply){
+		checkApply(apply);
+		applyService.save(apply);
+		return R.ok();
+	}
+
+	private void checkApply(@RequestBody ApplyEntity apply) {
 		apply.setCtime(new Date());
 		apply.setApplyHot((int)(Math.random()*900 + 100));
 		apply.setCreatePeople(SystemConstant.CREATE_PEOPLE);
 		apply.setIsDel(SystemConstant.F_STR);
 		apply.setAuditStatus(AuditStatusEnum.UNCOMMIT.getCode());
 		if (StringUtils.isNotEmpty(apply.getVideoLink())) {
+			if(StringUtils.isEmpty(apply.getBanner())){
+				apply.setBanner(SystemConstant.DEFAULT_VEDIO_IMG);
+			}
 			apply.setApplyContentType(SystemConstant.VIDEO_TYPE);
 		} else if (apply.getApplyContent().indexOf("<img") > 0) {
 			apply.setApplyContentType(SystemConstant.IMAGE_TYPE);
 		} else {
 			apply.setApplyContentType(SystemConstant.TEXT_TYPE);
 		}
-		applyService.save(apply);
-		
-		return R.ok();
+		if(StringUtils.isEmpty(apply.getBanner())){
+			apply.setBanner(SystemConstant.DEFAULT_TEXT_IMG);
+		}
 	}
 
 	@RequestMapping("/update")
@@ -185,4 +194,13 @@ public class ApplyController {
 		}
 	}
 
+	/**
+	 * 列表
+	 */
+	@RequestMapping("/queryAll")
+	//@RequiresPermissions("apply:list")
+	public R queryAll(){
+		List<ApplyEntity> applyList = applyService.queryAll();
+		return R.ok().put("applyList", applyList);
+	}
 }

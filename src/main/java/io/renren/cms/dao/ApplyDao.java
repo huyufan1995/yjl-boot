@@ -27,4 +27,6 @@ public interface ApplyDao extends BaseDao<ApplyEntity> {
     List<ApplyEntityDto> queryListByOpenId(Map<String, Object> params);
 
     List<ApplyEntityDto> queryListByOpenIdWithCollect(Map<String, Object> params);
+
+    List<ApplyEntity> queryAll();
 }

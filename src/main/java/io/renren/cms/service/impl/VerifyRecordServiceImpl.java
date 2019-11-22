@@ -84,5 +84,10 @@ public class VerifyRecordServiceImpl implements VerifyRecordService {
 		return verifyRecordDao.queryVerifyPeopleInfo(param);
 	}
 
+	@Override
+	public boolean updateVerifyStatus(String memberId,String applyId) {
+		return verifyRecordDao.updateVerifyStatus(memberId,applyId);
+	}
+
 
 }

@@ -45,4 +45,6 @@ public class SessionMember {
 	 * vipCode
 	 */
 	private String code;
+
+	private String verify;
 }

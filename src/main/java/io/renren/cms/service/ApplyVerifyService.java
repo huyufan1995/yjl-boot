@@ -2,6 +2,7 @@ package io.renren.cms.service;
 
 import io.renren.cms.entity.ApplyVerifyEntity;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,4 +32,6 @@ public interface ApplyVerifyService {
 	int logicDel(Integer id);
 	
 	int logicDelBatch(List<Integer> ids);
+
+    List<ApplyVerifyEntity> queryListWithVerifyMember(HashMap<String, Object> param);
 }

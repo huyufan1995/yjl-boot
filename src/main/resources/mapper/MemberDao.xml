@@ -247,4 +247,8 @@
 			limit #{offset}, #{limit}
 		</if>
 	</select>
+
+	<update id="updateVerify">
+	update tb_member set verify = #{verify} where openid = #{openid}
+	</update>
 </mapper>

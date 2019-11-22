@@ -1,5 +1,6 @@
 package io.renren.cms.dao;
 
+import java.util.HashMap;
 import java.util.List;
 
 import io.renren.cms.entity.ApplyVerifyEntity;
@@ -17,4 +18,6 @@ public interface ApplyVerifyDao extends BaseDao<ApplyVerifyEntity> {
 	int logicDel(Integer id);
 	
 	int logicDelBatch(List<Integer> ids);
+
+    List<ApplyVerifyEntity> queryListWithVerifyMember(HashMap<String, Object> param);
 }
