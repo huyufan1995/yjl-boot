@@ -134,7 +134,7 @@
 		where 1 = 1
 		and tm.type='vip'
 		and tvr.`apply_id` = #{applyId}
-		group by tvr.ctime desc limit 0,4
+		group by tvr.ctime desc limit 0,5
 	</select>
 
 	<select id="queryVerifyPeopleInfo" resultType="io.renren.api.dto.VerifyRecordInfoDto">

@@ -3,6 +3,8 @@ package io.renren.cms.service.impl;
 import io.renren.api.dto.CommentEntityDto;
 import io.renren.cms.dao.CommentDao;
 import io.renren.cms.entity.CommentEntity;
+import io.renren.cms.vo.CommentEntityVo;
+import io.renren.utils.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,6 +78,11 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public List<CommentEntityDto> queryListDto(Map<String, Object> params) {
 		return commentDao.queryListDto(params);
+	}
+
+	@Override
+	public List<CommentEntityVo> queryListVO(Map<String, Object> map) {
+		return commentDao.queryListVO(map);
 	}
 
 

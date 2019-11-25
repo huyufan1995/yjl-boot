@@ -70,11 +70,18 @@
 	</select>
 	
  	<select id="queryTotal" resultType="int">
-		select count(id) from tb_comment where 1 = 1
-			<if test="informationId != null and informationId != ''"> and `information_id` = #{informationId}</if>
-			<if test="remark != null and remark != ''"> and `remark` = #{remark}</if>
-			<if test="ctime != null and ctime != ''"> and `create_time` = #{ctime}</if>
-			<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		select count(tc.id) from tb_comment tc
+		left join tb_member tm
+		on tc.openid = tm.openid
+		left join tb_information ti
+		on tc.information_id = ti.id
+		where 1 = 1
+		<if test="informationTitle != null and informationTitle != ''"> and ti.`title` = #{informationTitle}</if>
+		<if test="remark != null and remark != ''">
+			and tc.`remark` like concat('%',#{remark},'%')
+		</if>
+		<if test="nickName != null and nickName != ''"> and tm.`nickname` = #{nickName}</if>
+		<if test="informationId != null and informationId != ''"> and tm.`information_id` = #{informationId}</if>
 
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
 			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
@@ -147,4 +154,35 @@
 		and tc.`information_id` = #{informationId}
 		group by tc.ctime desc limit 0,4
 	</select>
+
+	<select id="queryListVO" resultType="io.renren.cms.vo.CommentEntityVo">
+		select tc.*,tm.nickname as nickName,ti.title as informationTitle from tb_comment tc
+		left join tb_member tm
+		on tc.openid = tm.openid
+		left join tb_information ti
+		on tc.information_id = ti.id
+		where 1 = 1
+		<if test="informationTitle != null and informationTitle != ''"> and ti.`title` = #{informationTitle}</if>
+		<if test="remark != null and remark != ''">
+		 and tc.`remark` like concat('%',#{remark},'%')
+		</if>
+		<if test="nickName != null and nickName != ''"> and tm.`nickname` = #{nickName}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (tc.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by tc.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
 </mapper>

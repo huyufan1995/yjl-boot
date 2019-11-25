@@ -410,8 +410,8 @@ public class ApiMemberController {
 		Map<String,Object> map= new HashMap<>(1);
 		map.put("read",leaveService.queryTotal(param)> 0);
 		List<MemberEntity> memberEntityList = memberService.queryAddressAndNationalityInfo();
-		List<String> addressList = memberEntityList.stream().map(MemberEntity::getAddress).collect(Collectors.toList());
-		List<String> nationalityList = memberEntityList.stream().map(MemberEntity::getNationality).collect(Collectors.toList());
+		List<String> addressList = memberEntityList.stream().map(MemberEntity::getAddress).distinct().collect(Collectors.toList());
+		List<String> nationalityList = memberEntityList.stream().map(MemberEntity::getNationality).distinct().collect(Collectors.toList());
 		map.put("address",addressList);
 		map.put("nationalityList",nationalityList);
 		return ApiResult.ok(map);

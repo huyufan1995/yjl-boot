@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.util.StrUtil;
 import com.qcloud.cos.COSClient;
 import io.renren.api.constant.SystemConstant;
 import io.renren.cms.entity.InformationsEntity;
+import io.renren.cms.service.InformationTypeService;
 import io.renren.config.WxMaConfiguration;
 import io.renren.enums.AuditStatusEnum;
 import io.renren.properties.YykjProperties;
@@ -45,6 +48,9 @@ public class InformationController {
 	private YykjProperties yykjProperties;
 
 	@Autowired
+	private InformationTypeService informationTypeService;
+
+	@Autowired
 	private COSClient cosClient;
 	
 	/**
@@ -56,6 +62,13 @@ public class InformationController {
         Query query = new Query(params);
 
 		List<InformationsEntity> informationList = informationService.queryList(query);
+		informationList.forEach(informationsEntity ->
+				{
+					Integer informationType = informationsEntity.getInformationType();
+					informationsEntity.setInformationTypeName(informationTypeService.queryObject(informationType).getName()
+					);
+				}
+				);
 		int total = informationService.queryTotal(query);
 		
 		PageUtils pageUtil = new PageUtils(informationList, total, query.getLimit(), query.getPage());
@@ -160,12 +173,12 @@ public class InformationController {
 	}
 	
 	/**
-	 * 逻辑删除
+	 * 删除
 	 */
 	@RequestMapping("/logic_del/{id}")
 	//@RequiresPermissions("information:logicDel")
 	public R logicDel(@PathVariable("id") Integer id) {
-		informationService.logicDel(id);
+		informationService.delete(id);
 		return R.ok();
 	}
 

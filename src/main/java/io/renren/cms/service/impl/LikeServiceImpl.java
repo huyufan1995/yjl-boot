@@ -1,5 +1,6 @@
 package io.renren.cms.service.impl;
 
+import io.renren.cms.vo.LikeEntityVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,6 +71,11 @@ public class LikeServiceImpl implements LikeService {
 	@Override
 	public Boolean deleteByOpenIdAndLikeTypeAndDataId(HashMap<String, Object> params) {
 		return likeDao.deleteByOpenIdAndLikeTypeAndDataId(params);
+	}
+
+	@Override
+	public List<LikeEntityVO> queryListVO(Map<String, Object> map) {
+		return likeDao.queryListVO(map);
 	}
 
 

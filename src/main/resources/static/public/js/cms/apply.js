@@ -330,8 +330,9 @@ var vm = new Vue({
 					vm.apply.dateTimeRange = vm.dateArr;
 					vm.showBannerImage = true;
 					if(vm.apply.auditStatus == 'pending'){
+						vm.showList = true;
 						vm.$Message.success('此活动已经提交，请先撤回再修改!');
-						return false;
+						return;
 					}
 				}
 			});

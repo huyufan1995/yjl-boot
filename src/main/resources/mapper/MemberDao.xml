@@ -254,7 +254,8 @@
 	</update>
 
 	<select id="queryAddressAndNationalityInfo" resultType="io.renren.cms.entity.MemberEntity">
-		SELECT address,nationality FROM tb_member where id in(SELECT min(id) from tb_member GROUP BY nationality)
+		SELECT address,nationality FROM tb_member where
+		type ='vip'
 	</select>
 
 	<select id="queryListLike" resultType="io.renren.cms.entity.MemberEntity">

@@ -1,8 +1,5 @@
 package io.renren.api.controller;
 
-import cn.binarywang.wx.miniapp.api.WxMaService;
-import cn.binarywang.wx.miniapp.bean.WxMaTemplateData;
-import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.http.HttpUtil;
@@ -12,23 +9,14 @@ import io.renren.api.constant.SystemConstant;
 import io.renren.api.dto.*;
 import io.renren.api.exception.ApiException;
 import io.renren.api.vo.ApiResult;
-import io.renren.api.vo.ApiResultList;
-import io.renren.cms.entity.ApplyEntity;
-import io.renren.cms.entity.ApplyRecordEntity;
-import io.renren.cms.entity.InformationsEntity;
-import io.renren.cms.entity.LikeEntity;
-import io.renren.cms.service.ApplyRecordService;
-import io.renren.cms.service.ApplyReviewService;
-import io.renren.cms.service.ApplyService;
-import io.renren.cms.service.CollectService;
-import io.renren.config.WxMaConfiguration;
+import io.renren.cms.entity.*;
+import io.renren.cms.service.*;
 import io.renren.properties.YykjProperties;
 import io.renren.utils.HTMLSpirit;
 import io.renren.utils.Query;
 import io.renren.utils.annotation.IgnoreAuth;
 import io.renren.utils.annotation.MemberType;
 import io.renren.utils.annotation.TokenMember;
-import io.renren.utils.validator.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -70,6 +58,9 @@ public class ApiApplyController {
     private ApplyService applyService;
 
     @Autowired
+    private ApplyBannerService applyBannerService;
+
+    @Autowired
     private YykjProperties yykjProperties;
 
     @Autowired
@@ -107,7 +98,7 @@ public class ApiApplyController {
             q.put("applyId", entityDto.getId());
             List<ApplyRecordEntiyDto> applyRecordEntiyDtoList = applyRecordService.queryPortrait(q);
             // 处理报名人头像
-            entityDto.setPortrait(applyRecordEntiyDtoList.stream().map(ApplyRecordEntiyDto::getPortrait).limit(4).collect(Collectors.toList()));
+            entityDto.setPortrait(applyRecordEntiyDtoList.stream().map(ApplyRecordEntiyDto::getPortrait).limit(5).collect(Collectors.toList()));
             if (new Date().after(entityDto.getStartTime())) {
                 entityDto.setApplyStatus("已结束");
             } else {
@@ -127,7 +118,11 @@ public class ApiApplyController {
                 }
             }
         }
-        return ApiResult.ok(applyEntityListDto);
+        List<ApplyBannerEntity> applyBannerEntities = applyBannerService.queryList(null);
+        Map<String,Object> result = new HashMap<>(2);
+        result.put("list",applyEntityListDto);
+        result.put("banner",applyBannerEntities);
+        return ApiResult.ok(result);
     }
 
     @PostMapping("/addApply")

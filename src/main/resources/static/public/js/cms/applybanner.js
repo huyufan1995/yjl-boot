@@ -1,13 +1,11 @@
 $(function () {
     $("#jqGrid").jqGrid({
-        url: '../like/list',
+        url: '../applybanner/list',
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '点赞人', name: 'nickName', width: 80 },
-			{ label: '点赞时间', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '数据ID', name: 'dataId', index: 'data_id', width: 80 },
-			{ label: '点赞类型  1：资讯 2：评论 3：活动', name: 'likeType', index: 'like_type', width: 80 },
+			{ label: '活动banner图', name: 'bannerImg', index: 'banner_img', width: 80 },
+			{ label: '活动Id', name: 'applyId', index: 'apply_id', width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
@@ -51,6 +49,7 @@ function edit(id){
 	}
 //	vm.showList = false;
 	vm.showModal = true;
+	vm.getApplyList();
     vm.title = "修改";
     vm.getInfo(id)
 }
@@ -67,7 +66,7 @@ function logic_del(id){
         onOk:() => {
         	$.ajax({
     			type: "GET",
-    			url: "../like/logic_del/" + id,
+    			url: "../applybanner/logic_del/" + id,
     		    success: function(r){
     		    	if(r.code == 0){
     					$("#jqGrid").trigger("reloadGrid");
@@ -86,19 +85,15 @@ var vm = new Vue({
 	data:{
 		showList: true,
 		showModal: false,
+		showBanner:false,
+		bannerImgSrc:null,
+		applyList:[],
 		title: null,
-		like: {},
+		applyBanner: {},
 		ruleValidate: {
-											
-																openid: [
-		                { required: true, message: '请输入点赞人openid' }
-		            ], 																ctime: [
-		                { required: true, message: '请输入点赞时间' }
-		            ], 																dataId: [
-		                { required: true, message: '请输入数据ID' }
-		            ], 																likeType: [
-		                { required: true, message: '请输入点赞类型  1：资讯 2：评论 3：活动' }
-		            ]							        },
+															applyId: [
+		                { required: true, message: '请输入活动Id' }
+		            ]	},
         q:{
 			id: null,
 			sdate: null,
@@ -120,7 +115,8 @@ var vm = new Vue({
 			//vm.showList = false;
 			vm.showModal = true;
 			vm.title = "新增";
-			vm.like = {};
+			vm.applyBanner = {};
+			vm.getApplyList();
 		},
 		update: function (event) {
 			var id = getSelectedRow();
@@ -129,20 +125,38 @@ var vm = new Vue({
 			}
 			vm.showList = false;
             vm.title = "修改";
+            vm.getApplyList();
             vm.getInfo(id)
 		},
+		getApplyList: function () {
+			$.ajax({
+				url: "../apply/queryAll",
+				async: false,
+				type: "GET",
+				success: function (r) {
+					vm.applyList = r.applyList;
+				}
+			});
+		},
 		saveOrUpdate: function (event) {
-			this.$refs['like'].validate((valid) => {
+			this.$refs['applyBanner'].validate((valid) => {
                 if (valid) {
-                	var url = vm.like.id == null ? "../like/save" : "../like/update";
+                	if(vm.bannerImgSrc ==null){
+						vm.$Message.error("请上传活动Banner");
+						return;
+					};
+
+                	var url = vm.applyBanner.id == null ? "../applybanner/save" : "../applybanner/update";
         			$.ajax({
         				type: "POST",
         			    url: url,
         			    contentType: "application/json",
-        			    data: JSON.stringify(vm.like),
+        			    data: JSON.stringify(vm.applyBanner),
         			    success: function(r){
         			    	if(r.code === 0){
         			    		vm.reload();
+        			    		vm.bannerImgSrc =null;
+        			    		vm.showBanner =false;
         			    		vm.showModal = false;
         			    		vm.$Message.success('操作成功!');
         					}else{
@@ -165,7 +179,7 @@ var vm = new Vue({
 	        onOk:() => {
 	        	$.ajax({
 					type: "POST",
-				    url: "../like/delete",
+				    url: "../applybanner/delete",
 				    data: JSON.stringify(ids),
 				    success: function(r){
 						if(r.code === 0){
@@ -180,18 +194,30 @@ var vm = new Vue({
 	    });
 		},
 		getInfo: function(id){
-			//$.get("../like/info/" + id, function(r){
-            //    vm.like = r.like;
+			//$.get("../applybanner/info/" + id, function(r){
+            //    vm.applyBanner = r.applyBanner;
             //});
             
             $.ajax({
 				type : "GET",
 				async: false,
-				url : "../like/info/" + id,
+				url : "../applybanner/info/" + id,
 				success : function(r) {
-					vm.like = r.like;
+					vm.applyBanner = r.applyBanner;
+					vm.showBanner = true;
+					vm.bannerImgSrc = vm.applyBanner.bannerImg;
 				}
 			});
+		},
+		handleSuccess1 (res, file) {
+			console.log(res)
+			if(res.code != 500){
+				vm.showBanner = true;
+				vm.bannerImgSrc = res.data.url;
+				vm.applyBanner.bannerImg = vm.bannerImgSrc;
+			}else{
+				this.$Message.success('大小超过3M!');
+			}
 		},
 		reload: function (event) {
 			vm.showList = true;

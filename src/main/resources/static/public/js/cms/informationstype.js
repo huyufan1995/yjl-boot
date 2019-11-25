@@ -4,7 +4,7 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '', name: 'name', index: 'name', width: 80 },
+			{ label: '资讯分类', name: 'name', index: 'name', width: 80 },
 			{ label: '排名', name: 'sort', index: 'sort', width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
@@ -59,14 +59,15 @@ function logic_del(id){
 		return ;
 	}
 	
-	vm.Modal.confirm({
+	vm.$Modal.confirm({
         title: '提示',
         content: '确定要删除吗？',
         onOk:() => {
         	$.ajax({
     			type: "GET",
     			url: "../informationstype/logic_del/" + id,
-    		    success: function(r){
+				contentType: "application/json",
+				success: function(r){
     		    	if(r.code == 0){
     					$("#jqGrid").trigger("reloadGrid");
     		    		vm.$Message.success('操作成功!');
@@ -97,7 +98,8 @@ var vm = new Vue({
 			id: null,
 			sdate: null,
 			edate: null,
-			ctime: []
+			ctime: [],
+			name:null
 		}
 	},
 	methods: {
@@ -109,6 +111,7 @@ var vm = new Vue({
 			vm.q.sdate = null;
 			vm.q.edate = null;
 			vm.q.ctime = null;
+			vm.q.name = null;
 		},
 		add: function(){
 			//vm.showList = false;
@@ -160,6 +163,7 @@ var vm = new Vue({
 	        	$.ajax({
 					type: "POST",
 				    url: "../informationstype/delete",
+					contentType: "application/json",
 				    data: JSON.stringify(ids),
 				    success: function(r){
 						if(r.code === 0){
@@ -191,7 +195,7 @@ var vm = new Vue({
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
-				postData:{"id": vm.q.id, "sdate":vm.q.sdate, "edate":vm.q.edate},
+				postData:{"id": vm.q.id,"name":vm.q.name, "sdate":vm.q.sdate, "edate":vm.q.edate},
                 page:page
             }).trigger("reloadGrid");
 		},

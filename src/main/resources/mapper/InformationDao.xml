@@ -56,6 +56,8 @@
 			<if test="videoLink != null and videoLink != ''"> and `video_link` = #{videoLink}</if>
 			<if test="content != null and content != ''"> and `content` = #{content}</if>
 			<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
+			<if test="informationType != null and informationType != ''"> and `information_type` = #{informationType}</if>
+
 			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
 			<if test="updateTime != null and updateTime != ''"> and `update_time` = #{updateTime}</if>
 

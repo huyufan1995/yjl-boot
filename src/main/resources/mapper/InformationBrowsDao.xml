@@ -74,7 +74,7 @@
 		on tm.openid = tib.openid
 		where 1 = 1
 		and tib.`information_id` = #{informationId}
-		group by tib.ctime desc limit 0,4
+		group by tib.ctime desc limit 0,5
 	</select>
 
 </mapper>

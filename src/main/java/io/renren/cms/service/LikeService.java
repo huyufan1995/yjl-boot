@@ -1,6 +1,8 @@
 package io.renren.cms.service;
 
 import io.renren.cms.entity.LikeEntity;
+import io.renren.cms.vo.LikeEntityVO;
+import io.renren.utils.Query;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,4 +36,6 @@ public interface LikeService {
 	int logicDelBatch(List<Integer> ids);
 
     Boolean deleteByOpenIdAndLikeTypeAndDataId(HashMap<String, Object> params);
+
+    List<LikeEntityVO> queryListVO(Map<String, Object> map);
 }

@@ -6,7 +6,7 @@ $(function () {
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
 			{ label: '活动标题', name: 'applyTitle',width: 80 },
 			{ label: '活动回顾', name: 'applyReviewContent', index: 'apply_review_content', width: 80 },
-			{ label: 't:展示 f:暂停', name: 'showStatus', index: 'show_status', width: 80,
+			{ label: '是否展示', name: 'showStatus', index: 'show_status', width: 80,
 				formatter: function (value, options, row) {
 					if(value =='t'){
 						return "<span class='label label-success'>展示</span>";

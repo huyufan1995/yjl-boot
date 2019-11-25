@@ -203,4 +203,5 @@ public class ApplyController {
 		List<ApplyEntity> applyList = applyService.queryAll();
 		return R.ok().put("applyList", applyList);
 	}
+
 }

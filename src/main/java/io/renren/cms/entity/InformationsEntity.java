@@ -79,5 +79,5 @@ public class InformationsEntity implements Serializable {
 	 */
 	private String qrCode;
 
-
+    private String informationTypeName;
 }

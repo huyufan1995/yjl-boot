@@ -3,8 +3,7 @@ package io.renren.cms.controller;
 import java.util.List;
 import java.util.Map;
 
-import io.renren.cms.entity.CommentEntity;
-import io.renren.cms.vo.CommentEntityVo;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,36 +11,38 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.renren.cms.service.CommentService;
+import io.renren.cms.entity.ApplyBannerEntity;
+import io.renren.cms.service.ApplyBannerService;
 import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
 import io.renren.utils.R;
 
 
 /**
- * 评论表
+ * 
  * 
  * @author moran
- * @date 2019-11-05 11:05:36
+ * @email ${email}
+ * @date 2019-11-25 10:59:15
  */
 @RestController
-@RequestMapping("comment")
-public class CommentController {
+@RequestMapping("applybanner")
+public class ApplyBannerController {
 	@Autowired
-	private CommentService commentService;
+	private ApplyBannerService applyBannerService;
 	
 	/**
 	 * 列表
 	 */
 	@RequestMapping("/list")
-	//@RequiresPermissions("comment:list")
+	//@RequiresPermissions("applybanner:list")
 	public R list(@RequestParam Map<String, Object> params){
         Query query = new Query(params);
 
-		List<CommentEntityVo> commentList = commentService.queryListVO(query);
-		int total = commentService.queryTotal(query);
+		List<ApplyBannerEntity> applyBannerList = applyBannerService.queryList(query);
+		int total = applyBannerService.queryTotal(query);
 		
-		PageUtils pageUtil = new PageUtils(commentList, total, query.getLimit(), query.getPage());
+		PageUtils pageUtil = new PageUtils(applyBannerList, total, query.getLimit(), query.getPage());
 		
 		return R.ok().put("page", pageUtil);
 	}
@@ -51,20 +52,20 @@ public class CommentController {
 	 * 信息
 	 */
 	@RequestMapping("/info/{id}")
-	//@RequiresPermissions("comment:info")
+	//@RequiresPermissions("applybanner:info")
 	public R info(@PathVariable("id") Integer id){
-		CommentEntity comment = commentService.queryObject(id);
+		ApplyBannerEntity applyBanner = applyBannerService.queryObject(id);
 		
-		return R.ok().put("comment", comment);
+		return R.ok().put("applyBanner", applyBanner);
 	}
 	
 	/**
 	 * 保存
 	 */
 	@RequestMapping("/save")
-	//@RequiresPermissions("comment:save")
-	public R save(@RequestBody CommentEntity comment){
-		commentService.save(comment);
+	//@RequiresPermissions("applybanner:save")
+	public R save(@RequestBody ApplyBannerEntity applyBanner){
+		applyBannerService.save(applyBanner);
 		
 		return R.ok();
 	}
@@ -73,9 +74,9 @@ public class CommentController {
 	 * 修改
 	 */
 	@RequestMapping("/update")
-	//@RequiresPermissions("comment:update")
-	public R update(@RequestBody CommentEntity comment){
-		commentService.update(comment);
+	//@RequiresPermissions("applybanner:update")
+	public R update(@RequestBody ApplyBannerEntity applyBanner){
+		applyBannerService.update(applyBanner);
 		
 		return R.ok();
 	}
@@ -84,9 +85,9 @@ public class CommentController {
 	 * 删除
 	 */
 	@RequestMapping("/delete")
-	//@RequiresPermissions("comment:delete")
+	//@RequiresPermissions("applybanner:delete")
 	public R delete(@RequestBody Integer[] ids){
-		commentService.deleteBatch(ids);
+		applyBannerService.deleteBatch(ids);
 		
 		return R.ok();
 	}
@@ -95,9 +96,9 @@ public class CommentController {
 	 * 逻辑删除
 	 */
 	@RequestMapping("/logic_del/{id}")
-	//@RequiresPermissions("comment:logicDel")
+	//@RequiresPermissions("applybanner:logicDel")
 	public R logicDel(@PathVariable("id") Integer id) {
-		commentService.logicDel(id);
+		applyBannerService.delete(id);
 		return R.ok();
 	}
 	

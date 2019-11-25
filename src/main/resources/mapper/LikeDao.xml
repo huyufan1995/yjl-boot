@@ -119,4 +119,32 @@
 		</foreach>
 	</update>
 
+	<select id="queryListVO" resultType="io.renren.cms.vo.LikeEntityVO">
+		select tl.*,tm.nickname as nickName from tb_like tl
+		left join tb_member tm
+		on tl.openid = tm.openid
+		where 1 = 1
+
+		<if test="openid != null and openid != ''"> and tl.`openid` = #{openid}</if>
+		<if test="ctime != null and ctime != ''"> and tl.`ctime` = #{ctime}</if>
+		<if test="dataId != null and dataId != ''"> and tl.`data_id` = #{dataId}</if>
+		<if test="likeType != null and likeType != ''"> and tl.`like_type` = #{likeType}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (tl.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by tl.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
 </mapper>

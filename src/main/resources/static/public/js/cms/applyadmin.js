@@ -28,7 +28,6 @@ $(function () {
                 formatter: function (value, options, row) {
 					var dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='release("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>通过</span></button>&nbsp;";
 					dom += "<button type='button' class='ivu-btn ivu-btn-primary' onclick='openAudit("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>不通过</span></button>&nbsp;";
-					dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
                 	return dom;
                 }
             }
@@ -305,10 +304,6 @@ var vm = new Vue({
 					vm.dateArr[1] =vm.apply.endTime;
 					vm.apply.dateTimeRange = vm.dateArr;
 					vm.showBannerImage = true;
-					if(vm.apply.auditStatus == 'pending'){
-						vm.$Message.success('此活动已经提交，请先撤回再修改!');
-						return false;
-					}
 				}
 			});
 		},

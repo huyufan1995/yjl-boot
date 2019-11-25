@@ -424,4 +424,68 @@ public class CosUploadController {
 		}
 	}
 
+
+	/**
+	 * 活动列表轮播banner
+	 */
+	@PostMapping("/cloud/applyBannerList")
+	public R applyBannerList(@RequestParam("file") MultipartFile multipartFile) {
+		HashMap<String, Object> result = Maps.newHashMap();
+		try {
+
+			if (multipartFile == null) {
+				return R.error(500, "上传文件不能为空");
+			}
+
+			if (multipartFile.getSize() < 0 || multipartFile.getSize() > SystemConstant.MAX_UPLOAD_FILE_SIZE) {
+				// 上传图片不能为空或超过3MB
+				return R.error(500, "文件不能超过3MB");
+			}
+
+			// 获取上传的文件名
+			String fileName = multipartFile.getOriginalFilename();
+			// 获取文件的后缀名
+			String extName = fileName.substring(fileName.lastIndexOf("."));
+
+			if (SystemConstant.IMAGE_REG.indexOf(extName.toLowerCase()) == -1) {
+				return R.error(500, "只允许上传图片");
+			}
+
+			InputStream inputStream = multipartFile.getInputStream();
+			File tempFile = new File(multipartFile.getOriginalFilename());
+			// 转换后会生成临时文件
+			ProjectUtils.inputStreamToFile(inputStream, tempFile);
+			String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+			// 文件路径
+		/*	String catalogue = templateWebsiteService.queryByLayoutWithCtime().getCatalogue();
+			String[] boxes = catalogue.split("box");
+			int i =  Integer.parseInt(boxes[1])+1;
+			String boxUrl ="/app/box"+i+"";*/
+			String path = "yjl/app/information/" + uuid;
+			String key = path + extName;
+			PutObjectRequest putObjectRequest = new PutObjectRequest(SystemConstant.BUCKET_NAME_IMAGE, key, tempFile);
+			// 设置存储类型, 默认是标准(Standard), 低频(standard_ia)
+			putObjectRequest.setStorageClass(StorageClass.Standard);
+			PutObjectResult putObjectResult = cosClient.putObject(putObjectRequest);
+			// putobjectResult会返回文件的etag
+			String etag = putObjectResult.getETag();
+			log.info("etag ===> {}", etag);
+			// 删除临时文件
+			File delFile = new File(tempFile.toURI());
+			delFile.delete();
+			if (StringUtils.isNotBlank(etag)) {
+				result.put("key", key);
+				result.put("url", imagePrefixUrl.concat(key));
+				log.info("COS 上传文件成功 ===> {}", result);
+				return R.ok().put("data", result);
+			} else {
+				return R.error(500, "上传文件异常");
+			}
+
+		} catch (Exception e) {
+			log.error("COS上传文件异常 === ", e);
+			return R.error(500, "上传文件异常");
+		}
+	}
+
 }

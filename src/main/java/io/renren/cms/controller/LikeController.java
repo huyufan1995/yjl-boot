@@ -3,6 +3,8 @@ package io.renren.cms.controller;
 import java.util.List;
 import java.util.Map;
 
+import io.renren.cms.service.*;
+import io.renren.cms.vo.LikeEntityVO;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.renren.cms.entity.LikeEntity;
-import io.renren.cms.service.LikeService;
 import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
 import io.renren.utils.R;
@@ -30,6 +31,18 @@ import io.renren.utils.R;
 public class LikeController {
 	@Autowired
 	private LikeService likeService;
+
+	@Autowired
+	private InformationService informationService;
+
+	@Autowired
+	private CommentService commentService;
+
+	@Autowired
+	private ApplyService applyService;
+
+	@Autowired
+	private MemberService memberService;
 	
 	/**
 	 * 列表
@@ -39,9 +52,8 @@ public class LikeController {
 	public R list(@RequestParam Map<String, Object> params){
         Query query = new Query(params);
 
-		List<LikeEntity> likeList = likeService.queryList(query);
+		List<LikeEntityVO> likeList = likeService.queryListVO(query);
 		int total = likeService.queryTotal(query);
-		
 		PageUtils pageUtil = new PageUtils(likeList, total, query.getLimit(), query.getPage());
 		
 		return R.ok().put("page", pageUtil);

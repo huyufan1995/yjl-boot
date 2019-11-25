@@ -6,6 +6,7 @@ $(function () {
 			{ label: '标题', name: 'title', index: 'title', width: 80 },
 			{ label: '资讯视频地址', name: 'videoLink', index: 'video_link', width: 80 },
 			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
+			{ label: '资讯类型', name: 'informationTypeName', width: 80 },
 			{ label: '修改时间', name: 'updateTime', index: 'update_time', width: 80 },
 			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 80 ,
 				formatter: function (value, options, row) {

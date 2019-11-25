@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.cms.dao.ApplyBannerDao">
+
+	<sql id="base_column" >
+			applyBanner.`id`, 			applyBanner.`banner_img`, 			applyBanner.`apply_id`  	</sql>
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.cms.entity.ApplyBannerEntity" id="applyBannerMap">
+        <result property="id" column="id"/>
+        <result property="bannerImg" column="banner_img"/>
+        <result property="applyId" column="apply_id"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.cms.entity.ApplyBannerEntity">
+		select * from tb_apply_banner where id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.cms.entity.ApplyBannerEntity">
+		select * from tb_apply_banner where 1 = 1
+		
+			<if test="bannerImg != null and bannerImg != ''"> and `banner_img` = #{bannerImg}</if>
+			<if test="applyId != null and applyId != ''"> and `apply_id` = #{applyId}</if>
+		
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+		
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(id) from tb_apply_banner where 1 = 1
+			<if test="bannerImg != null and bannerImg != ''"> and `banner_img` = #{bannerImg}</if>
+			<if test="applyId != null and applyId != ''"> and `apply_id` = #{applyId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.cms.entity.ApplyBannerEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into tb_apply_banner
+		(
+			`banner_img`, 
+			`apply_id`
+		)
+		values
+		(
+			#{bannerImg}, 
+			#{applyId}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.cms.entity.ApplyBannerEntity">
+		update tb_apply_banner 
+		<set>
+			<if test="bannerImg != null">`banner_img` = #{bannerImg}, </if>
+			<if test="applyId != null">`apply_id` = #{applyId}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<!-- 	物理删除 -->
+	<delete id="delete">
+		delete from tb_apply_banner where id = #{value}
+	</delete>
+	
+	<!-- 	批量物理删除 -->
+	<delete id="deleteBatch">
+		delete from tb_apply_banner where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<!-- 	逻辑删除 -->
+	<update id="logicDel">
+		update tb_apply_banner set is_del = 't' where id = #{value}
+	</update>
+	
+	<!-- 	批量逻辑删除 -->
+	<update id="logicDelBatch">
+		update  tb_apply_banner
+		set is_del = 't'
+		where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+</mapper>

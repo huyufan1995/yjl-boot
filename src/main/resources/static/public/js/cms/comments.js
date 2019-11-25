@@ -4,18 +4,10 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '资讯ID', name: 'informationId', index: 'information_id', width: 80 },
+			{ label: '资讯标题', name: 'informationTitle', width: 80 },
 			{ label: ' 评论内容', name: 'remark', index: 'remark', width: 80 },
-			{ label: ' 评论时间', name: 'createTime', index: 'create_time', width: 80 },
-			{ label: '评论人openid', name: 'commentator', index: 'commentator', width: 80 },
-			{
-                label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
-                formatter: function (value, options, row) {
-                	var dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='edit("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>修改</span></button>&nbsp;";
-                	dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
-                	return dom;
-                }
-            }
+			{ label: ' 评论时间', name: 'ctime', index: 'ctime', width: 80 },
+			{ label: '评论人', name: 'nickName', width: 80 }
         ],
 		viewrecords: true,
 		height: $(window).height() - 250,
@@ -61,13 +53,14 @@ function logic_del(id){
 		return ;
 	}
 	
-	vm.Modal.confirm({
+	vm.$Modal.confirm({
         title: '提示',
         content: '确定要删除吗？',
         onOk:() => {
         	$.ajax({
     			type: "GET",
     			url: "../comment/logic_del/" + id,
+				contentType: "application/json",
     		    success: function(r){
     		    	if(r.code == 0){
     					$("#jqGrid").trigger("reloadGrid");
@@ -103,7 +96,10 @@ var vm = new Vue({
 			id: null,
 			sdate: null,
 			edate: null,
-			ctime: []
+			ctime: [],
+			informationTitle:null,
+			nickName:null,
+			remark: null
 		}
 	},
 	methods: {
@@ -115,6 +111,9 @@ var vm = new Vue({
 			vm.q.sdate = null;
 			vm.q.edate = null;
 			vm.q.ctime = null;
+			vm.q.remark = null;
+			vm.q.informationTitle = null;
+			vm.q.nickName =null;
 		},
 		add: function(){
 			//vm.showList = false;
@@ -159,20 +158,21 @@ var vm = new Vue({
 				return ;
 			}
 			
-			vm.Modal.confirm({
+			vm.$Modal.confirm({
 	        title: '提示',
 	        content: '确定要删除选中的记录？',
 	        onOk:() => {
 	        	$.ajax({
 					type: "POST",
 				    url: "../comment/delete",
+					contentType: "application/json",
 				    data: JSON.stringify(ids),
 				    success: function(r){
 						if(r.code === 0){
 							$("#jqGrid").trigger("reloadGrid");
-    			    		vm.Message.success('操作成功!');
+    			    		vm.$Message.success('操作成功!');
     					}else{
-    						vm.Message.error(r.msg);
+    						vm.$Message.error(r.msg);
     					}
 					}
 				});
@@ -197,7 +197,7 @@ var vm = new Vue({
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
-				postData:{"id": vm.q.id, "sdate":vm.q.sdate, "edate":vm.q.edate},
+				postData:{"id": vm.q.id,"informationTitle":vm.q.informationTitle,"remark":vm.q.remark,"nickName":vm.q.nickName, "sdate":vm.q.sdate, "edate":vm.q.edate},
                 page:page
             }).trigger("reloadGrid");
 		},

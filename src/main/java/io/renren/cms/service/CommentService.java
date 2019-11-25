@@ -2,6 +2,8 @@ package io.renren.cms.service;
 
 import io.renren.api.dto.CommentEntityDto;
 import io.renren.cms.entity.CommentEntity;
+import io.renren.cms.vo.CommentEntityVo;
+import io.renren.utils.Query;
 
 import java.util.List;
 import java.util.Map;
@@ -35,4 +37,6 @@ public interface CommentService {
 	List<String> queryPortrait(String informationId);
 
 	List<CommentEntityDto> queryListDto(Map<String, Object> params);
+
+    List<CommentEntityVo> queryListVO(Map<String, Object> map);
 }

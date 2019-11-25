@@ -5,6 +5,7 @@ import java.util.Map;
 
 import io.renren.api.dto.CommentEntityDto;
 import io.renren.cms.entity.CommentEntity;
+import io.renren.cms.vo.CommentEntityVo;
 import io.renren.dao.BaseDao;
 
 /**
@@ -23,4 +24,6 @@ public interface CommentDao extends BaseDao<CommentEntity> {
     List<String> queryPortrait(String informationId);
 
 	List<CommentEntityDto> queryListDto(Map<String, Object> params);
+
+    List<CommentEntityVo> queryListVO(Map<String, Object> map);
 }

@@ -1,8 +1,10 @@
 package io.renren.cms.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.renren.cms.service.InformationService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +32,9 @@ import io.renren.utils.R;
 public class InformationTypeController {
 	@Autowired
 	private InformationTypeService informationTypeService;
+
+	@Autowired
+	private InformationService informationService;
 	
 	/**
 	 * 列表
@@ -81,24 +86,30 @@ public class InformationTypeController {
 		return R.ok();
 	}
 	
-	/**
+/*	*//**
 	 * 删除
-	 */
+	 *//*
 	@RequestMapping("/delete")
 	//@RequiresPermissions("informationtype:delete")
 	public R delete(@RequestBody Integer[] ids){
 		informationTypeService.deleteBatch(ids);
 		
 		return R.ok();
-	}
+	}*/
 	
 	/**
-	 * 逻辑删除
+	 * 删除
 	 */
 	@RequestMapping("/logic_del/{id}")
 	//@RequiresPermissions("informationtype:logicDel")
 	public R logicDel(@PathVariable("id") Integer id) {
-		informationTypeService.logicDel(id);
+		HashMap<String,Object> params = new HashMap<>(1);
+		params.put("informationType",id);
+		int total = informationService.queryTotal(params);
+		if(total> 0){
+			return R.error("该类别下面有资讯信息，请先删除资讯信息");
+		}
+		informationTypeService.delete(id);
 		return R.ok();
 	}
 
