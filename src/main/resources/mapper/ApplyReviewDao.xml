@@ -25,20 +25,24 @@
 	</select>
 
 	<select id="queryList" resultType="io.renren.cms.entity.ApplyReviewEntity">
-		select * from tb_apply_review where 1 = 1
+		select tar.*,ta.apply_title as applyTitle from tb_apply_review tar
+		left join tb_apply ta
+		on tar.apply_id = ta.id
+		where 1 = 1
 		
-			<if test="applyId != null and applyId != ''"> and `apply_id` = #{applyId}</if>
-			<if test="applyReviewContent != null and applyReviewContent != ''"> and `apply_review_content` = #{applyReviewContent}</if>
-			<if test="showStatus != null and showStatus != ''"> and `show_status` = #{showStatus}</if>
-			<if test="auditStatus != null and auditStatus != ''"> and `audit_status` = #{auditStatus}</if>
-			<if test="auditMsg != null and auditMsg != ''"> and `audit_msg` = #{auditMsg}</if>
-			<if test="applyReviewType != null and applyReviewType != ''"> and `apply_review_type` = #{applyReviewType}</if>
-			<if test="videoLink != null and videoLink != ''"> and `video_link` = #{videoLink}</if>
-			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
-			<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
+			<if test="applyId != null and applyId != ''"> and tar.`apply_id` = #{applyId}</if>
+			<if test="applyTitle != null and applyTitle != ''"> and ta.`apply_title` = #{applyTitle}</if>
+			<if test="applyReviewContent != null and applyReviewContent != ''"> and tar.`apply_review_content` = #{applyReviewContent}</if>
+			<if test="showStatus != null and showStatus != ''"> and tar.`show_status` = #{showStatus}</if>
+			<if test="auditStatus != null and auditStatus != ''"> and tar.`audit_status` = #{auditStatus}</if>
+			<if test="auditMsg != null and auditMsg != ''"> and tar.`audit_msg` = #{auditMsg}</if>
+			<if test="applyReviewType != null and applyReviewType != ''"> and tar.`apply_review_type` = #{applyReviewType}</if>
+			<if test="videoLink != null and videoLink != ''"> and tar.`video_link` = #{videoLink}</if>
+			<if test="ctime != null and ctime != ''"> and tar.`ctime` = #{ctime}</if>
+			<if test="isDel != null and isDel != ''"> and tar.`is_del` = #{isDel}</if>
 		
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
-			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+			and (tar.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
 		</if>
 		
         <choose>
@@ -46,7 +50,7 @@
                 order by ${sidx} ${order}
             </when>
 			<otherwise>
-                order by id desc
+                order by tar.id desc
 			</otherwise>
         </choose>
 		<if test="offset != null and limit != null">

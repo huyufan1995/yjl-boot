@@ -30,11 +30,9 @@ spring:
           max-idle: 10      # 连接池中的最大空闲连接
           min-idle: 5       # 连接池中的最小空闲连接
 yykj:
-  uploaddir: /mnt/upload/yykj/
-  visitprefix: https://picture.dingapp.com/yykj/
-  appid: wx69b79496c0342beb
-  secret: 7fd51669ca492019587c1a123c85c99c
+  uploaddir: /mnt/upload/yjl/
+  visitprefix: https://pic.dingapp.com/
+  appid: wx8faf64d2d6968e74
+  secret: 23c6cf328c5d27af8a2e86e8a7e82f84
   temppath: /tmp/
-  giftemplatepath: /mnt/app/yykj/giftemplate/
-  paynotifyurl: http://yykj.dingapp.com/api/pay/notify
   imagePrefixUrl: https://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/

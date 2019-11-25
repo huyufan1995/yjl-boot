@@ -2,6 +2,7 @@ package io.renren.cms.service.impl;
 
 import io.renren.api.dto.ApplyRecordEntiyDto;
 import io.renren.api.dto.VerifyMemberInfoDto;
+import io.renren.cms.vo.ApplyRecordEntityVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -83,6 +84,11 @@ public class ApplyRecordServiceImpl implements ApplyRecordService {
 	@Override
 	public List<VerifyMemberInfoDto> queryVerifyMember(String code) {
 		return applyRecordDao.queryVerifyMember(code);
+	}
+
+	@Override
+	public List<ApplyRecordEntityVO> queryListVo(Map<String, Object> map) {
+		return applyRecordDao.queryListVo(map);
 	}
 
 

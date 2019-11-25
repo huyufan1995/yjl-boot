@@ -18,9 +18,10 @@ spring:
 #        maxPoolPreparedStatementPerConnectionSize: 20
     redis:
       open: true  # 是否开启redis缓存  true开启   false关闭
-      database: 0
-      host: 127.0.0.1
-      port: 6379
+      database: 1
+      host: 47.93.187.30
+      port: 16379
+      password: wyfdh0791-
       timeout: 6000 # 连接超时时长（毫秒）
       jedis:
         pool:
@@ -29,11 +30,9 @@ spring:
           max-idle: 10      # 连接池中的最大空闲连接
           min-idle: 5       # 连接池中的最小空闲连接
 yykj: 
-  uploaddir: /www/wwwroot/img.test.wfwzs.com/
-  visitprefix: http://img.test.wfwzs.com/
-  appid: wx69b79496c0342beb
-  secret: 7fd51669ca492019587c1a123c85c99c
+  uploaddir: /mnt/upload/yjl/
+  visitprefix: https://pic.dingapp.com/
+  appid: wx8faf64d2d6968e74
+  secret: 23c6cf328c5d27af8a2e86e8a7e82f84
   temppath: /tmp/
-  giftemplatepath: /www/wwwroot/img.test.wfwzs.com/yykj/giftemplate/
-  paynotifyurl: http://api.test.wfwzs.com/api/pay/notify
   imagePrefixUrl: https://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/

@@ -179,5 +179,15 @@ public class MemberServiceImpl implements MemberService {
 		memberDao.updateVerify(verify,openid);
 	}
 
+	@Override
+	public List<MemberEntity> queryAddressAndNationalityInfo() {
+		return memberDao.queryAddressAndNationalityInfo();
+	}
+
+	@Override
+	public List<MemberEntity> queryListLikeAll(Map<String, Object> params) {
+		return memberDao.queryListLikeAll(params);
+	}
+
 
 }

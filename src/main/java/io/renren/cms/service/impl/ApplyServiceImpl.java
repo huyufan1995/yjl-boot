@@ -107,6 +107,11 @@ public class ApplyServiceImpl implements ApplyService {
 	}
 
 	@Override
+	public List<ApplyEntity> queryApplyListNoReview() {
+		return applyDao.queryApplyListNoReview();
+	}
+
+	@Override
 	public int commit(Integer id) {
 		ApplyEntity entity = new ApplyEntity();
 		entity.setId(id);

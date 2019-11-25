@@ -4,9 +4,19 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '活动id', name: 'applyId', index: 'apply_id', width: 80 },
+			{ label: '活动标题', name: 'applyTitle',width: 80 },
 			{ label: '活动回顾', name: 'applyReviewContent', index: 'apply_review_content', width: 80 },
-			{ label: 't:展示 f:暂停', name: 'showStatus', index: 'show_status', width: 80 },
+			{ label: 't:展示 f:暂停', name: 'showStatus', index: 'show_status', width: 80,
+				formatter: function (value, options, row) {
+					if(value =='t'){
+						return "<span class='label label-success'>展示</span>";
+
+					}else{
+						return "<span class='label label-success'>暂停</span>";
+
+					}
+				}
+			},
 			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 80,
 				formatter: function (value, options, row) {
 					if (value == 'pass') {
@@ -40,7 +50,6 @@ $(function () {
 					if(row.showStatus == 'f'){
 						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='startApplyReview("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>展示活动</span></button>&nbsp;";
 					}
-					dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
 					return dom;
 				}
             }
@@ -165,7 +174,8 @@ function logic_del(id){
         	$.ajax({
     			type: "GET",
     			url: "../applyreview/logic_del/" + id,
-    		    success: function(r){
+				contentType: "application/json",
+				success: function(r){
     		    	if(r.code == 0){
     					$("#jqGrid").trigger("reloadGrid");
     		    		vm.$Message.success('操作成功!');
@@ -182,21 +192,24 @@ var vm = new Vue({
 	el:'#rrapp',
 	data:{
 		showList: true,
-		showModal: false,
+		showModal: true,
 		title: null,
 		applyReview: {},
+		editFlag:false,
+		applyList: [],
 		ruleValidate: {
 					applyId: [
-		                { required: false, message: '请输入活动id' }
+		                { required: false, message: '请输入活动id'}
 		            ], 	applyReviewContent: [
-		                { required: false, message: '请输入活动回顾' }
+		                { required: false, message: '请输入活动回顾'}
 		            ]
 		},
         q:{
 			id: null,
 			sdate: null,
 			edate: null,
-			ctime: []
+			ctime: [],
+			applyTitle:null
 		}
 	},
 	methods: {
@@ -208,11 +221,13 @@ var vm = new Vue({
 			vm.q.sdate = null;
 			vm.q.edate = null;
 			vm.q.ctime = null;
+			vm.q.applyTitle = null;
 		},
 		add: function(){
 			vm.showList = false;
 			vm.title = "新增";
 			vm.applyReview = {};
+			vm.getApplyList();
 		},
 		update: function (event) {
 			var id = getSelectedRow();
@@ -221,7 +236,9 @@ var vm = new Vue({
 			}
 			vm.showList = false;
             vm.title = "修改";
-            vm.getInfo(id)
+            vm.editFlag = false;
+			vm.getApplyList();
+            vm.getInfo(id);
 		},
 		saveOrUpdate: function (event) {
 			this.$refs['applyReview'].validate((valid) => {
@@ -293,6 +310,17 @@ var vm = new Vue({
 						vm.$Message.success('此活动回顾已经提交，请先撤回再修改!');
 						return false;
 					}
+					vm.applyList.id =vm.applyReview.applyId;
+				}
+			});
+		},
+		getApplyList: function () {
+			$.ajax({
+				url: "../applyreview/applyList",
+				async: false,
+				type: "GET",
+				success: function (r) {
+					vm.applyList = r.applyList;
 				}
 			});
 		},
@@ -300,7 +328,7 @@ var vm = new Vue({
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
-				postData:{"id": vm.q.id, "sdate":vm.q.sdate, "edate":vm.q.edate},
+				postData:{"id": vm.q.id,"applyTitle":vm.q.applyTitle,"sdate":vm.q.sdate, "edate":vm.q.edate},
                 page:page
             }).trigger("reloadGrid");
 		},

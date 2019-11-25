@@ -18,10 +18,28 @@ $(function () {
 				}
 			},
 			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '认证状态', name: 'auditStatus', index: 'audit_status', width: 80 },
+			{ label: '认证状态', name: 'auditStatus', index: 'audit_status', width: 80,
+				formatter: function (value, options, row) {
+					if(value == 'pass'){
+						return "<span class='label label-warning'>认证通过</span>";
+					}else if (value == 'pending'){
+						return "<span class='label label-warning'>请认证</span>";
+					}else{
+						return "<span class='label label-warning'>无</span>";
+					}
+				}
+			},
 			{ label: '手机号', name: 'mobile', index: 'mobile', width: 80 },
 			{ label: '邮箱', name: 'email', index: 'email', width: 80 },
-			{ label: 'VIP', name: 'showVip', index: 'show_vip', width: 80 },
+			{ label: '是否拥有VIP', name: 'showVip', index: 'show_vip', width: 80,
+				formatter: function (value, options, row) {
+					if(value == 't'){
+						return "<span class='label label-warning' >是</span>";
+					}else{
+						return "<span class='label label-warning'>否</span>";
+					}
+				}
+			},
 			{ label: '手机号2 ：非必填', name: 'phone', index: 'phone', width: 80 },
 			{ label: '微信号', name: 'weixinNumber', index: 'weixin_number', width: 80 },
 			{ label: '出生日期', name: 'birthday', index: 'birthday', width: 80 },
@@ -30,15 +48,7 @@ $(function () {
 			{ label: '个人简介', name: 'profile', index: 'profile', width: 80 },
 			{ label: '公司介绍', name: 'companyProfile', index: 'company_profile', width: 80 },
 			{ label: '拥有资源', name: 'havaResource', index: 'hava_resource', width: 80 },
-			{ label: '需要资源', name: 'needResource', index: 'need_resource', width: 80 },
-			{ label: '二维码', name: 'qrCode', index: 'qr_code', width: 80,
-				formatter: function (value, options, row) {
-					if(value == null){
-						return "<span>无</span>";
-					}
-					return "<img src='"+value+"' width='80px' height='50px'/>";
-				}
-			},
+			{ label: '需要资源', name: 'needResource', index: 'need_resource', width: 80},
 			{ label: '手机号1所属地区', name: 'mobileCountry', index: 'mobile_country', width: 80 },
 			{ label: '手机号2所属地区', name: 'phoneCountry', index: 'phone_country', width: 80 },
 			{
@@ -48,6 +58,11 @@ $(function () {
                 	var dom ="<button type='button' class='ivu-btn ivu-btn-primary' onclick='showDesc("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>查看</span></button>&nbsp;";
 					if(row.auditStatus =='pending'){
 						dom +="<button type='button' class='ivu-btn ivu-btn-primary' onclick='showMember("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>认证</span></button>&nbsp;";
+					}
+					if(row.showVip =='t'){
+						dom +="<button type='button' class='ivu-btn ivu-btn-primary' onclick='removeVipLogo("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>取消VIP图标</span></button>&nbsp;";
+					}else{
+						dom +="<button type='button' class='ivu-btn ivu-btn-primary' onclick='addVipLogo("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>增加VIP图标</span></button>&nbsp;";
 					}
                 	return dom;
                 }
@@ -104,6 +119,45 @@ function showMember(id){
 	vm.getInfo(id)
 }
 
+//取消vipLogo
+function removeVipLogo(id){
+	if(id == null){
+		return ;
+	}
+	$.ajax({
+	type: "GET",
+	url: "../member/removeVipLogo/" + id,
+	success: function(r){
+	if(r.code == 0){
+		$("#jqGrid").trigger("reloadGrid");
+		vm.$Message.success('操作成功!');
+		}else{
+		vm.$Message.error(r.msg);
+		}
+		}
+	});
+}
+
+//增加vipLogo
+function addVipLogo(id){
+	if(id == null){
+		return ;
+	}
+	$.ajax({
+		type: "GET",
+		url: "../member/addVipLogo/" + id,
+		success: function(r){
+			if(r.code == 0){
+				$("#jqGrid").trigger("reloadGrid");
+				vm.$Message.success('操作成功!');
+			}else{
+				vm.$Message.error(r.msg);
+			}
+		}
+	});
+}
+
+
 //逻辑删除
 function logic_del(id){
 	if(id == null){
@@ -135,6 +189,7 @@ var vm = new Vue({
 	data:{
 		showList: true,
 		showModal: false,
+		qrcode: null,
 		title: null,
 		showModal4: false,
 		showModal2: false,
@@ -272,6 +327,7 @@ var vm = new Vue({
 				url : "../member/info/" + id,
 				success : function(r) {
 					vm.member = r.member;
+					vm.qrcode = vm.member.qrCode;
 				}
 			});
 		},

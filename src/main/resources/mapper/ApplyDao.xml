@@ -323,4 +323,12 @@
 		and current_timestamp &lt;= ta.end_time
 	</select>
 
+	<select id="queryApplyListNoReview" resultType="io.renren.cms.entity.ApplyEntity">
+		select ta.* from tb_apply ta
+		left join tb_apply_review tar
+		on ta.id &lt;&gt; tar.apply_id
+		where 1 = 1
+	</select>
+
+
 </mapper>

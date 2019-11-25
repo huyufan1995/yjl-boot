@@ -23,6 +23,11 @@ public class ApplyReviewEntity implements Serializable {
 	private Integer id;
 	/** 活动id */
 	private Integer applyId;
+
+	/**
+	 * 活动标题
+	 */
+	private String applyTitle;
 	/** 活动回顾 */
 	private String applyReviewContent;
 	/** t:展示 f:暂停 */

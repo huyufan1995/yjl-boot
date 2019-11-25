@@ -214,4 +214,30 @@ public class MemberController {
 
 		return R.ok().put("memberList", memberEntities);
 	}
+
+	/**
+	 * 取消VIP logo
+	 */
+	@RequestMapping("/removeVipLogo/{id}")
+	//@RequiresPermissions("member:logicDel")
+	public R removeVipLogo(@PathVariable("id") Integer id) {
+		MemberEntity memberEntity = new MemberEntity();
+		memberEntity.setId(id);
+		memberEntity.setShowVip("f");
+		memberService.update(memberEntity);
+		return R.ok();
+	}
+
+	/**
+	 * 增加VIP logo
+	 */
+	@RequestMapping("/addVipLogo/{id}")
+	//@RequiresPermissions("member:logicDel")
+	public R addVipLogo(@PathVariable("id") Integer id) {
+		MemberEntity memberEntity = new MemberEntity();
+		memberEntity.setId(id);
+		memberEntity.setShowVip("t");
+		memberService.update(memberEntity);
+		return R.ok();
+	}
 }

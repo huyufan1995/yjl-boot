@@ -4,9 +4,9 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '', name: 'applyId', index: 'apply_id', width: 80 },
+			{ label: '报名时间', name: 'ctime', index: 'ctime', width: 80 },
 			{ label: '活动标题', name: 'applyTitle', index: 'apply_title', width: 80 },
-			{ label: '报名人openid', name: 'openid', index: 'openid', width: 80 },
+			{ label: '报名人', name: 'nickName', width: 80 }/*,
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
@@ -14,7 +14,7 @@ $(function () {
                 	dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
                 	return dom;
                 }
-            }
+            }*/
         ],
 		viewrecords: true,
 		height: $(window).height() - 250,
@@ -100,7 +100,9 @@ var vm = new Vue({
 			id: null,
 			sdate: null,
 			edate: null,
-			ctime: []
+			ctime: [],
+			nickName:null,
+			applyTitle:null
 		}
 	},
 	methods: {
@@ -112,6 +114,8 @@ var vm = new Vue({
 			vm.q.sdate = null;
 			vm.q.edate = null;
 			vm.q.ctime = null;
+			vm.q.applyTitle = null;
+			vm.q.nickName = null;
 		},
 		add: function(){
 			//vm.showList = false;
@@ -194,7 +198,7 @@ var vm = new Vue({
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
-				postData:{"id": vm.q.id, "sdate":vm.q.sdate, "edate":vm.q.edate},
+				postData:{"id": vm.q.id,"applyTitle":vm.q.applyTitle,"nickName":vm.q.nickName, "sdate":vm.q.sdate, "edate":vm.q.edate},
                 page:page
             }).trigger("reloadGrid");
 		},

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import io.renren.api.constant.SystemConstant;
 import io.renren.cms.entity.ApplyEntity;
+import io.renren.cms.service.ApplyService;
 import io.renren.enums.AuditStatusEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -35,6 +36,9 @@ import io.renren.utils.R;
 public class ApplyReviewController {
 	@Autowired
 	private ApplyReviewService applyReviewService;
+
+	@Autowired
+	private ApplyService applyService;
 	
 	/**
 	 * 列表
@@ -182,6 +186,17 @@ public class ApplyReviewController {
 		}else{
 			return R.error();
 		}
+	}
+
+
+	/**
+	 * 查询未绑定活动详情的活动数据列表
+	 */
+	@RequestMapping("/applyList")
+	//@RequiresPermissions("applyreview:list")
+	public R applyList(){
+		List<ApplyEntity> applyList = applyService.queryApplyListNoReview();
+		return R.ok().put("applyList", applyList);
 	}
 
 }

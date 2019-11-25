@@ -49,4 +49,6 @@ public interface ApplyService {
 	List<ApplyEntityDto> queryListByOpenIdWithCollect(Map<String, Object> params);
 
     List<ApplyEntity> queryAll();
+
+    List<ApplyEntity> queryApplyListNoReview();
 }

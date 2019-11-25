@@ -48,4 +48,8 @@ public interface MemberDao extends BaseDao<MemberEntity> {
     List<MemberEntity> queryListByIsCollect(Map<String, Object> map);
 
     void updateVerify(@Param(value = "verify") String verify,@Param(value = "openid") String openid);
+
+    List<MemberEntity> queryAddressAndNationalityInfo();
+
+	List<MemberEntity> queryListLikeAll(Map<String, Object> params);
 }

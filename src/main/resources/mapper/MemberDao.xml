@@ -124,6 +124,7 @@
 			<if test="ctime != null">`ctime`=#{ctime},</if>
 			<if test="isDel != null">`is_del`=#{isDel},</if>
 			<if test="status != null">`status`=#{status},</if>
+			<if test="showVip != null">`show_vip`=#{showVip},</if>
 			<if test="realName != null">`real_name`=#{realName},</if>
 			<if test="mobile != null">`mobile`=#{mobile},</if>
 			<if test="openid != null">`openid`=#{openid},</if>
@@ -194,7 +195,7 @@
 		<if test="mobile != null and mobile != ''"> and t.`mobile` = #{mobile}</if>
 		<if test="openid != null and openid != ''"> and t.`openid` = #{openid}</if>
 		<if test="type != null and type != ''"> and t.`type` = #{type}</if>
-		<if test="company != null and company != ''"> and t.`company` = #{company}</if>
+		<if test="code != null and code != ''"> and t.`code` = #{code}</if>
 		<if test="email != null and email != ''"> and t.`email` = #{email}</if>
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
 			and (t.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
@@ -251,4 +252,78 @@
 	<update id="updateVerify">
 	update tb_member set verify = #{verify} where openid = #{openid}
 	</update>
+
+	<select id="queryAddressAndNationalityInfo" resultType="io.renren.cms.entity.MemberEntity">
+		SELECT address,nationality FROM tb_member where id in(SELECT min(id) from tb_member GROUP BY nationality)
+	</select>
+
+	<select id="queryListLike" resultType="io.renren.cms.entity.MemberEntity">
+		select * from tb_member where 1 = 1
+
+		<if test="nickname != null and nickname != ''"> and `nickname` = #{nickname}</if>
+		<if test="gender != null and gender != ''"> and `gender` = #{gender}</if>
+		<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+		<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
+		<if test="status != null and status != ''"> and `status` = #{status}</if>
+		<if test="realName != null and realName != ''"> and `real_name` = #{realName}</if>
+		<if test="mobile != null and mobile != ''"> and `mobile` = #{mobile}</if>
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="type != null and type != ''"> and `type` = #{type}</if>
+		<if test="company != null and company != ''"> and `company` = #{company}</if>
+		<if test="email != null and email != ''"> and `email` = #{email}</if>
+		<if test="code != null and code != ''"> and `code` = #{code}</if>
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryListLikeAll" resultType="io.renren.cms.entity.MemberEntity">
+		select * from tb_member where 1 = 1
+			and type ='vip'
+			and status ='normal'
+		<if test="keyAll != null and keyAll != ''">
+			and (`nickname` like concat('%',#{keyAll},'%')
+			or`mobile` like concat('%',#{keyAll},'%')
+			or`code` like concat('%',#{keyAll},'%')
+			or`phone` like concat('%',#{keyAll},'%')
+			or`weixin_number` like concat('%',#{keyAll},'%')
+			or`nationality` like concat('%',#{keyAll},'%')
+			or`address` like concat('%',#{keyAll},'%')
+			or`profile` like concat('%',#{keyAll},'%')
+			or`company_profile` like concat('%',#{keyAll},'%')
+			or`have_resource` like concat('%',#{keyAll},'%')
+			or`need_resource` like concat('%',#{keyAll},'%')
+			or`mobile_country` like concat('%',#{keyAll},'%')
+			or`phone_country` like concat('%',#{keyAll},'%')
+			)
+		</if>
+		<if test="address != null and address != ''"> and `address` = #{address}</if>
+		<if test="nationality != null and nationality != ''"> and `nationality` = #{nationality}</if>
+
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
 </mapper>

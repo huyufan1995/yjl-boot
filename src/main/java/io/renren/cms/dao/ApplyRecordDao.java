@@ -2,10 +2,12 @@ package io.renren.cms.dao;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.renren.api.dto.ApplyRecordEntiyDto;
 import io.renren.api.dto.VerifyMemberInfoDto;
 import io.renren.cms.entity.ApplyRecordEntity;
+import io.renren.cms.vo.ApplyRecordEntityVO;
 import io.renren.dao.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
@@ -27,4 +29,6 @@ public interface ApplyRecordDao extends BaseDao<ApplyRecordEntity> {
 	Boolean deleteByOpenIdAndApplyId(HashMap<String, Object> params);
 
     List<VerifyMemberInfoDto> queryVerifyMember(@Param(value = "code")String code);
+
+    List<ApplyRecordEntityVO> queryListVo(Map<String, Object> map);
 }

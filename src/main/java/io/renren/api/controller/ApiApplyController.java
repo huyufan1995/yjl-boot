@@ -1,7 +1,13 @@
 package io.renren.api.controller;
 
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaTemplateData;
+import cn.binarywang.wx.miniapp.bean.WxMaTemplateMessage;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import io.renren.api.constant.SystemConstant;
 import io.renren.api.dto.*;
 import io.renren.api.exception.ApiException;
@@ -15,6 +21,8 @@ import io.renren.cms.service.ApplyRecordService;
 import io.renren.cms.service.ApplyReviewService;
 import io.renren.cms.service.ApplyService;
 import io.renren.cms.service.CollectService;
+import io.renren.config.WxMaConfiguration;
+import io.renren.properties.YykjProperties;
 import io.renren.utils.HTMLSpirit;
 import io.renren.utils.Query;
 import io.renren.utils.annotation.IgnoreAuth;
@@ -25,19 +33,24 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +60,7 @@ import java.util.stream.Collectors;
  * @date 2019-11-11
  */
 @RestController
+@Slf4j
 @RequestMapping("/api/apply")
 @Api("活动")
 public class ApiApplyController {
@@ -54,6 +68,9 @@ public class ApiApplyController {
 
     @Autowired
     private ApplyService applyService;
+
+    @Autowired
+    private YykjProperties yykjProperties;
 
     @Autowired
     private ApplyReviewService applyReviewService;
@@ -132,6 +149,7 @@ public class ApiApplyController {
             applyRecordEntity.setMemberId(sessionMember.getMemberId());
             applyRecordEntity.setVerifyStatus(SystemConstant.F_STR);
             applyRecordService.save(applyRecordEntity);
+            sendAsync(sessionMember,applyId);
         } else {
             Boolean isApply = applyRecordService.deleteByOpenIdAndApplyId(params);
             if (!isApply) {
@@ -140,6 +158,46 @@ public class ApiApplyController {
         }
         return ApiResult.ok();
     }
+    @Async
+    public Future<Boolean> sendAsync(SessionMember sessionMember, String applyId) {
+        log.info("异步发送模板消息开始===");
+        try {
+            String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=AppId&secret=AppSecret";
+            url = url.replace("AppId", yykjProperties.getAppid());
+            url = url.replace("AppSecret",yykjProperties.getSecret());
+            String result = HttpUtil.get(url);
+            JSONObject jsonObject = new JSONObject(result);
+            Object access_token = jsonObject.get("access_token");
+
+            url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token="+access_token;
+            HashMap<String,Object> params = new HashMap<>();
+            params.put("touser",sessionMember.getOpenid());
+            params.put("template_id","ATbf_EHzqt4pFH0mvy92IZDZm4hB-jqxfnukRRfYl5o");
+            params.put("page","pages/bm/info/info");
+            ApplyEntity applyEntity = applyService.queryObject(Integer.parseInt(applyId));
+            HashMap<String,Object> data = new HashMap<>();
+            HashMap<String,Object> h1 =new HashMap<>(1);
+            h1.put("value",applyEntity.getApplyTitle());
+            HashMap<String,Object> h4 =new HashMap<>(1);
+            h4.put("value","活动加入成功");
+            HashMap<String,Object> d2 =new HashMap<>(1);
+            String time =new SimpleDateFormat("yyyy-MM-dd").format(applyEntity.getStartTime()).toString();
+            d2.put("value",time);
+            data.put("thing2",h1);
+            data.put("thing4",h4);
+            data.put("date3",d2);
+            params.put("data",data);
+            String s = JSONUtil.toJsonStr(params);
+            String post = HttpUtil.post(url, s);
+            System.out.println(post);
+        } catch (Exception e) {
+            log.error("异步发送模板消息异常{}", e.getMessage());
+            return new AsyncResult<Boolean>(false);
+        }
+        log.info("异步发送模板消息结束===");
+        return new AsyncResult<Boolean>(true);
+    }
+
 
     @IgnoreAuth
     @ApiOperation("活动数据详情")

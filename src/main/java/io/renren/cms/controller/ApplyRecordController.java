@@ -5,6 +5,7 @@ import java.util.Map;
 
 import io.renren.cms.entity.ApplyEntity;
 import io.renren.cms.entity.ApplyReviewEntity;
+import io.renren.cms.vo.ApplyRecordEntityVO;
 import io.renren.enums.AuditStatusEnum;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class ApplyRecordController {
 	public R list(@RequestParam Map<String, Object> params){
         Query query = new Query(params);
 
-		List<ApplyRecordEntity> applyRecordList = applyRecordService.queryList(query);
+		List<ApplyRecordEntityVO> applyRecordList = applyRecordService.queryListVo(query);
 		int total = applyRecordService.queryTotal(query);
 		
 		PageUtils pageUtil = new PageUtils(applyRecordList, total, query.getLimit(), query.getPage());

@@ -86,7 +86,7 @@ public class ApiInformationController {
             @ApiImplicitParam(paramType = "query", dataType = "int", name = "page", value = "页码 默认1", required = false),
             @ApiImplicitParam(paramType = "query", dataType = "int", name = "limit", value = "页大小 默认5", required = false),
             @ApiImplicitParam(paramType = "query", dataType = "String", name = "keyword", value = "关键词", required = false),
-            @ApiImplicitParam(paramType = "query", dataType = "int", name = "informationType", value = "资讯类型", required = false)
+            @ApiImplicitParam(paramType = "query", dataType = "int", name = "informationType", value = "资讯类型", required = true)
     })
     @PostMapping("/list")
     public ApiResultList list(@ApiIgnore() @RequestParam Map<String, Object> params) {

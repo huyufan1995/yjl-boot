@@ -3,7 +3,7 @@ $(function () {
         url: '../member/list',
         datatype: "json",
         colModel: [			
-			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
+			{ label: 'id', name: 'code', index: 'code', width: 50, key: true },
 			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
 			{ label: '状态', name: 'status', index: 'status', width: 80,
 				formatter: function (value, options, row) {
@@ -214,6 +214,8 @@ var vm = new Vue({
 			id: null,
 			sdate: null,
 			edate: null,
+			code:null,
+			nickname:null,
 			ctime: [],
 			mobile: null,
 			superiorId: null,
@@ -235,8 +237,8 @@ var vm = new Vue({
 			vm.q.sdate = null;
 			vm.q.edate = null;
 			vm.q.ctime = null;
-			vm.q.superiorId = null;
-			vm.q.type = null;
+			vm.q.nickname = null;
+			vm.q.code = null;
 		},
 		add: function(){
 			//vm.showList = false;
@@ -345,7 +347,7 @@ var vm = new Vue({
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
-				postData:{"id": vm.q.id,"mobile": vm.q.mobile, "sdate":vm.q.sdate, "superiorId":vm.q.superiorId,"type":vm.q.type,"edate":vm.q.edate},
+				postData:{"id": vm.q.id,"nickname": vm.q.nickname, "sdate":vm.q.sdate, "code":vm.q.code,"type":vm.q.type,"edate":vm.q.edate},
                 page:page
             }).trigger("reloadGrid");
 		},

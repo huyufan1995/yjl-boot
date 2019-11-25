@@ -44,4 +44,8 @@ public interface MemberService {
     List<MemberEntity> queryListByIsCollect(Map<String, Object> map);
 
 	void updateVerify(String verify, String openid);
+
+    List<MemberEntity> queryAddressAndNationalityInfo();
+
+	List<MemberEntity> queryListLikeAll(Map<String, Object> params);
 }

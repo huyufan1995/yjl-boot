@@ -341,13 +341,12 @@ public class ApiMemberController {
 	@ApiImplicitParams({
 			@ApiImplicitParam(paramType = "query", dataType = "int", name = "page", value = "页码 默认1", required = false),
 			@ApiImplicitParam(paramType = "query", dataType = "int", name = "limit", value = "页大小 默认5", required = false),
-			@ApiImplicitParam(paramType = "query", dataType = "int", name = "nickname", value = "搜索", required = false)
+			@ApiImplicitParam(paramType = "query", dataType = "String", name = "keyAll", value = "搜索模糊匹配", required = false),
+			@ApiImplicitParam(paramType = "query", dataType = "String", name = "address", value = "address", required = false),
+			@ApiImplicitParam(paramType = "query", dataType = "String", name = "nationality", value = "nationality", required = false)
 	})
 	public ApiResult memberVipList(@ApiIgnore() @RequestParam Map<String, Object> params) {
-		params.put("openid","");
-		params.put("type","vip");
-		params.put("status","normal");
-		List<MemberEntity> memberEntities = memberService.queryList(params);
+		List<MemberEntity> memberEntities = memberService.queryListLikeAll(params);
 		List<MemberBannerEntity> memberBannerEntities = memberBannerService.queryList(null);
 		HashMap<String,Object> map = new HashMap<>(2);
 		map.put("banner",memberBannerEntities);
@@ -410,6 +409,11 @@ public class ApiMemberController {
 		param.put("status","f");
 		Map<String,Object> map= new HashMap<>(1);
 		map.put("read",leaveService.queryTotal(param)> 0);
+		List<MemberEntity> memberEntityList = memberService.queryAddressAndNationalityInfo();
+		List<String> addressList = memberEntityList.stream().map(MemberEntity::getAddress).collect(Collectors.toList());
+		List<String> nationalityList = memberEntityList.stream().map(MemberEntity::getNationality).collect(Collectors.toList());
+		map.put("address",addressList);
+		map.put("nationalityList",nationalityList);
 		return ApiResult.ok(map);
 	}
 
