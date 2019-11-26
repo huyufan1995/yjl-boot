@@ -66,6 +66,9 @@
 		       		<Form-item label="活动标题" prop="applyTitle">
 		            	<i-input v-model="apply.applyTitle" placeholder="活动标题" style="width: 300px"></i-input>
 		        	</Form-item>
+					<Form-item label="活动热度" prop="applyHot">
+						<i-input v-model="apply.applyHot" placeholder="活动热度" style="width: 300px"></i-input>
+					</Form-item>
 					<Form-item label="活动时间" prop="dateTimeRange">
 						<Date-picker type="datetimerange" v-model="apply.dateTimeRange" format="yyyy-MM-dd HH:mm" placeholder="请选择时间范围" style="width: 300px"></Date-picker>
 					</Form-item>
@@ -83,7 +86,7 @@
 							action="../cos/upload/cloud/applyBanner">
 						<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
 					</Upload>
-					<span>图片尺寸：690*360px</span>
+					<span>图片尺寸：640*360px</span>
 				</Form-item>
 				<Form-item label="活动视频链接地址" prop="videoLink">
 					<i-input v-model="apply.videoLink" placeholder="请输入活动视频链接地址" style="width: 300px"></i-input>
@@ -103,7 +106,7 @@
 	</div>
 	
 	<!-- Modal -->	
-	<Modal v-model="showModal" :title="title" :mask-closable="false" width="800">
+	<!--<Modal v-model="showModal" :title="title" :mask-closable="false" width="800">
 	
 		<i-form ref="apply" :model="apply" :rules="ruleValidate" :label-width="100" label-position="left">
 																<Form-item label="活动标题" prop="applyTitle">
@@ -136,7 +139,7 @@
         	<i-button type="warning" @click="showModal = false">取消</i-button>
         	<i-button type="primary" @click="saveOrUpdate">确定</i-button>
     	</div>
-	 </Modal>
+	 </Modal>-->
 </div>
 
 <script src="../public/js/cms/apply.js"></script>

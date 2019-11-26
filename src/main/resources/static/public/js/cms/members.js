@@ -3,10 +3,10 @@ $(function () {
         url: '../member/list',
         datatype: "json",
         colModel: [			
-			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
+			{ label: 'id', name: 'id', index: 'id', width: 30, key: true },
 			{ label: '会员号', name: 'code', index: 'code', width: 80 },
 			{ label: '昵称', name: 'nickname', index: 'nickname', width: 80 },
-			{ label: '性别', name: 'gender', index: 'gender', width: 80,
+			{ label: '性别', name: 'gender', index: 'gender', width: 30,
 				formatter: function (value, options, row) {
 					if(value == '1'){
 						return "<span class='label label-warning'>男</span>";
@@ -18,7 +18,7 @@ $(function () {
 				}
 			},
 			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '认证状态', name: 'auditStatus', index: 'audit_status', width: 80,
+			{ label: '认证状态', name: 'auditStatus', index: 'audit_status', width: 50,
 				formatter: function (value, options, row) {
 					if(value == 'pass'){
 						return "<span class='label label-warning'>认证通过</span>";
@@ -39,18 +39,18 @@ $(function () {
 						return "<span class='label label-warning'>否</span>";
 					}
 				}
-			},
-			{ label: '手机号2 ：非必填', name: 'phone', index: 'phone', width: 80 },
+			},/*
+			{ label: '手机号2 ：非必填', name: 'phone', index: 'phone', width: 80 },*/
 			{ label: '微信号', name: 'weixinNumber', index: 'weixin_number', width: 80 },
-			{ label: '出生日期', name: 'birthday', index: 'birthday', width: 80 },
-			{ label: '国籍', name: 'nationality', index: 'nationality', width: 80 },
+			{ label: '出生日期', name: 'birthday', index: 'birthday', width: 40 },
+			{ label: '国籍', name: 'nationality', index: 'nationality', width: 50 },
 			{ label: '当前居住地址', name: 'address', index: 'address', width: 80 },
-			{ label: '个人简介', name: 'profile', index: 'profile', width: 80 },
+			{ label: '个人简介', name: 'profile', index: 'profile', width: 80 },/*
 			{ label: '公司介绍', name: 'companyProfile', index: 'company_profile', width: 80 },
 			{ label: '拥有资源', name: 'havaResource', index: 'hava_resource', width: 80 },
 			{ label: '需要资源', name: 'needResource', index: 'need_resource', width: 80},
 			{ label: '手机号1所属地区', name: 'mobileCountry', index: 'mobile_country', width: 80 },
-			{ label: '手机号2所属地区', name: 'phoneCountry', index: 'phone_country', width: 80 },
+			{ label: '手机号2所属地区', name: 'phoneCountry', index: 'phone_country', width: 80 },*/
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
@@ -59,11 +59,14 @@ $(function () {
 					if(row.auditStatus =='pending'){
 						dom +="<button type='button' class='ivu-btn ivu-btn-primary' onclick='showMember("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>认证</span></button>&nbsp;";
 					}
-					if(row.showVip =='t'){
-						dom +="<button type='button' class='ivu-btn ivu-btn-primary' onclick='removeVipLogo("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>取消VIP图标</span></button>&nbsp;";
-					}else{
-						dom +="<button type='button' class='ivu-btn ivu-btn-primary' onclick='addVipLogo("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>增加VIP图标</span></button>&nbsp;";
+					if(row.type =='vip'){
+						if(row.showVip =='t'){
+							dom +="<button type='button' class='ivu-btn ivu-btn-primary' onclick='removeVipLogo("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>取消VIP图标</span></button>&nbsp;";
+						}else{
+							dom +="<button type='button' class='ivu-btn ivu-btn-primary' onclick='addVipLogo("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>增加VIP图标</span></button>&nbsp;";
+						}
 					}
+
                 	return dom;
                 }
             }

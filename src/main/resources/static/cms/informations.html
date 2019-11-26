@@ -74,7 +74,9 @@
 							<i-option v-for="item in informationTypeList" :value="item.id" :key="item.id">{{ item.name }}</i-option>
 						</i-select>
 					</Form-item>
-
+					<Form-item label="默认资讯浏览量" prop="browsTotal">
+						<i-input v-model="information.browsTotal" placeholder="请输入资讯浏览量" style="width: 300px"></i-input>
+					</Form-item>
 					<Form-item label="资讯封面图" prop="banner">
 					<img :src="bannerImgSrc" class="img-rounded" v-if="showBannerImage" width="150px" height="78px">
 						<Upload
@@ -85,7 +87,7 @@
 								action="../cos/upload/cloud/informationBanner">
 							<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
 						</Upload>
-						<span>图片尺寸：690*360px</span>
+						<span>图片尺寸：640*360px</span>
 					</Form-item>
                     <Form-item label="视频链接地址" prop="videoLink">
                         <i-input v-model="information.videoLink" placeholder="请输入视频链接地址" style="width: 300px"></i-input>

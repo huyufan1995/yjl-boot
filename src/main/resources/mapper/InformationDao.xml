@@ -102,6 +102,9 @@
 			<if test="qrCode != null">
 				qr_code,
 			</if>
+			<if test="browsTotal != null">
+				brows_total
+			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="title != null and title != ''">
@@ -137,6 +140,9 @@
 			<if test="qrCode != null">
 				#{qrCode},
 			</if>
+			<if test="browsTotal != null">
+				#{browsTotal}
+			</if>
 		</trim>
 	</insert>
 
@@ -152,6 +158,8 @@
 			<if test="auditStatus != null">`audit_status` = #{auditStatus}, </if>
 			<if test="ctime != null">`ctime` = #{ctime}, </if>
 			<if test="updateTime != null">`update_time` = #{updateTime}</if>
+			<if test="browsTotal != null">`brows_total` = #{browseTotal}</if>
+
 		</set>
 		where id = #{id}
 	</update>

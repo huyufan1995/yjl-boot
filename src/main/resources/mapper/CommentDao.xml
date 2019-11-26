@@ -81,7 +81,7 @@
 			and tc.`remark` like concat('%',#{remark},'%')
 		</if>
 		<if test="nickName != null and nickName != ''"> and tm.`nickname` = #{nickName}</if>
-		<if test="informationId != null and informationId != ''"> and tm.`information_id` = #{informationId}</if>
+		<if test="informationId != null and informationId != ''"> and tc.`information_id` = #{informationId}</if>
 
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
 			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))

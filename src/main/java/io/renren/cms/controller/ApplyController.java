@@ -77,7 +77,9 @@ public class ApplyController {
 
 	private void checkApply(@RequestBody ApplyEntity apply) {
 		apply.setCtime(new Date());
-		apply.setApplyHot((int)(Math.random()*900 + 100));
+		if(apply.getApplyHot()==null){
+			apply.setApplyHot((int)(Math.random()*900 + 100));
+		}
 		apply.setCreatePeople(SystemConstant.CREATE_PEOPLE);
 		apply.setIsDel(SystemConstant.F_STR);
 		apply.setAuditStatus(AuditStatusEnum.UNCOMMIT.getCode());

@@ -5,7 +5,7 @@ $(function () {
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
 			{ label: '活动banner图', name: 'bannerImg', index: 'banner_img', width: 80 },
-			{ label: '活动Id', name: 'applyId', index: 'apply_id', width: 80 },
+			{ label: '活动标题', name: 'applyTitle',width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
@@ -98,7 +98,8 @@ var vm = new Vue({
 			id: null,
 			sdate: null,
 			edate: null,
-			ctime: []
+			ctime: [],
+			applyTitle:null
 		}
 	},
 	methods: {
@@ -110,6 +111,7 @@ var vm = new Vue({
 			vm.q.sdate = null;
 			vm.q.edate = null;
 			vm.q.ctime = null;
+			vm.q.applyTitle = null;
 		},
 		add: function(){
 			//vm.showList = false;
@@ -209,6 +211,11 @@ var vm = new Vue({
 				}
 			});
 		},
+		closeModal:function(event){
+			vm.bannerImgSrc =null;
+			vm.showBanner =false;
+			vm.showModal = false;
+		},
 		handleSuccess1 (res, file) {
 			console.log(res)
 			if(res.code != 500){
@@ -223,7 +230,7 @@ var vm = new Vue({
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
-				postData:{"id": vm.q.id, "sdate":vm.q.sdate, "edate":vm.q.edate},
+				postData:{"id": vm.q.id,"applyTitle":vm.q.applyTitle, "sdate":vm.q.sdate, "edate":vm.q.edate},
                 page:page
             }).trigger("reloadGrid");
 		},

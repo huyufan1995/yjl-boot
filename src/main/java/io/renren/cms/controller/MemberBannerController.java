@@ -93,12 +93,12 @@ public class MemberBannerController {
 	}
 	
 	/**
-	 * 逻辑删除
+	 * 删除
 	 */
 	@RequestMapping("/logic_del/{id}")
 	//@RequiresPermissions("memberbanner:logicDel")
 	public R logicDel(@PathVariable("id") Integer id) {
-		memberBannerService.logicDel(id);
+		memberBannerService.delete(id);
 		return R.ok();
 	}
 	

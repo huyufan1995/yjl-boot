@@ -26,4 +26,8 @@ public class MemberBannerEntity implements Serializable {
 	/** 会员id */
 	private Integer memberId;
 
+	private String nickName;
+
+	private String code;
+
 }

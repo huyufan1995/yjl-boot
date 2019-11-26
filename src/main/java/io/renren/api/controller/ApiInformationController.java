@@ -170,7 +170,7 @@ public class ApiInformationController {
         int total = informationBrowsService.queryTotal(qid);
         InformationsEntityInfoDto informationsEntityInfoDto = new InformationsEntityInfoDto();
         BeanUtil.copyProperties(informationEntity, informationsEntityInfoDto, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
-        informationsEntityInfoDto.setBrowsTotal(total==0?total+1:total);
+        informationsEntityInfoDto.setBrowsTotal(informationEntity.getBrowsTotal()+total);
         //查询当前资讯是否收藏
         Boolean collectFlag = collectService.isCollect(id,1,openid);
         informationsEntityInfoDto.setIsCollect(collectFlag);

@@ -4,8 +4,9 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
+			{ label: '会员号', name: 'code', width: 80 },
 			{ label: '会员Banner', name: 'memberBanner', index: 'member_banner', width: 80 },
-			{ label: '会员id', name: 'memberId', index: 'member_id', width: 80 },
+			{ label: '会员名称', name: 'nickName', width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
@@ -48,8 +49,10 @@ function edit(id){
 		return ;
 	}
 //	vm.showList = false;
-	vm.showModal2 = true;
+	vm.editFlag = true;
+	vm.showModal = true;
     vm.title = "修改";
+    vm.getMemberList();
     vm.getInfo(id)
 }
 
@@ -84,6 +87,7 @@ var vm = new Vue({
 	data:{
 		showList: true,
 		showModal: false,
+		editFlag: false,
 		title: null,
 		showModal2: false,
 		memberList: [],
@@ -92,13 +96,15 @@ var vm = new Vue({
 		showBannerImage: false,
 		ruleValidate: {
 			memberId: [
-		                { required: true, message: '请输入会员id' }
+		                { required: true, message: '请选择会员' }
 		            ]							        },
         q:{
 			id: null,
 			sdate: null,
 			edate: null,
-			ctime: []
+			ctime: [],
+			code: null,
+			nickName:null
 		}
 	},
 	methods: {
@@ -110,11 +116,15 @@ var vm = new Vue({
 			vm.q.sdate = null;
 			vm.q.edate = null;
 			vm.q.ctime = null;
+			vm.q.code = null;
+			vm.q.nickName = null;
 		},
 		add: function(){
 			//vm.showList = false;
 			vm.showModal = true;
 			vm.title = "新增";
+			vm.editFlag = false;
+			vm.bannerImgSrc = null;
 			vm.memberBanner = {};
 			vm.getMemberList();
 		},
@@ -154,6 +164,7 @@ var vm = new Vue({
 						vm.$Message.error("请上传图片");
 						return;
 					}
+                	vm.memberBanner.memberBanner =vm.bannerImgSrc;
                 	var url = vm.memberBanner.id == null ? "../memberbanner/save" : "../memberbanner/update";
         			$.ajax({
         				type: "POST",
@@ -212,6 +223,7 @@ var vm = new Vue({
 					vm.memberBanner = r.memberBanner;
 					vm.bannerImgSrc = vm.memberBanner.memberBanner;
 					vm.showBannerImage =true;
+					vm.memberList.id =vm.memberBanner.memberId;
 				}
 			});
 		},
@@ -219,7 +231,7 @@ var vm = new Vue({
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
-				postData:{"id": vm.q.id, "sdate":vm.q.sdate, "edate":vm.q.edate},
+				postData:{"id": vm.q.id, "nickName":vm.q.nickName,"code":vm.q.code,"sdate":vm.q.sdate, "edate":vm.q.edate},
                 page:page
             }).trigger("reloadGrid");
 		},

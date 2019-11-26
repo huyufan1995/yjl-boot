@@ -63,7 +63,7 @@
 
             <i-form ref="applyReview" :model="applyReview" :rules="ruleValidate" :label-width="100" label-position="left">
 		       		<Form-item label="活动" prop="applyId">
-						<i-select disabled="editFlag" v-model="applyReview.applyId" placeholder="请选择活动" style="width: 300px" >
+						<i-select v-bind:disabled="editFlag" v-model="applyReview.applyId" placeholder="请选择活动" style="width: 300px" >
 							<i-option v-for="item in applyList" :value="item.id" :key="item.id">{{ item.applyTitle }}</i-option>
 						</i-select>
 		        	</Form-item>

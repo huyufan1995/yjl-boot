@@ -2,6 +2,7 @@ package io.renren.cms.controller;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -169,7 +170,9 @@ public class MemberController {
 	@RequestMapping("/queryAll")
 	//@RequiresPermissions("informationtype:delete")
 	public R queryAll(){
-		List<MemberEntity> memberEntities = memberService.queryListByMemberBanner(null);
+		Map<String,Object> params = new HashMap<>(1);
+		params.put("type","vip");
+		List<MemberEntity> memberEntities = memberService.queryListByMemberBanner(params);
 
 		return R.ok().put("memberList", memberEntities);
 	}

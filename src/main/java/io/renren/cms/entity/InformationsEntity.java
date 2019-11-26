@@ -80,4 +80,9 @@ public class InformationsEntity implements Serializable {
 	private String qrCode;
 
     private String informationTypeName;
+
+	/**
+	 * 资讯浏览量
+	 */
+	private Integer browsTotal;
 }

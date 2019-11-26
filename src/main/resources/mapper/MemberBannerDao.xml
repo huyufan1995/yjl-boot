@@ -18,10 +18,15 @@
 	</select>
 
 	<select id="queryList" resultType="io.renren.cms.entity.MemberBannerEntity">
-		select * from tb_member_banner where 1 = 1
-		
-			<if test="memberBanner != null and memberBanner != ''"> and `member_banner` = #{memberBanner}</if>
-			<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+		select tmb.*,tm.code as code,tm.nickname as nickName from tb_member_banner tmb
+		 left join tb_member tm
+		 on tmb.member_id = tm.id
+		 where 1 = 1
+		<if test="code != null and code != ''"> and tm.`code` = #{code}</if>
+		<if test="nickName != null and nickName != ''"> and tm.`nickname` = #{nickName}</if>
+
+		<if test="memberBanner != null and memberBanner != ''"> and tmb.`member_banner` = #{memberBanner}</if>
+			<if test="memberId != null and memberId != ''"> and tmb.`member_id` = #{memberId}</if>
 		
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
 			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
@@ -32,7 +37,7 @@
                 order by ${sidx} ${order}
             </when>
 			<otherwise>
-                order by id desc
+                order by tmb.id desc
 			</otherwise>
         </choose>
 		<if test="offset != null and limit != null">

@@ -203,6 +203,9 @@ var vm = new Vue({
 						applyTitle: [
 							{ required: true, message: '请输入活动标题' }
 						],
+						applyHot: [
+							{ required: true, message: '请输入活动热度' }
+						],
 						dateTimeRange: [
 							{ required: true, message: '请选择活动开始时间' }
 						],

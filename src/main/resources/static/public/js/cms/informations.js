@@ -186,10 +186,12 @@ var vm = new Vue({
 		information: {},
 		informationTypeList:[],
 		ruleValidate: {
-											
-																title: [
+					title: [
 		                { required: true, message: '请输入' }
-		            ], 														isDel: [
+									],
+							browsTotal: [
+					{ required: true, message: '请输入默认资讯浏览量' }
+						], 	isDel: [
 		                { required: true, message: '请输入t:代表逻辑删除,f:不删除' }
 		            ], 																createTime: [
 		                { required: true, message: '请输入' }

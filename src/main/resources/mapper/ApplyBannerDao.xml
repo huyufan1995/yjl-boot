@@ -18,13 +18,16 @@
 	</select>
 
 	<select id="queryList" resultType="io.renren.cms.entity.ApplyBannerEntity">
-		select * from tb_apply_banner where 1 = 1
+		select tab.*,ta.apply_title as applyTitle from tb_apply_banner tab
+		left join tb_apply ta
+		on tab.apply_id =ta.id
+		where 1 = 1
 		
-			<if test="bannerImg != null and bannerImg != ''"> and `banner_img` = #{bannerImg}</if>
-			<if test="applyId != null and applyId != ''"> and `apply_id` = #{applyId}</if>
+			<if test="bannerImg != null and bannerImg != ''"> and tab.`banner_img` = #{bannerImg}</if>
+			<if test="applyTitle != null and applyTitle != ''"> and ta.`apply_title` = #{applyTitle}</if>
 		
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
-			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+			and (tab.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
 		</if>
 		
         <choose>
@@ -32,7 +35,7 @@
                 order by ${sidx} ${order}
             </when>
 			<otherwise>
-                order by id desc
+                order by tab.id desc
 			</otherwise>
         </choose>
 		<if test="offset != null and limit != null">

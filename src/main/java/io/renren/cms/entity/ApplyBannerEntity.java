@@ -26,4 +26,6 @@ public class ApplyBannerEntity implements Serializable {
 	/** 活动Id */
 	private Integer applyId;
 
+	private String applyTitle;
+
 }

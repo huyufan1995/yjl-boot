@@ -97,6 +97,7 @@ public class ApiApplyController {
             HashMap<String, Object> q = new HashMap<>(3);
             q.put("applyId", entityDto.getId());
             List<ApplyRecordEntiyDto> applyRecordEntiyDtoList = applyRecordService.queryPortrait(q);
+            entityDto.setApplyHot(entityDto.getApplyHot()+applyRecordEntiyDtoList.size());
             // 处理报名人头像
             entityDto.setPortrait(applyRecordEntiyDtoList.stream().map(ApplyRecordEntiyDto::getPortrait).limit(5).collect(Collectors.toList()));
             if (new Date().after(entityDto.getStartTime())) {
