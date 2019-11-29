@@ -3,8 +3,8 @@ $(function () {
         url: '../member/list',
         datatype: "json",
         colModel: [			
-			{ label: 'id', name: 'id', index: 'id', width: 30, key: true },
-			{ label: '会员号', name: 'code', index: 'code', width: 80 },
+			{ label: '编号', name: 'id', index: 'id', width: 30, key: true },
+			{ label: '会员ID', name: 'code', index: 'code', width: 80 },
 			{ label: '昵称', name: 'nickname', index: 'nickname', width: 80 },
 			{ label: '性别', name: 'gender', index: 'gender', width: 30,
 				formatter: function (value, options, row) {
@@ -93,7 +93,7 @@ $(function () {
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
-        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "scroll" });
         }
     });
 });

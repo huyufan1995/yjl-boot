@@ -13,7 +13,7 @@ $(function () {
 					if (value == 'pass') {
 						return "<span class='label label-success'>通过</span>";
 					}else if (value == 'reject') {
-						return "<span class='label label-danger'>驳回</span>";
+						return "<span class='label label-danger'>驳回("+row.auditMsg+")</span>";
 					}else if (value == 'pending') {
 						return "<span class='label label-warning'>审核中</span>";
 					}else{
@@ -32,7 +32,7 @@ $(function () {
 						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='revocation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>撤回审核</span></button>&nbsp;";
 					}
 					if(row.showStatus == 't'){
-						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='stopInformation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>暂停资讯</span></button>&nbsp;";
+						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='stopInformation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>小程序前台暂停展示</span></button>&nbsp;";
 					}
 					if(row.showStatus == 'f'){
 						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='startInformation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>展示资讯</span></button>&nbsp;";
@@ -64,7 +64,7 @@ $(function () {
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
-        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "scroll" });
         }
     });
 });
@@ -99,7 +99,7 @@ function stopInformation(id) {
 	vm.information.showStatus = 'f';
 	$.ajax({
 		type: "POST",
-		url: "../information/update",
+		url: "../information/updateShowStatus",
 		contentType: "application/json",
 		data: JSON.stringify(vm.information),
 		success: function(r){

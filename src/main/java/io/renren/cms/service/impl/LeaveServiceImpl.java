@@ -1,6 +1,7 @@
 package io.renren.cms.service.impl;
 
 import io.renren.api.dto.LeaveEntityDto;
+import io.renren.cms.vo.LeaveEntityVO;
 import io.renren.utils.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,6 +83,11 @@ public class LeaveServiceImpl implements LeaveService {
 	@Override
 	public List<LeaveEntityDto> queryListDto(Map<String, Object> map) {
 		return leaveDao.queryListDto(map);
+	}
+
+	@Override
+	public List<LeaveEntityVO> queryListVO(Map<String, Object> map) {
+		return leaveDao.queryListVO(map);
 	}
 
 

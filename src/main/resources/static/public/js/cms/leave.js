@@ -4,12 +4,10 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
+			{ label: '留言人', name: 'leaveName', width: 80 },
+			{ label: '留言对象', name: 'memberName',width: 80 },
 			{ label: '留言内容', name: 'content', index: 'content', width: 80 },
-			{ label: '', name: 'openid', index: 'openid', width: 80 },
-			{ label: '', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '状态', name: 'status', index: 'status', width: 80 },
-			{ label: '', name: 'isDel', index: 'is_del', width: 80 },
-			{ label: '会员ID', name: 'memberId', index: 'member_id', width: 80 },
+			{ label: '留言时间', name: 'ctime', index: 'ctime', width: 80 }/*,
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
@@ -17,7 +15,7 @@ $(function () {
                 	dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
                 	return dom;
                 }
-            }
+            }*/
         ],
 		viewrecords: true,
 		height: $(window).height() - 250,
@@ -41,7 +39,7 @@ $(function () {
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
-        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "scroll" });
         }
     });
 });

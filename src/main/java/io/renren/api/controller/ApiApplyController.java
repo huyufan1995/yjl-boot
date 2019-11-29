@@ -145,7 +145,7 @@ public class ApiApplyController {
             applyRecordEntity.setMemberId(sessionMember.getMemberId());
             applyRecordEntity.setVerifyStatus(SystemConstant.F_STR);
             applyRecordService.save(applyRecordEntity);
-            sendAsync(sessionMember,applyId);
+            //sendAsync(sessionMember,applyId);
         } else {
             Boolean isApply = applyRecordService.deleteByOpenIdAndApplyId(params);
             if (!isApply) {
@@ -154,6 +154,7 @@ public class ApiApplyController {
         }
         return ApiResult.ok();
     }
+/*
     @Async
     public Future<Boolean> sendAsync(SessionMember sessionMember, String applyId) {
         log.info("异步发送模板消息开始===");
@@ -193,6 +194,7 @@ public class ApiApplyController {
         log.info("异步发送模板消息结束===");
         return new AsyncResult<Boolean>(true);
     }
+*/
 
 
     @IgnoreAuth

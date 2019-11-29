@@ -4,8 +4,10 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '活动id', name: 'applyId', index: 'apply_id', width: 80 },
-			{ label: '核销员openid', name: 'openid', index: 'openid', width: 80 },
+			{ label: '活动标题', name: 'applyTitle', index: 'apply_id', width: 80 },
+			{ label: '核销员code', name: 'code', width: 80 },
+			{ label: '核销员头像', name: 'portrait', width: 80 },
+			{ label: '核销员名称', name: 'nickName', width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
@@ -37,7 +39,7 @@ $(function () {
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
-        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "scroll" });
         }
     });
 });
@@ -50,6 +52,7 @@ function edit(id){
 //	vm.showList = false;
 	vm.showModal = true;
     vm.title = "修改";
+	vm.getApplyList();
     vm.getInfo(id)
 }
 
@@ -91,9 +94,9 @@ var vm = new Vue({
 		ruleValidate: {
 											
 																applyId: [
-		                { required: true, message: '请输入活动id' }
-		            ], 																openid: [
-		                { required: true, message: '请输入核销员openid' }
+		                { required: true, message: '请输入活动标题' }
+		            ], 																code: [
+		                { required: true, message: '请输入核销员会员ID' }
 		            ]							        },
         q:{
 			id: null,
@@ -117,7 +120,7 @@ var vm = new Vue({
 			vm.showModal = true;
 			vm.title = "新增";
 			vm.applyVerify = {};
-			vm.getMemberList();
+			//vm.getMemberList();
 			vm.getApplyList();
 		},
 		update: function (event) {

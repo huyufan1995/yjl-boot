@@ -239,6 +239,7 @@ public class ApiMemberController {
 	public ApiResult info(@ApiIgnore()MemberEntity memberEntity) {
 		if(memberEntity.getType().equals(MemberTypeEnum.VIP.getCode())){
 			memberEntity.setType(MemberTypeEnum.COMMON.getCode());
+			memberEntity.setShowVip(SystemConstant.F_STR);
 		}
 		memberEntity.setAuditStatus(AuditStatusEnum.PENDING.getCode());
 		memberService.update(memberEntity);

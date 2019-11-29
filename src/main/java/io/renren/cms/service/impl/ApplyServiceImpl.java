@@ -3,6 +3,7 @@ package io.renren.cms.service.impl;
 import io.renren.api.constant.SystemConstant;
 import io.renren.api.dto.ApplyEntityDto;
 import io.renren.cms.entity.ApplyEntity;
+import io.renren.cms.job.SendJobEntity;
 import io.renren.enums.AuditStatusEnum;
 import io.renren.utils.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class ApplyServiceImpl implements ApplyService {
 
 	@Autowired
 	private ApplyDao applyDao;
+
 	
 	@Override
 	public ApplyEntity queryObject(Integer id){
@@ -109,6 +111,11 @@ public class ApplyServiceImpl implements ApplyService {
 	@Override
 	public List<ApplyEntity> queryApplyListNoReview() {
 		return applyDao.queryApplyListNoReview();
+	}
+
+	@Override
+	public List<SendJobEntity> querySendJob() {
+		return applyDao.querySendJob();
 	}
 
 	@Override

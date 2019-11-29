@@ -35,8 +35,13 @@ public interface SystemConstant {
 
 	String IMAGE_HUIYUAN ="https://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/yjl/app/me/huiyuan.png";
 	String VIP_LOGO ="https://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/yjl/app/me/vip.png";
-	/** 默认文本类型越柬寮图片*/
+	/** 默认文本类型越柬寮图片 长的*/
 	String DEFAULT_TEXT_IMG = "https://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/yjl/app/me/19cc12ac22c54f500357825cdefe4fa.png";
+	/** 默认文本类型越柬寮图片 方的*/
+
+	String DEFAULT_TEXT_IMG_SQUARE = "https://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/yjl/app/me/19cc12ac22c54f500357825cdefe4fa.png";
+
+
 	/** 默认视频类型腾讯图片*/
 	String DEFAULT_VEDIO_IMG = "https://yykj-public-image-1252188577.cos.ap-beijing.myqcloud.com/yjl/app/me/146f60bf607370d301d72d5115d2367.png";
 	/** 默认名片姓名*/

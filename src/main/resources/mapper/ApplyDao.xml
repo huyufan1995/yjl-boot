@@ -330,5 +330,9 @@
 		where 1 = 1
 	</select>
 
-
+	<select id="querySendJob" resultType="io.renren.cms.job.SendJobEntity">
+		SELECT tar.openid,ta.start_time as startTime,ta.apply_title applyTitle FROM tb_apply_record tar
+		LEFT JOIN tb_apply ta
+		on tar.apply_id = ta.id
+	</select>
 </mapper>

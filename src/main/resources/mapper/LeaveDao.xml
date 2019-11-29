@@ -191,4 +191,36 @@
 			limit #{offset}, #{limit}
 		</if>
 	</select>
+
+	<select id="queryListVO" resultType="io.renren.cms.vo.LeaveEntityVO">
+		SELECT tl.*,t1.nickname as leaveName, t2.nickname as memberName FROM tb_leave tl
+		LEFT JOIN (SELECT tm.openid,tm.nickname FROM tb_member tm)t1
+		on tl.openid = t1.openid
+		LEFT JOIN (SELECT tm.id,tm.nickname FROM tb_member tm)t2
+		on t2.id = tl.member_id
+		where 1=1
+		<if test="content != null and content != ''"> and tl.`content` = #{content}</if>
+		<if test="openid != null and openid != ''"> and tl.`openid` = #{openid}</if>
+		<if test="ctime != null and ctime != ''"> and tl.`ctime` = #{ctime}</if>
+		<if test="status != null and status != ''"> and tl.`status` = #{status}</if>
+		<if test="isDel != null and isDel != ''"> and tl.`is_del` = #{isDel}</if>
+		<if test="memberId != null and memberId != ''"> and tl.`member_id` = #{memberId}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (tl.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by tl.id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
 </mapper>

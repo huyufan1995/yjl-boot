@@ -4,7 +4,14 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '活动banner图', name: 'bannerImg', index: 'banner_img', width: 80 },
+			{ label: '活动banner图', name: 'bannerImg', index: 'banner_img', width: 80,
+				formatter: function(value, options, row){
+					if(row.bannerImg == null){
+						return "<span>无</span>";
+					}
+					return "<img style='height:100px;' src='"+row.bannerImg+"' alt='' class='img-rounded'>";
+				}
+			},
 			{ label: '活动标题', name: 'applyTitle',width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
@@ -37,7 +44,7 @@ $(function () {
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
-        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "scroll" });
         }
     });
 });

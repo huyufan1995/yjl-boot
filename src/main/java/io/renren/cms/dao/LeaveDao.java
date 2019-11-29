@@ -5,6 +5,7 @@ import java.util.Map;
 
 import io.renren.api.dto.LeaveEntityDto;
 import io.renren.cms.entity.LeaveEntity;
+import io.renren.cms.vo.LeaveEntityVO;
 import io.renren.dao.BaseDao;
 
 /**
@@ -25,4 +26,6 @@ public interface LeaveDao extends BaseDao<LeaveEntity> {
     void updateMsgStatus(Integer memberId);
 
 	List<LeaveEntityDto> queryListDto(Map<String, Object> map);
+
+    List<LeaveEntityVO> queryListVO(Map<String, Object> map);
 }

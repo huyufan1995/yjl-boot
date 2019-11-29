@@ -196,6 +196,9 @@ public class ApiInformationController {
             content=content.substring(0,100);
         }
         informationsEntityInfoDto.setInformationDesc(content);
+        //处理字符间距
+        String s =informationsEntityInfoDto.getContent().replaceFirst("style=\"","style=\"letter-spacing:1px;");
+        informationsEntityInfoDto.setContent(s);
         return ApiResult.ok(informationsEntityInfoDto);
     }
     //添加资讯评论数量
@@ -243,7 +246,7 @@ public class ApiInformationController {
             }
             //banner
             if (templateItme.getId().equals(2650)) {
-                templateItme.setImagePath(informationsEntity.getBanner());
+                templateItme.setImagePath(SystemConstant.DEFAULT_TEXT_IMG);
             }
             //会员头像
             if (templateItme.getId().equals(2651)) {

@@ -249,7 +249,7 @@
 	</select>
 
 	<update id="updateVerify">
-	update tb_member set verify = #{verify} where openid = #{openid}
+	update tb_member set verify = #{verify} where code = #{code}
 	</update>
 
 	<select id="queryAddressAndNationalityInfo" resultType="io.renren.cms.entity.MemberEntity">

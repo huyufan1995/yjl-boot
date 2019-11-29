@@ -39,53 +39,18 @@
 	    <table id="jqGrid"></table>
 	    <div id="jqGridPager"></div>
     </div>
-    
-	<!-- Card -->	
-	<div v-show="!showList">
-		<Card dis-hover style="width:1200px">
-            <p slot="title">{{title}}</p>
-            
-            <a href="#" slot="extra" @click.prevent="saveOrUpdate">
-            	<Icon type="checkmark" style="color: green;"></Icon>
-	            <strong>保存</strong>&nbsp;&nbsp;
-	        </a>
-	        <a href="#" slot="extra" @click.prevent="reload">
-	        	<Icon type="close" style="color: red;"></Icon>
-	            <strong>关闭</strong>
-	        </a>
-	        
-                
-            <i-form ref="applyVerify" :model="applyVerify" :rules="ruleValidate" :label-width="100" label-position="left">
-		       																		<Form-item label="活动id" prop="applyId">
-		            	<i-input v-model="applyVerify.applyId" placeholder="活动id" style="width: 300px"></i-input>
-		        	</Form-item>
-																	<Form-item label="核销员openid" prop="openid">
-		            	<i-input v-model="applyVerify.openid" placeholder="核销员openid" style="width: 300px"></i-input>
-		        	</Form-item>
-			</i-form>
-		    
-		    <!-- <div class="form-group">
-				<div class="col-sm-2 control-label"></div> 
-            	<i-button type="primary" @click="saveOrUpdate">确定</i-button>
-            	&nbsp;&nbsp;
-				<i-button type="warning" @click="reload">返回</i-button>
-			</div> -->
-        </Card>
-	</div>
-	
+
 	<!-- Modal -->	
 	<Modal v-model="showModal" :title="title" :mask-closable="false" width="800">
 	
 		<i-form ref="applyVerify" :model="applyVerify" :rules="ruleValidate" :label-width="100" label-position="left">
-				<Form-item label="活动id" prop="applyId">
-					<i-select v-model="applyVerify.applyId" placeholder="会员" style="width: 300px" >
+				<Form-item label="活动标题" prop="applyId">
+					<i-select v-model="applyVerify.applyId" placeholder="请选择活动" style="width: 300px" >
 						<i-option v-for="item in applyList" :value="item.id" :key="item.id">{{ item.applyTitle }}</i-option>
 					</i-select>
 				</Form-item>
-				<Form-item label="核销员openid" prop="openid">
-					<i-select v-model="applyVerify.openid" placeholder="会员" style="width: 300px" >
-						<i-option v-for="item in memberList" :value="item.openid" :key="item.openid">{{ item.nickname }}</i-option>
-					</i-select>
+				<Form-item label="核销员会员ID" prop="code">
+					<i-input v-model="applyVerify.code" placeholder="会员ID" style="width: 300px"></i-input>
 				</Form-item>
 		</i-form>
 	        

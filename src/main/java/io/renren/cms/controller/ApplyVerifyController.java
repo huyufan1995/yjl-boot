@@ -73,7 +73,7 @@ public class ApplyVerifyController {
 	@Transactional
 	public R save(@RequestBody ApplyVerifyEntity applyVerify){
 		applyVerifyService.save(applyVerify);
-		memberService.updateVerify(SystemConstant.T_STR,applyVerify.getOpenid());
+		memberService.updateVerify(SystemConstant.T_STR,applyVerify.getCode());
 		return R.ok();
 	}
 	

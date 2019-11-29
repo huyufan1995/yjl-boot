@@ -2,6 +2,7 @@ package io.renren.cms.service;
 
 import io.renren.api.dto.LeaveEntityDto;
 import io.renren.cms.entity.LeaveEntity;
+import io.renren.cms.vo.LeaveEntityVO;
 import io.renren.utils.Query;
 
 import java.util.List;
@@ -39,4 +40,6 @@ public interface LeaveService {
     void updateMsgStatus(Integer memberId);
 
 	List<LeaveEntityDto> queryListDto(Map<String, Object> map);
+
+    List<LeaveEntityVO> queryListVO(Map<String, Object> map);
 }

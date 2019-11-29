@@ -66,7 +66,7 @@ public class ApiVerifyController {
         HashMap<String,Object> param = new HashMap<>(1);
         List<ApplyVerifyEntity> applyVerifyEntities = applyVerifyService.queryListWithVerifyMember(param);
         if(applyVerifyEntities.isEmpty()){
-            return ApiResult.error(500,"该管理人员没有核销权限");
+            return ApiResult.error(500,"该管理人员没有此活动核销权限");
 
         }
         for (ApplyVerifyEntity verifyEntity : applyVerifyEntities) {

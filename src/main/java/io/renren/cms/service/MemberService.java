@@ -43,7 +43,7 @@ public interface MemberService {
 
     List<MemberEntity> queryListByIsCollect(Map<String, Object> map);
 
-	void updateVerify(String verify, String openid);
+	void updateVerify(String verify, String code);
 
     List<MemberEntity> queryAddressAndNationalityInfo();
 

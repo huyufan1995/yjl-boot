@@ -26,4 +26,6 @@ public class InformationTypeEntity implements Serializable {
 	/** 排名 */
 	private Integer sort;
 
+	private Date ctime;
+
 }

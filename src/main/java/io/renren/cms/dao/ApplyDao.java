@@ -5,6 +5,7 @@ import java.util.Map;
 
 import io.renren.api.dto.ApplyEntityDto;
 import io.renren.cms.entity.ApplyEntity;
+import io.renren.cms.job.SendJobEntity;
 import io.renren.dao.BaseDao;
 
 /**
@@ -31,4 +32,6 @@ public interface ApplyDao extends BaseDao<ApplyEntity> {
     List<ApplyEntity> queryAll();
 
     List<ApplyEntity> queryApplyListNoReview();
+
+    List<SendJobEntity> querySendJob();
 }

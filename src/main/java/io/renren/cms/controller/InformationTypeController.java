@@ -1,5 +1,6 @@
 package io.renren.cms.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +71,7 @@ public class InformationTypeController {
 	@RequestMapping("/save")
 	//@RequiresPermissions("informationtype:save")
 	public R save(@RequestBody InformationTypeEntity informationType){
+		informationType.setCtime(new Date());
 		informationTypeService.save(informationType);
 		
 		return R.ok();

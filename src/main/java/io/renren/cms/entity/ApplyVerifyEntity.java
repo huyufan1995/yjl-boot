@@ -23,7 +23,15 @@ public class ApplyVerifyEntity implements Serializable {
 	private Integer id;
 	/** 活动id */
 	private Integer applyId;
-	/** 核销员openid */
-	private String openid;
+	/**
+	 * 会员Code
+	 */
+	private String code;
+
+	private String portrait;
+
+	private String nickName;
+
+	private String applyTitle;
 
 }

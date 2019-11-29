@@ -138,7 +138,7 @@ public class InformationController {
 			if(StringUtils.isEmpty(information.getBanner())){
 				information.setBanner(SystemConstant.DEFAULT_VEDIO_IMG);
 			}
-		} else if (information.getContent().indexOf("<img") > 0) {
+		} else if (information.getContent().indexOf("<img") > 0 ) {
 			information.setContentType(SystemConstant.IMAGE_TYPE);
 		} else {
 			information.setContentType(SystemConstant.TEXT_TYPE);
@@ -158,6 +158,16 @@ public class InformationController {
 		information = checkInformationType(information);
 		informationService.update(information);
 		
+		return R.ok();
+	}
+
+	/**
+	 * 修改展示状态
+	 */
+	@RequestMapping("/updateShowStatus")
+	//@RequiresPermissions("information:update")
+	public R updateShowStatus(@RequestBody InformationsEntity information){
+		informationService.update(information);
 		return R.ok();
 	}
 	

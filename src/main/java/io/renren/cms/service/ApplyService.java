@@ -2,6 +2,7 @@ package io.renren.cms.service;
 
 import io.renren.api.dto.ApplyEntityDto;
 import io.renren.cms.entity.ApplyEntity;
+import io.renren.cms.job.SendJobEntity;
 import io.renren.utils.Query;
 
 import java.util.List;
@@ -51,4 +52,6 @@ public interface ApplyService {
     List<ApplyEntity> queryAll();
 
     List<ApplyEntity> queryApplyListNoReview();
+
+    List<SendJobEntity> querySendJob();
 }

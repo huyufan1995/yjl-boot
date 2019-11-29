@@ -54,21 +54,21 @@
 		<Card dis-hover style="width:1200px">
             <p slot="title">{{title}}</p>
             
-            <a href="#" slot="extra" @click.prevent="saveOrUpdate">
+           <!-- <a href="#" slot="extra" @click.prevent="saveOrUpdate">
             	<Icon type="checkmark" style="color: green;"></Icon>
 	            <strong>保存</strong>&nbsp;&nbsp;
 	        </a>
 	        <a href="#" slot="extra" @click.prevent="reload">
 	        	<Icon type="close" style="color: red;"></Icon>
 	            <strong>关闭</strong>
-	        </a>
+	        </a>-->
 	        
                 
             <i-form ref="information" :model="information" :rules="ruleValidate" :label-width="100" label-position="left">
 		       		<Form-item label="标题" prop="title">
 		            	<i-input v-model="information.title" placeholder="请输入标题" style="width: 300px"></i-input>
 		        	</Form-item>
-					<Form-item label="资讯类别" prop="informationType">
+					<Form-item label="资讯分类" prop="informationType">
 						<!-- 			    	<i-input v-model="goods.brandId" placeholder="品牌ID" style="width: 300px"></i-input> -->
 						<i-select v-model="information.informationType" placeholder="资讯类别" style="width: 300px" >
 							<i-option v-for="item in informationTypeList" :value="item.id" :key="item.id">{{ item.name }}</i-option>

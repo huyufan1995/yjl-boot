@@ -157,8 +157,8 @@
 			<if test="isDel != null">`is_del` = #{isDel}, </if>
 			<if test="auditStatus != null">`audit_status` = #{auditStatus}, </if>
 			<if test="ctime != null">`ctime` = #{ctime}, </if>
-			<if test="updateTime != null">`update_time` = #{updateTime}</if>
-			<if test="browsTotal != null">`brows_total` = #{browseTotal}</if>
+			<if test="updateTime != null">`update_time` = #{updateTime},</if>
+			<if test="browsTotal != null">`brows_total` = #{browsTotal}</if>
 
 		</set>
 		where id = #{id}
