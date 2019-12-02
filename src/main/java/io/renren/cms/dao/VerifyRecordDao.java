@@ -6,6 +6,7 @@ import java.util.Map;
 import io.renren.api.dto.VerifyApplyDto;
 import io.renren.api.dto.VerifyRecordInfoDto;
 import io.renren.cms.entity.VerifyRecordEntity;
+import io.renren.cms.vo.VerifyRecordEntityVO;
 import io.renren.dao.BaseDao;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,4 +30,6 @@ public interface VerifyRecordDao extends BaseDao<VerifyRecordEntity> {
 	List<VerifyRecordInfoDto> queryVerifyPeopleInfo(Map<String, Object> param);
 
     boolean updateVerifyStatus(@Param(value = "memberId") String memberId,@Param(value = "applyId") String applyId);
+
+    List<VerifyRecordEntityVO> queryListVo(Map<String, Object> param);
 }

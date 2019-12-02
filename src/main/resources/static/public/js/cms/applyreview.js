@@ -109,13 +109,14 @@ function commitApplyReview(id) {
 }
 
 function stopApplyReview(id) {
-	vm.apply.id = id;
-	vm.apply.showStatus = 'f';
+	var apply={};
+	apply.id =id;
+	apply.showStatus = 'f';
 	$.ajax({
 		type: "POST",
 		url: "../applyreview/update",
 		contentType: "application/json",
-		data: JSON.stringify(vm.apply),
+		data: JSON.stringify(apply),
 		success: function(r){
 			if(r.code === 0){
 				vm.reload();
@@ -129,13 +130,14 @@ function stopApplyReview(id) {
 }
 
 function startApplyReview(id) {
-	vm.apply.id = id;
-	vm.apply.showStatus = 't';
+	var apply={};
+	apply.id =id;
+	apply.showStatus = 't';
 	$.ajax({
 		type: "POST",
 		url: "../applyreview/update",
 		contentType: "application/json",
-		data: JSON.stringify(vm.apply),
+		data: JSON.stringify(apply),
 		success: function(r){
 			if(r.code === 0){
 				vm.reload();
@@ -296,6 +298,7 @@ var vm = new Vue({
 	        	$.ajax({
 					type: "POST",
 				    url: "../applyreview/delete",
+					contentType: "application/json",
 				    data: JSON.stringify(ids),
 				    success: function(r){
 						if(r.code === 0){

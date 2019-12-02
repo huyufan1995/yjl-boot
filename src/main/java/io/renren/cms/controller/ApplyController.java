@@ -123,7 +123,7 @@ public class ApplyController {
 	@RequestMapping("/logic_del/{id}")
 	//@RequiresPermissions("apply:logicDel")
 	public R logicDel(@PathVariable("id") Integer id) {
-		applyService.logicDel(id);
+		applyService.delete(id);
 		return R.ok();
 	}
 

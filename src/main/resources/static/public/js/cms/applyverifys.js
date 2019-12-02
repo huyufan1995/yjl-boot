@@ -6,13 +6,21 @@ $(function () {
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
 			{ label: '活动标题', name: 'applyTitle', index: 'apply_id', width: 80 },
 			{ label: '核销员code', name: 'code', width: 80 },
-			{ label: '核销员头像', name: 'portrait', width: 80 },
+			{ label: '核销员头像', name: 'portrait', width: 60,
+				formatter: function(value, options, row) {
+					if (row.portrait == null) {
+						return "<span>无</span>";
+					}
+					return "<img style='height:50px;' src='" + row.portrait + "' alt='' class='img-rounded'>";
+				}
+
+			},
 			{ label: '核销员名称', name: 'nickName', width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
                 	var dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='edit("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>修改</span></button>&nbsp;";
-                	dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
+                	/*dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";*/
                 	return dom;
                 }
             }
@@ -187,7 +195,8 @@ var vm = new Vue({
 	        	$.ajax({
 					type: "POST",
 				    url: "../applyverify/delete",
-				    data: JSON.stringify(ids),
+					contentType: "application/json",
+					data: JSON.stringify(ids),
 				    success: function(r){
 						if(r.code === 0){
 							$("#jqGrid").trigger("reloadGrid");

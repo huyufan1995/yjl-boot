@@ -22,6 +22,7 @@ import io.renren.cms.service.MemberService;
 import io.renren.cms.service.WxUserService;
 import io.renren.config.WxMaConfiguration;
 import io.renren.properties.YykjProperties;
+import io.renren.service.SysConfigService;
 import io.renren.utils.ProjectUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -60,6 +61,9 @@ public class MemberServiceImpl implements MemberService {
 
 	@Autowired
 	private WxUserService wxUserService;
+
+	@Autowired
+	private SysConfigService sysConfigService;
 
 	
 	@Override
@@ -145,6 +149,9 @@ public class MemberServiceImpl implements MemberService {
 		sessionMember.setMemberId(memberEntity.getId());
 		sessionMember.setShowVip(memberEntity.getShowVip());
 		sessionMember.setVerify(memberEntity.getVerify());
+		String mobile = sysConfigService.getValue("DEFAULT_MOBILE", "");
+		//联系我们 默认拨打电话
+		sessionMember.setDialPhone(mobile);
 		if (StringUtils.isNotBlank(memberEntity.getMobile())) {
 			sessionMember.setMobile(memberEntity.getMobile());
 /*

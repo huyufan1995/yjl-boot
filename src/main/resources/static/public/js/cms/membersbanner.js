@@ -4,8 +4,15 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '会员号', name: 'code', width: 80 },
-			{ label: '会员Banner', name: 'memberBanner', index: 'member_banner', width: 80 },
+			{ label: '会员ID', name: 'code', width: 80 },
+			{ label: '会员Banner', name: 'memberBanner', index: 'member_banner', width: 80,
+				formatter: function(value, options, row) {
+					if (row.memberBanner == null) {
+						return "<span>无</span>";
+					}
+					return "<img style='height:50px;' src='" + row.memberBanner + "' alt='' class='img-rounded'>";
+				}
+			},
 			{ label: '会员名称', name: 'nickName', width: 80 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,

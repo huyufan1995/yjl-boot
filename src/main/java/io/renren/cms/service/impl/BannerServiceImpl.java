@@ -6,6 +6,7 @@ import io.renren.cms.service.BannerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,9 @@ public class BannerServiceImpl implements BannerService {
 	
 	@Override
 	public List<BannerEntity> queryList(Map<String, Object> map){
-		return bannerDao.queryList(map);
+		List<BannerEntity> bannerEntities = new ArrayList<>();
+		bannerEntities.add(bannerDao.queryList(map).get(0));
+		return bannerEntities;
 	}
 	
 	@Override

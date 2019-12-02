@@ -3,6 +3,7 @@ package io.renren.cms.controller;
 import java.util.List;
 import java.util.Map;
 
+import io.renren.cms.vo.VerifyRecordEntityVO;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +40,7 @@ public class VerifyRecordController {
 	public R list(@RequestParam Map<String, Object> params){
         Query query = new Query(params);
 
-		List<VerifyRecordEntity> verifyRecordList = verifyRecordService.queryList(query);
+		List<VerifyRecordEntityVO> verifyRecordList = verifyRecordService.queryListVo(query);
 		int total = verifyRecordService.queryTotal(query);
 		
 		PageUtils pageUtil = new PageUtils(verifyRecordList, total, query.getLimit(), query.getPage());

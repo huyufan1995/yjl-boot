@@ -138,10 +138,8 @@ public class InformationController {
 			if(StringUtils.isEmpty(information.getBanner())){
 				information.setBanner(SystemConstant.DEFAULT_VEDIO_IMG);
 			}
-		} else if (information.getContent().indexOf("<img") > 0 ) {
+		}else {
 			information.setContentType(SystemConstant.IMAGE_TYPE);
-		} else {
-			information.setContentType(SystemConstant.TEXT_TYPE);
 		}
 		if(StringUtils.isEmpty(information.getBanner())){
 			information.setBanner(SystemConstant.DEFAULT_TEXT_IMG);

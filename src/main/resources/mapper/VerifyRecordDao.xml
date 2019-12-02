@@ -159,4 +159,38 @@
         where member_id = #{memberId}
         and apply_id =#{applyId}
     </update>
+
+	<select id="queryListVo" resultType="io.renren.cms.vo.VerifyRecordEntityVO">
+		SELECT
+		tvr.*,
+		tm1.nickname AS verifyName,
+		tm2.nickname AS memberName,
+		ta.apply_title AS applyTitle
+		FROM
+		tb_verify_record tvr
+		LEFT JOIN ( SELECT id AS tid, apply_title FROM tb_apply ) ta ON tvr.apply_id = ta.tid LEFT JOIN ( SELECT nickname, openid FROM tb_member ) tm1 ON tm1.openid = tvr.openid LEFT join ( SELECT nickname, id AS mid FROM tb_member ) tm2 ON tm2.mid = tvr.member_id
+		WHERE
+		1 = 1
+		<if test="applyTitle != null and applyTitle != ''"> and ta.apply_title = #{applyTitle}</if>
+		<if test="openid != null and openid != ''"> and `openid` = #{openid}</if>
+		<if test="memberId != null and memberId != ''"> and `member_id` = #{memberId}</if>
+		<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+
+		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
+			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+		</if>
+
+		<choose>
+			<when test="sidx != null and sidx.trim() != ''">
+				order by ${sidx} ${order}
+			</when>
+			<otherwise>
+				order by id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
 </mapper>

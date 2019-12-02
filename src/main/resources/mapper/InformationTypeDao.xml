@@ -19,7 +19,7 @@
 
 	<select id="queryList" resultType="io.renren.cms.entity.InformationTypeEntity">
 		select * from tb_information_type where 1 = 1
-		
+		and is_del = 'f'
 			<if test="name != null and name != ''"> and `name` = #{name}</if>
 			<if test="sort != null and sort != ''"> and `sort` = #{sort}</if>
 		
@@ -54,12 +54,16 @@
 		insert into tb_information_type
 		(
 			`name`, 
-			`sort`
+			`sort`,
+			`is_del`,
+			`ctime`
 		)
 		values
 		(
 			#{name}, 
-			#{sort}
+			#{sort},
+			#{isDel},
+			#{ctime}
 		)
 	</insert>
 	 

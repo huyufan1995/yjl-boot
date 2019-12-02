@@ -61,8 +61,7 @@
 				<span>图片尺寸：640*360px</span>
 			</Form-item>
 			<Form-item label="活动" prop="applyId">
-				<!-- 			    	<i-input v-model="goods.brandId" placeholder="品牌ID" style="width: 300px"></i-input> -->
-				<i-select v-model="applyBanner.applyId" placeholder="活动类别" style="width: 300px" >
+				<i-select v-model="applyBanner.applyId" placeholder="请选择活动" style="width: 300px" >
 					<i-option v-for="item in applyList" :value="item.id" :key="item.id">{{ item.applyTitle }}</i-option>
 				</i-select>
 			</Form-item>

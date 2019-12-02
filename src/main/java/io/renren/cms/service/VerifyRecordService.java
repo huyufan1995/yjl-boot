@@ -3,6 +3,8 @@ package io.renren.cms.service;
 import io.renren.api.dto.VerifyApplyDto;
 import io.renren.api.dto.VerifyRecordInfoDto;
 import io.renren.cms.entity.VerifyRecordEntity;
+import io.renren.cms.vo.VerifyRecordEntityVO;
+import io.renren.utils.Query;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,4 +44,6 @@ public interface VerifyRecordService {
 	List<VerifyRecordInfoDto> queryVerifyPeopleInfo(Map<String, Object> param);
 
     boolean updateVerifyStatus(String memberId,String applyId);
+
+    List<VerifyRecordEntityVO> queryListVo(Map<String, Object> param);
 }

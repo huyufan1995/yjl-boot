@@ -2,6 +2,7 @@ package io.renren.cms.service.impl;
 
 import io.renren.api.dto.VerifyApplyDto;
 import io.renren.api.dto.VerifyRecordInfoDto;
+import io.renren.cms.vo.VerifyRecordEntityVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -87,6 +88,11 @@ public class VerifyRecordServiceImpl implements VerifyRecordService {
 	@Override
 	public boolean updateVerifyStatus(String memberId,String applyId) {
 		return verifyRecordDao.updateVerifyStatus(memberId,applyId);
+	}
+
+	@Override
+	public List<VerifyRecordEntityVO> queryListVo(Map<String, Object> param) {
+		return verifyRecordDao.queryListVo(param);
 	}
 
 

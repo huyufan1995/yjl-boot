@@ -34,10 +34,10 @@ $(function () {
 						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='revocation("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>撤回审核</span></button>&nbsp;";
 					}
 					if(row.showStatus == 't'){
-						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='stopApply("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>暂停活动</span></button>&nbsp;";
+						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='stopApply("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>小程序端暂停展示</span></button>&nbsp;";
 					}
 					if(row.showStatus == 'f'){
-						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='startApply("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>小程序端不展示</span></button>&nbsp;";
+						dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='startApply("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>小程序端展示</span></button>&nbsp;";
 					}
 					dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
 					return dom;
@@ -303,7 +303,8 @@ var vm = new Vue({
 					type: "POST",
 				    url: "../apply/delete",
 				    data: JSON.stringify(ids),
-				    success: function(r){
+					contentType: "application/json",
+					success: function(r){
 						if(r.code === 0){
 							$("#jqGrid").trigger("reloadGrid");
     			    		vm.$Message.success('操作成功!');

@@ -28,4 +28,6 @@ public class InformationTypeEntity implements Serializable {
 
 	private Date ctime;
 
+	private String isDel;
+
 }

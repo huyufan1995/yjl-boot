@@ -205,6 +205,8 @@
 		<if test="content != null and content != ''"> and ti.`content` = #{content}</if>
 		<if test="auditStatus != null"> and ti.`audit_status` = #{auditStatus}</if>
 		<if test="isDel != null and isDel != ''"> and ti.`is_del` = #{isDel}</if>
+		<if test="showStatus != null and showStatus != ''"> and ti.`show_status` = #{showStatus}</if>
+
 		<if test="informationType != null and informationType != ''"> and ti.`information_type` = #{informationType}</if>
 		<if test="keyword != null and keyword != ''">
 			and (ti.title LIKE concat('%', #{keyword}, '%') or ti.content LIKE concat('%',#{keyword},'%'))

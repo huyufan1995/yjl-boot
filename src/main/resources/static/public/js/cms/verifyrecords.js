@@ -4,18 +4,20 @@ $(function () {
         datatype: "json",
         colModel: [			
 			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '活动Id', name: 'applyId', index: 'apply_id', width: 80 },
-			{ label: '核销人openid', name: 'openid', index: 'openid', width: 80 },
-			{ label: '参加活动人memberId', name: 'memberId', index: 'member_id', width: 80 },
-			{ label: '核显时间', name: 'ctime', index: 'ctime', width: 80 },
+			{ label: '活动标题', name: 'applyTitle', width: 80 },
+			{ label: '核销员', name: 'verifyName', width: 80 },
+			{ label: '参会人员', name: 'memberName',width: 80 },
+			{ label: '核销时间', name: 'ctime', index: 'ctime', width: 80 }/*,
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
                 formatter: function (value, options, row) {
                 	var dom = "<button type='button' class='ivu-btn ivu-btn-primary' onclick='edit("+row.id+")'><i class='ivu-icon ivu-icon-minus'></i><span>修改</span></button>&nbsp;";
+
                 	dom += "<button type='button' class='ivu-btn ivu-btn-error' onclick='logic_del("+row.id+")'><i class='ivu-icon ivu-icon-close'></i><span>删除</span></button>&nbsp;";
+
                 	return dom;
                 }
-            }
+            }*/
         ],
 		viewrecords: true,
 		height: $(window).height() - 250,
@@ -167,7 +169,8 @@ var vm = new Vue({
 					type: "POST",
 				    url: "../verifyrecord/delete",
 				    data: JSON.stringify(ids),
-				    success: function(r){
+					contentType: "application/json",
+					success: function(r){
 						if(r.code === 0){
 							$("#jqGrid").trigger("reloadGrid");
     			    		vm.$Message.success('操作成功!');

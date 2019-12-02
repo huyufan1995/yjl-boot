@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.renren.api.constant.SystemConstant;
 import io.renren.cms.service.InformationService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +72,7 @@ public class InformationTypeController {
 	@RequestMapping("/save")
 	//@RequiresPermissions("informationtype:save")
 	public R save(@RequestBody InformationTypeEntity informationType){
+		informationType.setIsDel(SystemConstant.F_STR);
 		informationType.setCtime(new Date());
 		informationTypeService.save(informationType);
 		

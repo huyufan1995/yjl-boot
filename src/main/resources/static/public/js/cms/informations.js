@@ -119,7 +119,7 @@ function startInformation(id) {
 	vm.information.showStatus = 't';
 	$.ajax({
 		type: "POST",
-		url: "../information/update",
+		url: "../information/updateShowStatus",
 		contentType: "application/json",
 		data: JSON.stringify(vm.information),
 		success: function(r){

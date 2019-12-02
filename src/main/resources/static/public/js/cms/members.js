@@ -17,7 +17,6 @@ $(function () {
 					}
 				}
 			},
-			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
 			{ label: '认证状态', name: 'auditStatus', index: 'audit_status', width: 50,
 				formatter: function (value, options, row) {
 					if(value == 'pass'){
@@ -29,9 +28,9 @@ $(function () {
 					}
 				}
 			},
-			{ label: '手机号', name: 'mobile', index: 'mobile', width: 80 },
-			{ label: '邮箱', name: 'email', index: 'email', width: 80 },
-			{ label: '是否拥有VIP', name: 'showVip', index: 'show_vip', width: 80,
+			{ label: '手机号', name: 'mobile', index: 'mobile', width: 60 },
+			{ label: '邮箱', name: 'email', index: 'email', width: 50 },
+			{ label: '是否拥有VIP', name: 'showVip', index: 'show_vip', width: 30,
 				formatter: function (value, options, row) {
 					if(value == 't'){
 						return "<span class='label label-warning' >是</span>";
@@ -41,11 +40,11 @@ $(function () {
 				}
 			},/*
 			{ label: '手机号2 ：非必填', name: 'phone', index: 'phone', width: 80 },*/
-			{ label: '微信号', name: 'weixinNumber', index: 'weixin_number', width: 80 },
+			{ label: '微信号', name: 'weixinNumber', index: 'weixin_number', width: 50 },
 			{ label: '出生日期', name: 'birthday', index: 'birthday', width: 40 },
 			{ label: '国籍', name: 'nationality', index: 'nationality', width: 50 },
-			{ label: '当前居住地址', name: 'address', index: 'address', width: 80 },
-			{ label: '个人简介', name: 'profile', index: 'profile', width: 80 },/*
+			{ label: '当前居住地址', name: 'address', index: 'address', width: 60 },
+			{ label: '个人简介', name: 'profile', index: 'profile', width: 60 },/*
 			{ label: '公司介绍', name: 'companyProfile', index: 'company_profile', width: 80 },
 			{ label: '拥有资源', name: 'havaResource', index: 'hava_resource', width: 80 },
 			{ label: '需要资源', name: 'needResource', index: 'need_resource', width: 80},

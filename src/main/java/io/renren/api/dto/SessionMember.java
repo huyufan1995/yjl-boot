@@ -47,4 +47,6 @@ public class SessionMember {
 	private String code;
 
 	private String verify;
+
+	private String dialPhone;
 }
