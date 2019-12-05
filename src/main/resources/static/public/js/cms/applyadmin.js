@@ -3,14 +3,14 @@ $(function () {
         url: '../apply/adminList',
         datatype: "json",
         colModel: [			
-			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '活动标题', name: 'applyTitle', index: 'apply_title', width: 80 },
-			{ label: '活动开始时间', name: 'startTime', index: 'start_time', width: 80 },
-			{ label: '活动结束时间', name: 'endTime', index: 'end_time', width: 80 },
-			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '活动地址', name: 'applyLocation', index: 'apply_location', width: 80 },
-			{ label: '活动详情', name: 'applyContent', index: 'apply_content', width: 80 },
-			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 80,
+			{ label: 'id', name: 'id', index: 'id', width: 20, key: true },
+			{ label: '活动标题', name: 'applyTitle', index: 'apply_title', width: 30 },
+			{ label: '活动开始时间', name: 'startTime', index: 'start_time', width: 30 },
+			{ label: '活动结束时间', name: 'endTime', index: 'end_time', width: 30 },
+			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 20 },
+			{ label: '活动地址', name: 'applyLocation', index: 'apply_location', width: 50 },
+			{ label: '活动详情', name: 'applyContent', index: 'apply_content', width: 40 },
+			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 30,
 				formatter: function (value, options, row) {
 					if (value == 'pass') {
 						return '通过';

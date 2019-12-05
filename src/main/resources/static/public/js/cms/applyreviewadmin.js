@@ -3,11 +3,21 @@ $(function () {
         url: '../applyreview/adminList',
         datatype: "json",
         colModel: [			
-			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
-			{ label: '活动id', name: 'applyId', index: 'apply_id', width: 80 },
+			{ label: 'id', name: 'id', index: 'id', width: 20, key: true },
+			{ label: '活动标题', name: 'applyTitle',width: 60 },
 			{ label: '活动回顾', name: 'applyReviewContent', index: 'apply_review_content', width: 80 },
-			{ label: 't:展示 f:暂停', name: 'showStatus', index: 'show_status', width: 80 },
-			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 80,
+			{ label: '是否展示', name: 'showStatus', index: 'show_status', width: 30,
+				formatter: function (value, options, row) {
+					if(value =='t'){
+						return "<span class='label label-success'>展示</span>";
+
+					}else{
+						return "<span class='label label-success'>暂停</span>";
+
+					}
+				}
+			},
+			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 30,
 				formatter: function (value, options, row) {
 					if (value == 'pass') {
 						return "<span class='label label-success'>通过</span>";
@@ -20,10 +30,23 @@ $(function () {
 					}
 				}
 			},
-			{ label: '审核意见', name: 'auditMsg', index: 'audit_msg', width: 80 },
-			{ label: '1:text文本 2：image图片 3video视频', name: 'applyReviewType', index: 'apply_review_type', width: 80 },
-			{ label: '视频链接', name: 'videoLink', index: 'video_link', width: 80 },
-			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
+			{ label: '审核意见', name: 'auditMsg', index: 'audit_msg', width: 50 },
+			{ label: '内容类型', name: 'applyReviewType', index: 'apply_review_type', width: 30,
+				formatter: function (value, options, row) {
+					if(value =='1'){
+						return "<span class='label label-success'>文本</span>";
+
+					}else if(value == '2'){
+						return "<span class='label label-success'>图片</span>";
+
+					}else{
+						return "<span class='label label-success'>视频</span>";
+
+					}
+				}
+			},
+			{ label: '视频链接', name: 'videoLink', index: 'video_link', width: 50 },
+			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 30 },
 			{
                 label: '操作', name: '', index: 'operate', width: 100, align: 'left', sortable: false,
 				formatter: function (value, options, row) {

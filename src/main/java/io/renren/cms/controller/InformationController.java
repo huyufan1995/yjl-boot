@@ -65,7 +65,8 @@ public class InformationController {
 		informationList.forEach(informationsEntity ->
 				{
 					Integer informationType = informationsEntity.getInformationType();
-					informationsEntity.setInformationTypeName(informationTypeService.queryObject(informationType).getName()
+					String name = informationTypeService.queryObject(informationType).getName();
+					informationsEntity.setInformationTypeName(name
 					);
 				}
 				);

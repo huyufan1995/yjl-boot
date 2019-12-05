@@ -3,14 +3,14 @@ $(function () {
         url: '../apply/list',
         datatype: "json",
         colModel: [			
-			{ label: 'id', name: 'id', index: 'id', width: 50, key: true },
+			{ label: 'id', name: 'id', index: 'id', width: 15, key: true },
 			{ label: '活动标题', name: 'applyTitle', index: 'apply_title', width: 80 },
-			{ label: '活动开始时间', name: 'startTime', index: 'start_time', width: 80 },
-			{ label: '活动结束时间', name: 'endTime', index: 'end_time', width: 80 },
-			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 80 },
-			{ label: '活动地址', name: 'applyLocation', index: 'apply_location', width: 80 },
-			{ label: '创建人', name: 'createPeople', index: 'create_people', width: 80 },
-			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 80 ,
+			{ label: '活动开始时间', name: 'startTime', index: 'start_time', width: 30 },
+			{ label: '活动结束时间', name: 'endTime', index: 'end_time', width: 30 },
+			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 30 },
+			{ label: '活动地址', name: 'applyLocation', index: 'apply_location', width: 50 },
+			{ label: '创建人', name: 'createPeople', index: 'create_people', width: 25 },
+			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 20 ,
 				formatter: function (value, options, row) {
 					if (value == 'pass') {
 						return "<span class='label label-success'>通过</span>";

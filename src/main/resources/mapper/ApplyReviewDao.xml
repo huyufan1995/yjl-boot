@@ -25,7 +25,7 @@
 	</select>
 
 	<select id="queryList" resultType="io.renren.cms.entity.ApplyReviewEntity">
-		select tar.*,ta.apply_title applyTitle from tb_apply_review tar
+		select tar.*,ta.apply_title applyTitle,ta.show_status as showStatus from tb_apply_review tar
 		left join tb_apply ta
 		on tar.apply_id = ta.id
 		where 1 = 1
