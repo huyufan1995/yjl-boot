@@ -69,6 +69,9 @@
 					<Form-item label="活动热度" prop="applyHot">
 						<i-input v-model="apply.applyHot" placeholder="活动热度" style="width: 300px"></i-input>
 					</Form-item>
+					<Form-item label="活动排名" prop="sort">
+						<i-input v-model="apply.sort" placeholder="输入数字(数字越大排名越高)" style="width: 300px"></i-input>
+					</Form-item>
 					<Form-item label="活动时间" prop="dateTimeRange">
 						<Date-picker type="datetimerange" v-model="apply.dateTimeRange" format="yyyy-MM-dd HH:mm" placeholder="请选择时间范围" style="width: 300px"></Date-picker>
 					</Form-item>
@@ -86,7 +89,7 @@
 							action="../cos/upload/cloud/applyBanner">
 						<i-button type="ghost" icon="ios-cloud-upload-outline">上传图片</i-button>
 					</Upload>
-					<span>图片尺寸：640*360px</span>
+					<span>图片尺寸：690*300px</span>
 				</Form-item>
 				<Form-item label="活动视频链接地址" prop="videoLink">
 					<i-input v-model="apply.videoLink" placeholder="请输入活动视频链接地址" style="width: 300px"></i-input>
@@ -98,7 +101,7 @@
 		    
 		     <div class="form-group">
 				<div class="col-sm-2 control-label"></div> 
-            	<i-button type="primary" @click="saveOrUpdate">确定</i-button>
+            	<i-button type="primary" v-show="!showModal5" @click="saveOrUpdate">确定</i-button>
             	&nbsp;&nbsp;
 				<i-button type="warning" @click="reload">返回</i-button>
 			</div> 

@@ -89,4 +89,6 @@ public class ApplyEntity implements Serializable {
 	 * 活动报名记录
 	 */
 	private List<ApplyRecordEntiyDto> applyRecordEntiyDto;
+
+	private Integer sort;
 }

@@ -194,6 +194,33 @@ var vm = new Vue({
 				}
 			});
 		},
+		easyExcel: function(id){
+			var p1 = vm.q.applyTitle==null?"":vm.q.applyTitle;
+			var p2 = vm.q.nickName==null?"":vm.q.nickName;
+			var d1 = vm.q.sdate==null?"":vm.q.sdate;
+			var d2 = vm.q.edate==null?"":vm.q.edate;
+			window.open("../applyrecord/applyRecordPoi/?applyTitle="+p1+"&nickName="+p2+"&sdate="+d1+"&edate="+d2);
+			/*$.ajax({
+				type : "post",
+				async: false,
+				responseType: 'blob',
+				url : "../applyrecord/applyRecordPoi/",
+				success : function(res) {
+					// 将文件流转成blob形式
+					const blob = new Blob([res.data], {type: 'application/vnd.ms-excel'})
+					let filename = 'test.xls'
+					// 创建一个超链接，将文件流赋进去，然后实现这个超链接的单击事件
+					const elink = document.createElement('a')
+					elink.download = filename
+					elink.style.display = 'none'
+					elink.href = URL.createObjectURL(blob)
+					document.body.appendChild(elink)
+					elink.click()
+					URL.revokeObjectURL(elink.href) // 释放URL 对象
+					document.body.removeChild(elink)
+				}
+			});*/
+		},
 		reload: function (event) {
 			vm.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');

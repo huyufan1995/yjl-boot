@@ -1,28 +1,21 @@
 package io.renren;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
-import com.google.common.collect.Maps;
-import io.renren.api.dto.ApplyEntityDto;
-import io.renren.api.dto.VerifyApplyDto;
-import io.renren.api.vo.ApiResult;
+import cn.afterturn.easypoi.excel.ExcelExportUtil;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
 import io.renren.cms.dao.ApplyDao;
-import io.renren.cms.entity.ApplyEntity;
-import io.renren.cms.service.ApplyService;
+import io.renren.cms.service.ApplyRecordService;
 import io.renren.cms.service.VerifyRecordService;
-import lombok.experimental.var;
+import io.renren.cms.vo.ApplyRecordEntityVO;
+import io.renren.utils.easypoi.ApplyRecordPOI;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
+import java.io.FileOutputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -33,6 +26,29 @@ public class KhxjApplicationTests {
 
     @Autowired
     private VerifyRecordService verifyRecordService;
+
+    @Autowired
+    private ApplyRecordService applyRecordService;
+
+    @Test
+    public void test13()throws Exception{
+        List<ApplyRecordEntityVO> applyRecordList = applyRecordService.queryListVo(null);
+        List<ApplyRecordPOI> list = new ArrayList<>();
+        applyRecordList.forEach(v -> {
+            ApplyRecordPOI poi = new ApplyRecordPOI();
+            poi.setApplyTitle(v.getApplyTitle());
+            poi.setCtime(v.getCtime());
+            poi.setNickName(v.getNickName());
+            list.add(poi);
+        });
+        Workbook workbook = ExcelExportUtil.exportExcel(new ExportParams("计算机一班学生","学生"),
+                ApplyRecordPOI.class, list);
+        FileOutputStream fos = new FileOutputStream("D:/excel.xlsx");
+        /*response.setContentType("application/vnd.ms-excel;charset=utf-8");
+        response.setHeader("Content-Disposition", "attachment; filename=" + excelName + ".xlsx");*/
+
+        workbook.write(fos);
+    }
 /*
     @Test
     public void test1(){

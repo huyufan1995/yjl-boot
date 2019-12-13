@@ -57,8 +57,11 @@
 			<when test="sidx != null and sidx.trim() != ''">
 				order by ${sidx} ${order}
 			</when>
+			<when test="offset == 0 ">
+				order by `sort` desc
+			</when>
 			<otherwise>
-				order by id desc
+				order id desc
 			</otherwise>
 		</choose>
 		<if test="offset != null and limit != null">
@@ -105,7 +108,8 @@
 			`audit_status`,
 			`audit_msg`,
 			`show_status`,
-			`apply_hot`
+			`apply_hot`,
+			`sort`
 		)
 		values
 		(
@@ -123,7 +127,8 @@
 			#{auditStatus},
 			#{auditMsg},
 			#{showStatus},
-			#{applyHot}
+			#{applyHot},
+			#{sort}
 		)
 	</insert>
 
@@ -144,7 +149,9 @@
 			<if test="auditStatus != null">`audit_status` = #{auditStatus}, </if>
 			<if test="auditMsg != null">`audit_msg` = #{auditMsg}, </if>
 			<if test="showStatus != null">`show_status` = #{showStatus},</if>
-			<if test="applyHot != null">`apply_hot` = #{applyHot}</if>
+			<if test="applyHot != null">`apply_hot` = #{applyHot},</if>
+			<if test="sort != null">`sort` = #{sort}</if>
+
 		</set>
 		where id = #{id}
 	</update>
@@ -200,8 +207,11 @@
 			<when test="sidx != null and sidx.trim() != ''">
 				order by ${sidx} ${order}
 			</when>
+			<when test="offset == 0 ">
+				order by `sort` desc
+			</when>
 			<otherwise>
-				order by ctime desc
+				order id desc
 			</otherwise>
 		</choose>
 		<if test="offset != null and limit != null">

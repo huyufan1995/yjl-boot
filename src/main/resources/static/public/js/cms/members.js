@@ -195,6 +195,8 @@ var vm = new Vue({
 		title: null,
 		showModal4: false,
 		showModal2: false,
+		showMemberImage: false,
+		memberImgSrc: null,
 		member: {},
 		ruleValidate: {
 			nickname: [
@@ -330,6 +332,14 @@ var vm = new Vue({
 				success : function(r) {
 					vm.member = r.member;
 					vm.qrcode = vm.member.qrCode;
+					vm.memberImgSrc = vm.member.portrait;
+					if(vm.member.gender == '1'){
+						vm.member.gender= '男';
+					}else{
+						vm.member.gender= '女';
+
+					}
+					vm.showMemberImage = true;
 				}
 			});
 		},

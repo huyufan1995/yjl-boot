@@ -1,6 +1,7 @@
 package io.renren.cms.controller;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -154,6 +155,7 @@ public class InformationController {
 	@RequestMapping("/update")
 	//@RequiresPermissions("information:update")
 	public R update(@RequestBody InformationsEntity information){
+		information.setUpdateTime(new Date());
 		information = checkInformationType(information);
 		informationService.update(information);
 		

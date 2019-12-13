@@ -21,28 +21,34 @@
 	</select>
 
 	<select id="queryList" resultType="io.renren.cms.entity.InformationsEntity">
-		select * from tb_information where 1 = 1
-
-			<if test="title != null and title != ''"> and `title` = #{title}</if>
-			<if test="videoLink != null and videoLink != ''"> and `video_link` = #{videoLink}</if>
-			<if test="content != null and content != ''"> and `content` = #{content}</if>
-			<if test="auditStatus != null and auditStatus != ''"> and `audit_status` = #{auditStatus}</if>
-			<if test="isDel != null and isDel != ''"> and `is_del` = #{isDel}</if>
-			<if test="ctime != null and ctime != ''"> and `ctime` = #{ctime}</if>
+		SELECT ti.*,tit.`name` as informationTypeName FROM `tb_information` ti
+		LEFT JOIN tb_information_type tit
+		on ti.information_type = tit.id
+		where 1=1
+			<if test="informationTypeName != null and informationTypeName != ''"> and tit.`name` = #{informationTypeName}</if>
+			<if test="title != null and title != ''"> and ti.`title` = #{title}</if>
+			<if test="videoLink != null and videoLink != ''"> and ti.`video_link` = #{videoLink}</if>
+			<if test="content != null and content != ''"> and ti.`content` = #{content}</if>
+			<if test="auditStatus != null and auditStatus != ''"> and ti.`audit_status` = #{auditStatus}</if>
+			<if test="isDel != null and isDel != ''"> and ti.`is_del` = #{isDel}</if>
+			<if test="ctime != null and ctime != ''"> and ti.`ctime` = #{ctime}</if>
 			<if test="keyword != null and keyword != ''">
-				and (title LIKE concat('%', #{keyword}, '%') or content LIKE concat('%',#{keyword},'%'))
+				and (ti.title LIKE concat('%', #{keyword}, '%') or content LIKE concat('%',#{keyword},'%'))
 			 </if>
 
 		<if test="sdate != null and sdate != '' and edate != null and edate != ''">
-			and (ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
+			and (ti.ctime between CONCAT(#{sdate},' 00:00:00') and CONCAT(#{edate},' 23:59:59'))
 		</if>
 
         <choose>
             <when test="sidx != null and sidx.trim() != ''">
                 order by ${sidx} ${order}
             </when>
+			<when test="offset == 0 ">
+				order by ti.`sort` desc
+			</when>
 			<otherwise>
-                order by id desc
+				order by ti.`update_time` desc
 			</otherwise>
         </choose>
 		<if test="offset != null and limit != null">
@@ -103,7 +109,10 @@
 				qr_code,
 			</if>
 			<if test="browsTotal != null">
-				brows_total
+				brows_total,
+			</if>
+			<if test="sort != null">
+				`sort`
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -141,7 +150,10 @@
 				#{qrCode},
 			</if>
 			<if test="browsTotal != null">
-				#{browsTotal}
+				#{browsTotal},
+			</if>
+			<if test="sort != null">
+				#{sort}
 			</if>
 		</trim>
 	</insert>
@@ -151,6 +163,7 @@
 		<set>
 			<if test="title != null">`title` = #{title}, </if>
 			<if test="videoLink != null">`video_link` = #{videoLink}, </if>
+			<if test="banner != null">`banner` = #{banner}, </if>
 			<if test="content != null">`content` = #{content}, </if>
 			<if test="auditMsg != null">`audit_msg` = #{auditMsg}, </if>
 			<if test="showStatus != null">`show_status` = #{showStatus}, </if>
@@ -158,8 +171,8 @@
 			<if test="auditStatus != null">`audit_status` = #{auditStatus}, </if>
 			<if test="ctime != null">`ctime` = #{ctime}, </if>
 			<if test="updateTime != null">`update_time` = #{updateTime},</if>
-			<if test="browsTotal != null">`brows_total` = #{browsTotal}</if>
-
+			<if test="browsTotal != null">`brows_total` = #{browsTotal},</if>
+			<if test="sort != null">`sort` = #{sort}</if>
 		</set>
 		where id = #{id}
 	</update>
@@ -220,8 +233,11 @@
 			<when test="sidx != null and sidx.trim() != ''">
 				order by ${sidx} ${order}
 			</when>
+			<when test="offset == 0 ">
+				order by ti.`sort` desc
+			</when>
 			<otherwise>
-				order by ti.id desc
+				order by ti.`update_time` desc
 			</otherwise>
 		</choose>
 		<if test="offset != null and limit != null">

@@ -85,4 +85,9 @@ public class InformationsEntity implements Serializable {
 	 * 资讯浏览量
 	 */
 	private Integer browsTotal;
+
+	/**
+	 * 排序字段
+	 */
+	private Integer sort;
 }

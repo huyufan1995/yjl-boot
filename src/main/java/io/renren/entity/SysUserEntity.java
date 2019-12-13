@@ -49,6 +49,11 @@ public class SysUserEntity implements Serializable {
 	private String mobile;
 
 	/**
+	 * 区域
+	 */
+	private String location;
+
+	/**
 	 * 状态  0：禁用   1：正常
 	 */
 	private Integer status;
@@ -195,5 +200,12 @@ public class SysUserEntity implements Serializable {
 	public void setCreateUserId(Long createUserId) {
 		this.createUserId = createUserId;
 	}
-	
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
 }

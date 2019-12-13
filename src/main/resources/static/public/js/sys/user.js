@@ -7,6 +7,7 @@ $(function () {
 			{ label: '用户名', name: 'username', width: 75 },
 			{ label: '邮箱', name: 'email', width: 90 },
 			{ label: '手机号', name: 'mobile', width: 100 },
+			{ label: '区域', name: 'location', width: 100 },
 			{ label: '状态', name: 'status', width: 80, formatter: function(value, options, row){
 				return value === 0 ? 
 					'<span class="label label-danger">禁用</span>' : 
