@@ -48,4 +48,6 @@ public interface MemberService {
     List<MemberEntity> queryAddressAndNationalityInfo();
 
 	List<MemberEntity> queryListLikeAll(Map<String, Object> params);
+
+    List<MemberEntity> queryListVO(Map<String, Object> params);
 }

@@ -39,6 +39,7 @@ public class HTMLSpirit{
         htmlStr = delHtmlTags(htmlStr);
         //去除空格" "
         htmlStr = htmlStr.replaceAll(" ","");
+        htmlStr = htmlStr.replaceAll("&nbsp;","");
         return htmlStr;
     }
 

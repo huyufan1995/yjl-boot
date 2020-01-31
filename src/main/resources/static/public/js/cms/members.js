@@ -252,7 +252,6 @@ var vm = new Vue({
 			vm.title = "请输入不通过原因";
 		},
 		memberPass: function(event){
-			vm.member.auditMsg = null;
 			$.ajax({
 				type: "POST",
 				url: "../member/updateType",
@@ -260,12 +259,32 @@ var vm = new Vue({
 				data: JSON.stringify(vm.member),
 				success: function(r){
 					if(r.code === 0){
-						vm.reload();
 						vm.showModal = false;
 						vm.showModal4 = false;
 						vm.showModal2 =false;
 						vm.member.auditMsg = null;
 						vm.$Message.success('操作成功!');
+						vm.reload();
+					}else{
+						vm.$Message.error(r.msg);
+					}
+				}
+			});
+		},
+		noMemberPass: function(event){
+			$.ajax({
+				type: "POST",
+				url: "../member/updateTypeNoPass",
+				contentType: "application/json",
+				data: JSON.stringify(vm.member),
+				success: function(r){
+					if(r.code === 0){
+						vm.showModal = false;
+						vm.showModal4 = false;
+						vm.showModal2 =false;
+						vm.member.auditMsg = null;
+						vm.$Message.success('操作成功!');
+						vm.reload();
 					}else{
 						vm.$Message.error(r.msg);
 					}

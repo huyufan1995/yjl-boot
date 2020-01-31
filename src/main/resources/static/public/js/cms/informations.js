@@ -6,7 +6,7 @@ $(function () {
 			{ label: '标题', name: 'title', index: 'title', width: 60 },
 			{ label: '资讯视频地址', name: 'videoLink', index: 'video_link', width: 50 },
 			{ label: '创建时间', name: 'ctime', index: 'ctime', width: 30 },
-			{ label: '资讯类型', name: 'informationTypeName', width: 20 },
+			{ label: '资讯类型', name: 'informationTypeName',index:'informationTypeName', width: 20 },
 			{ label: '修改时间', name: 'updateTime', index: 'update_time', width: 20 },
 			{ label: '审核状态', name: 'auditStatus', index: 'audit_status', width: 50 ,
 				formatter: function (value, options, row) {
@@ -161,6 +161,7 @@ function revocation(id) {
 		}
 	});
 }
+
 //逻辑删除
 function logic_del(id){
 	if(id == null){
@@ -221,6 +222,9 @@ var vm = new Vue({
 			informationTypeName:null
 		}
 	},
+	created:function(){
+		this.getInformationType();
+	},
 	methods: {
 		query: function () {
 			vm.reload();
@@ -256,7 +260,7 @@ var vm = new Vue({
 		getInformationType: function () {
 			$.ajax({
 				url: "../informationstype/queryAll",
-				async: false,
+				async: true,
 				type: "GET",
 				success: function (r) {
 					vm.informationTypeList = r.informationTypeList;

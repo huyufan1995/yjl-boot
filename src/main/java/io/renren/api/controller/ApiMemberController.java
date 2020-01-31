@@ -237,6 +237,12 @@ public class ApiMemberController {
 			@ApiImplicitParam(paramType = "query", dataType = "string", name = "type", value = "common游客 vip 会员", required = true)
 	})
 	public ApiResult info(@ApiIgnore()MemberEntity memberEntity) {
+		System.out.println(memberEntity.getGender());
+		if("01".equals(memberEntity.getGender())){
+			memberEntity.setGender("1");
+		}else{
+			memberEntity.setGender("2");
+		}
 		if(memberEntity.getType().equals(MemberTypeEnum.VIP.getCode())){
 			memberEntity.setType(MemberTypeEnum.COMMON.getCode());
 			memberEntity.setShowVip(SystemConstant.F_STR);

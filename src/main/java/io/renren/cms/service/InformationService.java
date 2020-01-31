@@ -47,4 +47,6 @@ public interface InformationService {
     InformationsEntityInfoDto queryObjectDto(Integer id, String openid);
 
     List<InformationsEntityDto> queryListDtoByOpenIdWithCollect(Map<String, Object> map);
+
+    List<InformationsEntity> queryListVO(Map<String, Object> map);
 }

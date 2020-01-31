@@ -62,7 +62,7 @@ public class InformationController {
 	public R list(@RequestParam Map<String, Object> params){
         Query query = new Query(params);
 
-		List<InformationsEntity> informationList = informationService.queryList(query);
+		List<InformationsEntity> informationList = informationService.queryListVO(query);
 		informationList.forEach(informationsEntity ->
 				{
 					Integer informationType = informationsEntity.getInformationType();

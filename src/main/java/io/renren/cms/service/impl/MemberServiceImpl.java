@@ -196,5 +196,10 @@ public class MemberServiceImpl implements MemberService {
 		return memberDao.queryListLikeAll(params);
 	}
 
+	@Override
+	public List<MemberEntity> queryListVO(Map<String, Object> params) {
+		return memberDao.queryListVO(params);
+	}
+
 
 }

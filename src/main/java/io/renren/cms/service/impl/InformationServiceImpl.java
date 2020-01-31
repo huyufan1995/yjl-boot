@@ -125,5 +125,10 @@ public class InformationServiceImpl implements InformationService {
 		return informationDao.queryListDtoByOpenIdWithCollect(map);
 	}
 
+	@Override
+	public List<InformationsEntity> queryListVO(Map<String, Object> map) {
+		return informationDao.queryListVO(map);
+	}
+
 
 }

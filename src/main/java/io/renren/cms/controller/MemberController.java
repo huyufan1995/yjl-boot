@@ -66,7 +66,7 @@ public class MemberController {
 	public R list(@RequestParam Map<String, Object> params){
         Query query = new Query(params);
 
-		List<MemberEntity> memberList = memberService.queryList(query);
+		List<MemberEntity> memberList = memberService.queryListVO(query);
 		int total = memberService.queryTotal(query);
 		
 		PageUtils pageUtil = new PageUtils(memberList, total, query.getLimit(), query.getPage());
@@ -103,6 +103,11 @@ public class MemberController {
 	@RequestMapping("/update")
 	//@RequiresPermissions("member:update")
 	public R update(@RequestBody MemberEntity member){
+		if("女".equals(member.getGender())){
+			member.setGender("2");
+		}else{
+			member.setGender("1");
+		}
 		memberService.update(member);
 		
 		return R.ok();
@@ -136,32 +141,41 @@ public class MemberController {
 	//@RequiresPermissions("member:save")
 	public R updateType(@RequestBody MemberEntity member){
 		MemberEntity memberEntity = new MemberEntity();
-		if(StringUtils.isNotEmpty(member.getAuditMsg())){
-			memberEntity.setId(member.getId());
-			memberEntity.setAuditStatus(AuditStatusEnum.REJECT.getCode());
-			memberEntity.setAuditMsg(member.getAuditMsg());
-			memberService.update(memberEntity);
-		}else{
-			memberEntity.setId(member.getId());
-			memberEntity.setAuditStatus(AuditStatusEnum.PASS.getCode());
-			memberEntity.setType(MemberTypeEnum.VIP.getCode());
-			String id = System.currentTimeMillis()+"";
-			id = id.substring(0, 6);
-			memberEntity.setCode(id+memberEntity.getId());
-			memberEntity.setAuditMsg(" ");
-			final WxMaService wxMaService = WxMaConfiguration.getMaService(yykjProperties.getAppid());
-			try {
-				File qrcodeFile = wxMaService.getQrcodeService().createWxaCode(
-						StrUtil.format(SystemConstant.APP_PAGE_PATH_Member_DETAIL, memberEntity.getCode()), 280, false, null, false);
-				String key = ProjectUtils.uploadCosFile(cosClient, qrcodeFile);
-				System.err.println(yykjProperties.getImagePrefixUrl().concat(key));
-				memberEntity.setQrCode(yykjProperties.getImagePrefixUrl().concat(key));
-			} catch (Exception e) {
-				e.printStackTrace();
-				log.error("===生成会员二维码异常：{}", e.getMessage());
-			}
-			memberService.update(memberEntity);
+		memberEntity.setId(member.getId());
+		memberEntity.setAuditStatus(AuditStatusEnum.PASS.getCode());
+		memberEntity.setType(MemberTypeEnum.VIP.getCode());
+		String id = System.currentTimeMillis() + "";
+		id = id.substring(0, 6);
+		memberEntity.setCode(id + memberEntity.getId());
+		memberEntity.setAuditMsg(" ");
+		final WxMaService wxMaService = WxMaConfiguration.getMaService(yykjProperties.getAppid());
+		try {
+			File qrcodeFile = wxMaService.getQrcodeService().createWxaCode(
+					StrUtil.format(SystemConstant.APP_PAGE_PATH_Member_DETAIL, memberEntity.getCode()), 280, false, null, false);
+			String key = ProjectUtils.uploadCosFile(cosClient, qrcodeFile);
+			System.err.println(yykjProperties.getImagePrefixUrl().concat(key));
+			memberEntity.setQrCode(yykjProperties.getImagePrefixUrl().concat(key));
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("===生成会员二维码异常：{}", e.getMessage());
 		}
+		memberService.update(memberEntity);
+
+		return R.ok();
+	}
+
+
+	/**
+	 * 更新用户认证授权状态
+	 */
+	@RequestMapping("/updateTypeNopass")
+	//@RequiresPermissions("member:save")
+	public R updateTypeNoPass(@RequestBody MemberEntity member){
+		MemberEntity memberEntity = new MemberEntity();
+		memberEntity.setId(member.getId());
+		memberEntity.setAuditStatus(AuditStatusEnum.REJECT.getCode());
+		memberEntity.setAuditMsg(member.getAuditMsg());
+		memberService.update(memberEntity);
 		return R.ok();
 	}
 	/**
